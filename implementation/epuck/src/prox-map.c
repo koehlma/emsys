@@ -56,6 +56,8 @@ static void maybe_move(ProxMapState* prox_map, Sensors* sens) {
     map_move(map_get_proximity(),
         next.x - prox_map->lower_left.x,
         next.y - prox_map->lower_left.y);
+
+    prox_map->lower_left = next;
 }
 
 static void map_set_field_guarded(Map* map, int x, int y, FieldType type) {
