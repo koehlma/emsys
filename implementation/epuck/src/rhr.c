@@ -28,7 +28,7 @@ static const double RHR_CONF_CORNER_D = 9.5;
 static const double RHR_CONF_CORNER_X = 11;
 static const double RHR_CONF_WALL_THRESH = 2;
 static const double RHR_CONF_WALL_D = 1;
-static const double RHR_CONF_STROKE_THRESH = 1.1;
+static const double RHR_CONF_STROKE_THRESH = 1.8;
 
 void rhr_reset(RhrState* rhr) {
     rhr->state = RHR_check_wall;
