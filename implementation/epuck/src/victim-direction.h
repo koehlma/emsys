@@ -18,8 +18,8 @@ typedef struct VDLocals {
 typedef struct VDState {
     VDLocals locals;
     double victim_phi;
-    int victim_found;
-    int give_up;
+    unsigned int victim_found;
+    unsigned int give_up;
 } VDState;
 
 void vd_reset(VDState* vd);

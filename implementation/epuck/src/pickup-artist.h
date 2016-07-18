@@ -11,7 +11,7 @@ typedef struct PickupLocals {
 
 typedef struct PickupState {
     PickupLocals locals;
-    int is_dead;
+    unsigned int is_dead;
 } PickupState;
 
 /* Finally, it's not PulseAudio */

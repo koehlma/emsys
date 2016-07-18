@@ -43,7 +43,7 @@ typedef struct Sensors {
         double y;
         double phi;
     } current;
-    volatile int victim_attached;
+    volatile unsigned int victim_attached;
     T2TData t2t;
 } Sensors;
 

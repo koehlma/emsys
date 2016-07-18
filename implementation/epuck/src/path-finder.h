@@ -13,10 +13,10 @@ typedef struct PathFinderInputs {
     Map* map;
     double dest_x;
     double dest_y;
-    int compute;
-    int step_complete;
-    int step_see_obstacle;
-    int is_victim;
+    unsigned int compute;
+    unsigned int step_complete;
+    unsigned int step_see_obstacle;
+    unsigned int is_victim;
 } PathFinderInputs;
 
 typedef struct PathFinderLocals {
@@ -28,10 +28,10 @@ typedef struct PathFinderLocals {
 typedef struct PathFinderState {
     PathFinderLocals locals;
     Position next;
-    int no_path;
-    int path_completed;
-    int drive;
-    int backwards;
+    unsigned int no_path;
+    unsigned int path_completed;
+    unsigned int drive;
+    unsigned int backwards;
 } PathFinderState;
 
 void pf_reset(PathFinderState* pf);

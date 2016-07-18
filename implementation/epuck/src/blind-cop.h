@@ -4,15 +4,15 @@
 #include "hal.h"
 
 typedef struct BlindInputs {
-    int found_victim_xy;
-    int need_angle;
-    int no_path;
+    unsigned int found_victim_xy;
+    unsigned int need_angle;
+    unsigned int no_path;
     double origin_x;
     double origin_y;
     double victim_x;
     double victim_y;
-    int path_completed;
-    int victim_attached;
+    unsigned int path_completed;
+    unsigned int victim_attached;
 } BlindInputs;
 
 typedef struct BlindLocals {
@@ -34,7 +34,7 @@ typedef struct BlindState {
     double dst_x;
     double dst_y;
     enum BlindRunChoice run_choice;
-    int is_victim;
+    unsigned int is_victim;
 } BlindState;
 
 void blind_reset(BlindState* blind);

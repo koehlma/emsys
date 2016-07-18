@@ -5,7 +5,7 @@
 
 typedef struct VFInputs {
     double victim_angle;
-    int found_victim_phi;
+    unsigned int found_victim_phi;
 } VFInputs;
 
 typedef struct VFLocals {
@@ -15,7 +15,7 @@ typedef struct VFLocals {
 
 typedef struct {
     VFLocals locals;
-    int found_victim_xy;
+    unsigned int found_victim_xy;
     double victim_x;
     double victim_y;
 } VFState;

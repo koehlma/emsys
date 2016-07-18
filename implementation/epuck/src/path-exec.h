@@ -5,8 +5,8 @@
 #include "sensors.h"
 
 typedef struct PathExecInputs {
-    int drive;
-    int backwards;
+    unsigned int drive;
+    unsigned int backwards;
     double next_x;
     double next_y;
 } PathExecInputs;
@@ -24,8 +24,8 @@ typedef struct PathExecLocals {
 
 typedef struct PathExecState {
     PathExecLocals locals;
-    int done;
-    int see_obstacle;
+    unsigned int done;
+    unsigned int see_obstacle;
 } PathExecState;
 
 void pe_reset(PathExecState* pe);

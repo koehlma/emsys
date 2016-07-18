@@ -10,7 +10,7 @@ typedef struct IRSLocals {
 
 typedef struct IRSState {
     IRSLocals locals;
-    int ir_stable;
+    unsigned int ir_stable;
 } IRSState;
 
 void irs_reset(IRSState* irs);

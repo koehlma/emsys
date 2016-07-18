@@ -4,11 +4,11 @@
 #include "sensors.h"
 
 typedef struct TCEInputs {
-    int found_victim_phi;
-    int found_victim_xy;
+    unsigned int found_victim_phi;
+    unsigned int found_victim_xy;
     double ray_phi;
-    int ir_stable;
-    int phi_give_up;
+    unsigned int ir_stable;
+    unsigned int phi_give_up;
 } TCEInputs;
 
 typedef struct TCELocals {
@@ -20,7 +20,7 @@ typedef struct TCELocals {
 
 typedef struct TCEState {
     TCELocals locals;
-    int need_angle;
+    unsigned int need_angle;
 } TCEState;
 
 void tce_reset(TCEState* tce);
