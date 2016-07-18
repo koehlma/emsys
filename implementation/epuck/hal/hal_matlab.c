@@ -1,22 +1,5 @@
 /*
  * Matlab Hardware Abstraction Layer
- *
- *
- * Communication Subsystem Example:
- *
- *  void hal_send_example(void) {
- *      unsigned int number;
- *      MatlabBot* bot = current;
- *      if (bot->com != NULL) {
- *          for (number = 0; number < bot->com->length; number++) {
- *              // select bot to send data to
- *              matlab_select_bot((long) bot->com->bots[number], (long) bot->com);
- *              // TODO: call appropriate receive function directly
- *          }
- *      }
- *      // select sending bot
- *      matlab_select_bot((long) bot, (long) bot->com);
- *  }
  */
 
 #include <math.h> /* Only for "time feedback" */

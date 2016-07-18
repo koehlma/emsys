@@ -30,9 +30,7 @@ typedef char check_bit_per_field[(BIT_PER_FIELD == 2) ? 1 : -1];
  * I'm intent on getting it perfectly right.
  * [LSD] https://github.com/RemyPorter/TDWTF-BYOC-Casino/tree/master/Week1/ben#all-about-luckysergiomattarelladeuce
  *
- * This function should take 9 instructions.
- * FIXME: Can someone verify that with a disassembler?
- * FIXME: Inline flags?  ('inline' is not C90, so need some clever matlab-checking)
+ * This function takes very few instructions.  (See 'map-optimize/' directory.)
  *
  * The PIC chips throw an exception on unaligned data access!
  * The reads and writes (done by the caller) *must* be properly aligned! */
