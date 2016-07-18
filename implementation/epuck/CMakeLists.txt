@@ -64,7 +64,7 @@ set(SOURCE_FILES
 
         hal/hal_epuck.c
         hal/map_static.c
-        )
+        src/bellman-ford/bellman-ford.c)
 
 add_executable(${CMAKE_PROJECT_NAME}.elf ${SOURCE_FILES})
 

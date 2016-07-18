@@ -84,9 +84,9 @@ void reverse_path(Position* path, int len) {
 Position v2pos(int v) {
     Position res;
     assert(v < NUM_VERTICES);
-    res.y = v / MAP_MAX_WIDTH;
+    res.y = v / VERTICES_PER_ROW;
     res.y *= STEPPING_DIST;
-    res.x = v % MAP_MAX_WIDTH;
+    res.x = v % VERTICES_PER_COL;
     res.x *= STEPPING_DIST;
     assert(res.y < MAP_MAX_HEIGHT);
     return res;

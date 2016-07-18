@@ -73,7 +73,6 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
             assert(!inputs->step_complete || !inputs->step_see_obstacle);
             if (inputs->step_complete || pf->locals.path_index < 0) {
                 Position next_wp;
-                next_wp = pf->locals.path[pf->locals.path_index];
                 pf->drive = 0;
                 pf->backwards = 0;
                 /* Q: Why not check here for the position again?  Like this:
@@ -124,7 +123,7 @@ static int occupied(Position *pos, Map *map) {
     return map_get_field(map, pos->x, pos->y) == FIELD_WALL;
 }
 
-static const int APPROX_RADIUS;
+static const int APPROX_RADIUS = 2;
 static int adj(Position pos, Position goal, Map *map) {
     int i;
     Position test;
@@ -136,11 +135,14 @@ static int adj(Position pos, Position goal, Map *map) {
     assert(delta_x == 0 || delta_y == 0);
     assert(pos.x == goal.x || pos.y == goal.y);
 
+
     while(pos.x != goal.x || pos.y != goal.y) {
-        if(delta_x == 1){
+        if(abs(delta_x) == 1){
             test.x = pos.x;
-        } else {
             test.y = pos.y - APPROX_RADIUS;
+        } else {
+            test.x = pos.x - APPROX_RADIUS;
+            test.y = pos.y;
         }
         for(i = 0; i < APPROX_RADIUS * 2 + 1; ++i) {
             if (!invalid_pos(test, map) && occupied(&test, map)) {
