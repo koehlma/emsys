@@ -20,8 +20,8 @@
 typedef char check_minstep_is_valid[(0 < MAP_INTERNAL_DATA_SIZE(MIN_STEP_X,MIN_STEP_Y)) ? 1 : -1];
 
 static void desired_position(Position* into, Sensors* from) {
-    into->x = (int)((from->current.x - HALF_SIZE) / 4 + 0.5) * 4;
-    into->y = (int)((from->current.y - HALF_SIZE) / 2 + 0.5) * 2;
+    into->x = MIN_STEP_X * (int)((from->current.x - HALF_SIZE) / MIN_STEP_X + 0.5);
+    into->y = MIN_STEP_Y * (int)((from->current.y - HALF_SIZE) / MIN_STEP_Y + 0.5);
 /* I hate doing this. */
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
@@ -31,7 +31,7 @@ static void desired_position(Position* into, Sensors* from) {
     into->y = MIN(into->y, MAP_MAX_HEIGHT - MIN_STEP_Y);
 #undef MIN
 #undef MAX
-    assert(into->x%4 == 0 && into->y%2 == 0);
+    assert(into->x % MIN_STEP_X == 0 && into->y % MIN_STEP_Y == 0);
 }
 
 void proximity_reset(ProxMapState* prox_map, Sensors* sens) {
