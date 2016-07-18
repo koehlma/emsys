@@ -68,10 +68,12 @@ static void loop_alone(TinBot* tinbot) {
 /* Mode - MapOnly */
 static void setup_maponly(TinBot* tinbot) {
     hal_print("Tin Bot Setup: Alone");
+    approx_reset(&tinbot->controller.approx, &tinbot->sens);
     proximity_reset(&tinbot->controller.prox_map, &tinbot->sens);
 }
 
 static void loop_maponly(TinBot* tinbot) {
+    approx_step(&tinbot->controller.approx, &tinbot->sens);
     proximity_step(&tinbot->controller.prox_map, &tinbot->sens);
 }
 
