@@ -23,6 +23,8 @@ int map_get_height(Map* map) {
 }
 
 unsigned char* map_serialize(Map* map) {
+    assert(map);
+    assert(map->data);
     return map->data;
 }
 

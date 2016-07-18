@@ -98,14 +98,14 @@ static void enter_new_data(ProxMapState* prox_map, Sensors* sens) {
     double rel_x = sens->current.x - prox_map->lower_left.x;
     double rel_y = sens->current.y - prox_map->lower_left.y;
     Map* map = map_get_proximity();
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_20, 20 / M_PI);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_45, 45 / M_PI);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_90, 90 / M_PI);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_150, 150 / M_PI);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_20, -20 / M_PI);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_45, -45 / M_PI);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_90, -90 / M_PI);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_150, -150 / M_PI);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_20, 20 * M_PI / 180);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_45, 45 * M_PI / 180);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_90, 90 * M_PI / 180);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_150, 150 * M_PI / 180);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_20, -20 * M_PI / 180);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_45, -45 * M_PI / 180);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_90, -90 * M_PI / 180);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_150, -150 * M_PI / 180);
 }
 
 static void proximity_send(ProxMapState* prox_map) {
