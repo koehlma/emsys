@@ -18,7 +18,7 @@ CFLAGS?=-g -c -O2 -DMAP_MAX_WIDTH=20 -DMAP_MAX_HEIGHT=20 -DCONFIG_MAP_ASSERT_ANY
 LFLAGS?=-Weverything -lm
 # For libubsan, add "-fsanitize=undefined" to CFLAGS, and "-lubsan" to LFLAGS
 
-TBSRCS:=$(wildcard ../src/*.c) $(wildcard ../src/astar/*.c)
+TBSRCS:=$(wildcard ../src/*.c) $(wildcard ../src/bellman-ford/*.c)
 TBHEADERS:=$(wildcard ../src/*.h) $(wildcard ../src/astar/*.h) $(wildcard ../*.h) ../hal/hal.h mock.h ../hal/map_heap.h
 TBOBJS:=$(patsubst ../src/%.c,${OBJDIR}/%_tb.o,${TBSRCS})
 TESTOBJS:=$(patsubst src/%.c,${OBJDIR}/%_test.o,${TESTS})
@@ -41,7 +41,7 @@ clean:
 
 .PHONY: dirs
 dirs:
-	@mkdir -p ${OBJDIR} ${BINDIR} ${OBJDIR}/astar
+	@mkdir -p ${OBJDIR} ${BINDIR} ${OBJDIR}/bellman-ford
 
 .PHONY: run-all
 run-all: ${RUNTARGETS} ${OBJDIR}/matlab.o

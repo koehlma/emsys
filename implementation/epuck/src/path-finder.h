@@ -4,10 +4,11 @@
 #include <hal/hal.h>
 #include "map.h"
 #include "sensors.h"
+#include "bellman-ford/bellman-ford.h"
 
-#define STEP_DISTANCE 4
-#define MAX_PATH_LENGTH 20 /* map size over const dist */
-/* Caller must allocate space for MAX_PATH_LENGTH+1 instances of Position. */
+/* Caller must allocate space for MAX_PATH_LENGTH instances of Position. */
+
+extern const Position INVALID_POS;
 
 typedef struct PathFinderInputs {
     Map* map;
@@ -20,7 +21,7 @@ typedef struct PathFinderInputs {
 } PathFinderInputs;
 
 typedef struct PathFinderLocals {
-    Position path[MAX_PATH_LENGTH + 1];
+    Position path[MAX_PATH_LENGTH];
     int path_index; /* Must be signed */
     int state;
 } PathFinderLocals;
