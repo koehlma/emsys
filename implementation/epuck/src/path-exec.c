@@ -96,6 +96,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         }
         break;
     case PE_drive:
+        /* FIXME: use filtered proximity data */
         if ((PathExecInputs.backwards && 
             (sens->proximity[PROXIMITY_M_150] < 1
             || sens->proximity[PROXIMITY_P_150] < 1))
