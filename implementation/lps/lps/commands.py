@@ -53,13 +53,14 @@ class Commands(Command, enum.Enum):
     T2T_HEARTBEAT = 0x30
     T2T_VICTIM_PHI = 0x31, '3f'
     T2T_VICTIM_XY = 0x32, '3H'
-    T2T_UPDATE_MAP = 0x33, 'BB64B'
+    T2T_UPDATE_MAP = 0x33, 'hh64B'
     T2T_DOCKED = 0x34
     T2T_COMPLETED = 0x35
 
     DEBUG_INFO = 0x60, '11fH7B'
     DEBUG_MOTORS = 0x61, 'ff'
     DEBUG_LED = 0x62, 'H'
+    DEBUG_MAP = 0x63, 'hh64B'
 
 
 PROLOG = '''

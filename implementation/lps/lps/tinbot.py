@@ -10,6 +10,7 @@ import bluetooth
 from lps.constants import COLOR_MAP, Modes
 from lps.commands import Commands
 from lps.event import Event
+from lps.map import Map
 
 
 class Logger:
@@ -31,7 +32,7 @@ class Logger:
     def on_lps_send(self, source, target, command, payload):
         data = Commands.UPDATE_LPS.send_spec.unpack(payload)
         self.log('[LPS-Data] x: {} y: {} phi: {}'.format(*data))
-    
+
     def on_package(self, device, source, target, command, payload):
         if command in self.recv_handlers:
             self.recv_handlers[command](source, target, command, payload)
@@ -55,6 +56,7 @@ class TinBot:
         self.hue = None
         self.address = address
         self.controller = controller
+        self.map = Map()
 
         self._position = None
 
@@ -95,6 +97,7 @@ class TinBot:
 
     # commands
     def start(self):
+        self.map = Map()
         self.send(Commands.START)
 
     def reset(self):
@@ -107,6 +110,10 @@ class TinBot:
 
     def request_info(self):
         self.send(Commands.DEBUG_INFO)
+
+    def loop_patch(self, x, y, data):
+        payload = Commands.DEBUG_MAP.encode(x, y, *data)
+        self.send(Commands.DEBUG_MAP, payload)
 
     @property
     def position(self):
@@ -171,6 +178,9 @@ class TinBot:
                                                self.controller.victim.position[0] - x)
                     corrected_phi %= 2 * math.pi
                     self.correct_victim_phi(corrected_phi, valid)
+                elif command == Commands.T2T_UPDATE_MAP:
+                    x, y, *patch = Commands.T2T_UPDATE_MAP.decode(payload)
+                    self.map.patch(x, y, patch)
                 self.package_event.fire(self, source, target, command, payload)
         except bluetooth.btcommon.BluetoothError:
             pass

@@ -44,7 +44,7 @@ class VictimDirectionTest:
         self.debugger.print_message('Starting Victim Direction Test', INFO)
         self.tinbot.set_mode(Modes.VICDIR)
         for iteration in range(self.iterations):
-            time.sleep(0.5)
+            time.sleep(2)
             self.done.clear()
             self.tinbot.start()
             self.done.wait()

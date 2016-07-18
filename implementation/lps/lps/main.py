@@ -35,7 +35,7 @@ if __name__ == '__main__':
     controller = Controller(detector)
     controller.start()
 
-    server = Server(detector)
+    server = Server(detector, controller)
 
     loop.run_until_complete(server.setup())
 

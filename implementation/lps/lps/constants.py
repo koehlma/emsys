@@ -28,3 +28,4 @@ class Modes(enum.IntEnum):
     RHR = 2
     MERGEONLY = 3
     VICDIR = 4
+    MAPONLY = 5

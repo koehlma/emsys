@@ -15,6 +15,9 @@ import aiohttp
 from aiohttp import web
 from aiohttp import streams
 
+from lps.commands import Commands
+
+
 streams.DEFAULT_LIMIT = 1024 * 1024 * 200
 
 __path__ = os.path.dirname(__file__)
@@ -63,9 +66,12 @@ default_index_file = os.path.join(default_data_path, 'index.html')
 
 
 class Server:
-    def __init__(self, detector, loop=None, host=None, port=None):
+    def __init__(self, detector, controller, loop=None, host=None, port=None):
         self.detector = detector
         self.detector.data_event += self.on_data
+
+        self.controller = controller
+        self.controller.device_new_event += self.on_device_new
 
         self.host = host or '0.0.0.0'
         self.port = port or 8080
@@ -77,7 +83,7 @@ class Server:
 
         self.router.add_route('GET', '/websocket', self.websocket)
         self.clients = []
-        self.events = {'lps_data': []}
+        self.events = {'lps_data': [], 'map_data': []}
 
         self.router.add_route('GET', '/', self.index)
         self.router.add_static('/', default_data_path)
@@ -113,8 +119,26 @@ class Server:
         }
         self.loop.call_soon_threadsafe(self.send_data, json.dumps(data))
 
+    def on_device_new(self, device):
+        device.package_event += self.on_package
+
+    def on_package(self, device, source, target, command, payload):
+        if command != Commands.T2T_UPDATE_MAP:
+            return
+        image = base64.b64encode(device.map.get_image())
+        data = {
+            'event': 'map_data',
+            'color': device.color,
+            'image': image.decode('ascii')
+        }
+        self.loop.call_soon_threadsafe(self.send_map, json.dumps(data))
+
     def send_data(self, data):
         for client in self.events['lps_data']:
+            client.send_str(data)
+
+    def send_map(self, data):
+        for client in self.events['map_data']:
             client.send_str(data)
 
     @asyncio.coroutine
@@ -150,7 +174,7 @@ class Server:
                     if websocket in event_listeners:
                         event_listeners.remove(websocket)
                 print('error ' + str(error))
-                break
+                return
 
     @asyncio.coroutine
     def index(self, _):

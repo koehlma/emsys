@@ -3,6 +3,7 @@
 
 #include <tinpuck.h>
 #include <stdlib.h>
+#include <src/t2t-parse.h>
 
 #include "commands.h"
 #include "t2t.h"
@@ -37,7 +38,6 @@ static volatile unsigned int do_calibration = 0;
 static TinBot bot;
 
 static char my_com_addr;
-
 
 /* default mode executed on start command */
 static Mode mode = ALONE;
@@ -162,6 +162,16 @@ static void debug_on_motors(TinPackage *package) {
     tin_set_speed(speed_left, speed_right);
 }
 
+static void debug_on_map(TinPackage* package) {
+    static TinPackage response = {NULL, NULL, CMD_T2T_UPDATE_MAP, 0, NULL, NULL};
+    static char data[68] __attribute__ ((aligned (4)));
+    memcpy(data, package->data, 68);
+    response.target = package->source;
+    response.length = package->length;
+    response.data = data;
+    tin_com_send(&response);
+}
+
 
 /* Forwarding to T2T handlers */
 static void com_on_t2t_heartbeat(TinPackage *package) {
@@ -178,7 +188,7 @@ static void com_on_t2t_victim_xy(TinPackage *package) {
 }
 
 static void com_on_t2t_update_map(TinPackage *package) {
-    t2t_parse_update_map(&bot, package->data, package->length);
+    //t2t_parse_update_map(&bot, package->data, package->length);
 }
 
 static void com_on_t2t_docked(TinPackage *package) {
@@ -255,6 +265,7 @@ int main() {
     tin_com_register(CMD_DEBUG_INFO, debug_on_info);
     tin_com_register(CMD_DEBUG_LED, debug_on_led);
     tin_com_register(CMD_DEBUG_MOTORS, debug_on_motors);
+    tin_com_register(CMD_DEBUG_MAP, debug_on_map);
 
     tin_wait(2000);
 

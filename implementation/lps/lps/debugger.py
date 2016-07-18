@@ -97,7 +97,7 @@ class Debugger:
 
     # event handlers
     def on_package(self, device, source, target, command, payload):
-        if command in {Commands.HELLO}:
+        if command in {Commands.HELLO, Commands.T2T_UPDATE_MAP}:
             return
         if command in self.handlers:
             self.handlers[command](device, source, target, payload)
