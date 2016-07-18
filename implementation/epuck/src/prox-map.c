@@ -62,13 +62,13 @@ static void map_set_field_guarded(Map* map, int x, int y, FieldType type) {
 }
 
 static void enter_new_sensor_data(Map* map, Sensors* sens, double x, double y, unsigned int sensor_num, double sensor_phi) {
-    double distance = 5.3 / 2 + sens->proximity[sensor_num];
-    double delta_x = cosf(sens->current.phi + sensor_phi) * 0.7;
-    double delta_y = sinf(sens->current.phi + sensor_phi) * 0.7;
-    x += delta_x;
-    y += delta_y;
     double r = 0;
     double temp_x, temp_y;
+    double distance = 5.3 / 2 + sens->proximity[sensor_num];
+    double delta_x = cos(sens->current.phi + sensor_phi) * 0.7;
+    double delta_y = sin(sens->current.phi + sensor_phi) * 0.7;
+    x += delta_x;
+    y += delta_y;
     while (r < distance && r < 8) {
         temp_x = x + delta_x;
         map_set_field_guarded(map, (int) temp_x, (int) y, FIELD_FREE);

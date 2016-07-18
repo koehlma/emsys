@@ -39,8 +39,12 @@ typedef char check_bit_per_field[(BIT_PER_FIELD == 2) ? 1 : -1];
 typedef char check_map_merge_byte_bitlength[(BIT_PER_FIELD == 2) ? 1 : -1];
 static uint16_t merge_u16(uint16_t previously, uint16_t input) {
     /* Create a mask of all 'fields' that "are not unknown",
-     * which is equivalent to "are not 0b00". */
-    const uint16_t mask = input | (input & 0xAAAA) >> 1 | (input & 0x5555) << 1;
+     * which is equivalent to "are not 0b00".
+     * The cast is only necessary for platforms with
+     *     sizeof(int) > sizeof(uint16_t),
+     * due to the integer promotion rules.  Go read 'em up, they will melt
+     * your brain.  For the PIC, the cast is a no-op. */
+    const uint16_t mask = (uint16_t) (input | (input & 0xAAAA) >> 1 | (input & 0x5555) << 1);
     /* Remove information that shall be overwritten. */
     previously &= ~mask;
     /* "or"-in all new bits. */
