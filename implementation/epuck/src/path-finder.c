@@ -2,7 +2,6 @@
 #include <bellman-ford/bellman-ford.h>
 #include <hal/map_heap.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 #include "hal.h"
 #include "path-finder.h"

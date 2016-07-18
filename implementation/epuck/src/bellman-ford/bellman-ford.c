@@ -1,6 +1,5 @@
 #include <limits.h>
 #include <assert.h>
-#include <stdio.h>
 #include "bellman-ford.h"
 #include "path-finder.h"
 
@@ -11,10 +10,10 @@
 
 static BellmanFordLocals locals;
 
-int pos2v(Position pos);
-Position v2pos(int v);
+static int pos2v(Position pos);
+static Position v2pos(int v);
 static void init_bellman_ford(BellmanFord* state);
-void reverse_path(Position* path, int path_length);
+static void reverse_path(Position* path, int path_length);
 
 void find_path(BellmanFord* state) {
     int init = pos2v(state->init);
@@ -70,7 +69,7 @@ void find_path(BellmanFord* state) {
 
 /* AUX */
 
-void reverse_path(Position* path, int len) {
+static void reverse_path(Position* path, int len) {
     int border = len/2; /* same border for odd AND even length */
     int i;
     Position tmp;
@@ -81,7 +80,7 @@ void reverse_path(Position* path, int len) {
     }
 }
 
-Position v2pos(int v) {
+static Position v2pos(int v) {
     Position res;
     assert(v < NUM_VERTICES);
     res.y = v / VERTICES_PER_ROW;
@@ -92,7 +91,7 @@ Position v2pos(int v) {
     return res;
 }
 
-int pos2v(Position pos) {
+static int pos2v(Position pos) {
     int x = pos.x / STEPPING_DIST;
     int y = pos.y / STEPPING_DIST;
     int res = y * VERTICES_PER_ROW + x;
@@ -100,7 +99,7 @@ int pos2v(Position pos) {
     return res;
 }
 
-void init_bellman_ford(BellmanFord* state) {
+static void init_bellman_ford(BellmanFord* state) {
     int i;
     int x_real, y_real, x_graph, y_graph, cheat, not_cheat, valid;
     Position curr, neighbour;
