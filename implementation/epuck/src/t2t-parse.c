@@ -88,17 +88,18 @@ void t2t_parse_found_phi(TinBot* bot, char* data, unsigned int length) {
 
 void t2t_parse_phi_correction(TinBot* bot, char* data, unsigned int length) {
     assert(length == 4 + 2);
+    /* FIXME: Is this the correct structure? */
     t2t_receive_phi_correction(bot, ((float*) data)[0], ((uint16_t*) (data + 4))[1]);
 }
 
 void t2t_parse_found_xy(TinBot* bot, int is_ours, char* data, unsigned int length) {
-    assert(length == 3);
-    t2t_receive_found_xy(bot, is_ours, data[0], data[1], data[2]);
+    assert(length == 6);
+    t2t_receive_found_xy(bot, is_ours, ((int16_t*) data)[0], ((int16_t*) data)[1], ((int16_t*) data)[2]);
 }
 
 void t2t_parse_update_map(TinBot* bot, char* data, unsigned int length) {
-    assert(length == 2 + MAP_PROXIMITY_BUF_SIZE);
-    t2t_receive_update_map(bot, data[0], data[1], map_deserialize((unsigned char*)data + 2));
+    assert(length == 4 + MAP_PROXIMITY_BUF_SIZE);
+    t2t_receive_update_map(bot, ((int16_t*)data)[0], ((int16_t*)data)[1], map_deserialize((unsigned char*)data + 4));
 }
 
 void t2t_parse_docked(TinBot* bot) {
