@@ -65,6 +65,17 @@ static void loop_alone(TinBot* tinbot) {
 }
 
 
+/* Mode - MapOnly */
+static void setup_maponly(TinBot* tinbot) {
+    hal_print("Tin Bot Setup: Alone");
+    proximity_reset(&tinbot->controller->prox_map);
+}
+
+static void loop_maponly(TinBot* tinbot) {
+    proximity_step(&tinbot->controller->prox_map);
+}
+
+
 /* Mode - Full */
 static void setup_full(TinBot* tinbot) {
     hal_print("Tin Bot Setup: Full");
@@ -141,7 +152,8 @@ static TinMode modes[] = {
         {setup_full, loop_full},
         {setup_rhr, loop_rhr},
         {setup_mergeonly, loop_mergeonly},
-        {setup_vicdir, loop_vicdir}
+        {setup_vicdir, loop_vicdir},
+        {setup_maponly, loop_mpaonly}
 };
 
 void setup(TinBot* tinbot) {
