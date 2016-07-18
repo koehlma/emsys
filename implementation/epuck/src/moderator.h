@@ -12,13 +12,6 @@ typedef struct ModInputs {
     unsigned int give_up;
 } ModInputs;
 
-typedef enum ModDecision {
-    MOD_DECISION_SEARCHING,
-    MOD_DECISION_WAITING,
-    MOD_DECISION_RESCUEING,
-    MOD_DECISION_DEAD
-} ModDecision;
-
 typedef struct ModLocals {
     hal_time time_entered;
     int state;
@@ -27,7 +20,7 @@ typedef struct ModLocals {
 
 typedef struct ModState {
     ModLocals locals;
-    ModDecision decision;
+    unsigned int may_run_p;
     /* Use the same position on *every* Tin Bot.
      * That's necessary in the following edge case:
      * - we didn't successfully triangulate VICTOR
@@ -38,6 +31,7 @@ typedef struct ModState {
      * Also, it's nice to know that all Bots are "synchronized". */
     double victim_x;
     double victim_y;
+    unsigned int found_victim_xy;
 } ModState;
 
 void mod_reset(ModState* mod);

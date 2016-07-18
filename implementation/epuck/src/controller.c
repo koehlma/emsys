@@ -15,6 +15,7 @@ void controller_reset(Controller* c, Sensors* sens) {
     vf_reset(&c->vic_finder);
 }
 
+static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens);
 static void inquire_blind_decision(Controller* c, ControllerInput* in, Sensors* sens);
 static void inquire_eyes_decision(Controller* c, Sensors* sens);
 static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c, Sensors* sens);
@@ -24,11 +25,12 @@ static void run_path_finder_executer(Controller* c, Sensors* sens);
 void controller_step(ControllerInput* in, Controller* c, Sensors* sens) {
     enum BlindRunChoice old_choice;
 
-    /* FIXME: Run Moderator
-    if (c->is_dead) {
+    /* Zeroth, check whether we *want* to execute at all. */
+    if (!inquire_moderator_permission(c, sens)) {
+        /* Play dead. */
         return;
     }
-    */
+
     approx_step(&c->approx, sens);
 
     /* First, the eyes decide whether we need an interrupt. */
@@ -77,17 +79,29 @@ void controller_step(ControllerInput* in, Controller* c, Sensors* sens) {
     /* FIXME: T2T_update_map(&c->path_finder, sens) */
 }
 
+static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens) {
+    ModInputs inputs;
+    inputs.t2t_data = &sens->t2t.moderate;
+    inputs.own_victim_x = c->vic_finder.victim_x;
+    inputs.own_victim_y = c->vic_finder.victim_y;
+    inputs.found_victim_xy = c->vic_finder.found_victim_xy;
+    inputs.give_up = c->pickup_artist.is_dead;
+
+    mod_step(&inputs, &c->moderator);
+    return c->moderator.may_run_p;
+}
+
 static void inquire_blind_decision(Controller* c, ControllerInput* in, Sensors* sens) {
     BlindInputs inputs;
-    inputs.found_victim_xy = c->vic_finder.found_victim_xy;
+    inputs.found_victim_xy = c->moderator.found_victim_xy;
     inputs.need_angle = c->cop_eyes.need_angle;
     inputs.no_path = c->path_finder.no_path;
     inputs.path_completed = c->path_finder.path_completed;
     inputs.victim_attached = sens->victim_attached;
     inputs.origin_x = in->origin_x;
     inputs.origin_y = in->origin_y;
-    inputs.victim_x = c->vic_finder.victim_x;
-    inputs.victim_y = c->vic_finder.victim_y;
+    inputs.victim_x = c->moderator.victim_x;
+    inputs.victim_y = c->moderator.victim_y;
     blind_step(&inputs, &c->blind);
 }
 
