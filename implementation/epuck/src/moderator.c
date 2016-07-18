@@ -16,6 +16,9 @@ typedef char check_heartbeat_timeout[(T2T_HEARTBEAT_TIMEOUT_SECS > 1 + T2T_HEART
 
 void mod_reset(ModState* mod) {
     mod->may_run_p = 1;
+    mod->victim_x = -1;
+    mod->victim_y = -1;
+    mod->found_victim_xy = 0;
     mod->locals.time_entered = 0;
     mod->locals.state = MOD_STATE_SEARCHING;
     mod->locals.sent_iteration = -1;
@@ -55,6 +58,9 @@ void mod_step(ModInputs* inputs, ModState* mod) {
             /* "Whee!  My turn!" */
             mod->locals.state = MOD_STATE_RESCUEING;
             mod->may_run_p = 1;
+            mod->victim_x = inputs->t2t_data->seen_x;
+            mod->victim_y = inputs->t2t_data->seen_y;
+            mod->found_victim_xy = 1;
         } else if (inputs->t2t_data->newest_theirs >= mod->locals.sent_iteration) {
             /* Other Tin Bot was faster. */
             mod->locals.sent_iteration = inputs->t2t_data->newest_theirs;
