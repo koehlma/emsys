@@ -153,7 +153,7 @@ static TinMode modes[] = {
         {setup_rhr, loop_rhr},
         {setup_mergeonly, loop_mergeonly},
         {setup_vicdir, loop_vicdir},
-        {setup_maponly, loop_mpaonly}
+        {setup_maponly, loop_maponly}
 };
 
 void setup(TinBot* tinbot) {
