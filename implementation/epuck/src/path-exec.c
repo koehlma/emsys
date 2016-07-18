@@ -1,7 +1,3 @@
-/*
- * Right-Hand Follower (Right Hand Rule)
- */
-
 #include <math.h>
 
 #include "hal.h"
@@ -29,6 +25,18 @@ void pe_reset(PathExecState* pe) {
     pe->locals.state = PE_inactive;
     /* No further initialization needed because PE_inactive doesn't
        read from locals.time_entered or locals.start_* or locals.need_* */
+}
+
+#define PE_CRASH_TOLERANCE 1.0
+
+static unsigned int near_crash_p(PathExecInputs* inputs, Sensors* sens) {
+    if (inputs->backwards) {
+        return sens->proximity[PROXIMITY_M_150] < PE_CRASH_TOLERANCE
+            || sens->proximity[PROXIMITY_P_150] < PE_CRASH_TOLERANCE;
+    } else {
+        return sens->proximity[PROXIMITY_M_20] < PE_CRASH_TOLERANCE
+            || sens->proximity[PROXIMITY_P_20] < PE_CRASH_TOLERANCE;
+    }
 }
 
 void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
@@ -97,12 +105,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         break;
     case PE_drive:
         /* FIXME: use filtered proximity data */
-        if ((PathExecInputs.backwards && 
-            (sens->proximity[PROXIMITY_M_150] < 1
-            || sens->proximity[PROXIMITY_P_150] < 1))
-            || (!PathExecInputs.backwards && 
-            (sens->proximity[PROXIMITY_M_20] < 1
-            || sens->proximity[PROXIMITY_P_20] < 1))) {
+        if (near_crash_p(inputs, sens)) {
             smc_halt();
             l->state = PE_profit;
             pe->see_obstacle = 1;
