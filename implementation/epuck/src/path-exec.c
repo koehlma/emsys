@@ -96,8 +96,13 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         }
         break;
     case PE_drive:
-        if (sens->proximity[PROXIMITY_M_20] < 1
-            || sens->proximity[PROXIMITY_P_20] < 1) {
+        /* FIXME: use filtered proximity data */
+        if ((PathExecInputs.backwards && 
+            (sens->proximity[PROXIMITY_M_150] < 1
+            || sens->proximity[PROXIMITY_P_150] < 1))
+            || (!PathExecInputs.backwards && 
+            (sens->proximity[PROXIMITY_M_20] < 1
+            || sens->proximity[PROXIMITY_P_20] < 1))) {
             smc_halt();
             l->state = PE_profit;
             pe->see_obstacle = 1;
