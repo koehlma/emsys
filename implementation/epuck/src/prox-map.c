@@ -4,6 +4,7 @@
 #include "prox-map.h"
 #include "t2t-parse.h"
 #include "sensors.h"
+#include "state-machine-common.h"
 
 /* Invariant: lower_left.x%4==0 && lower_left.y%2==0
  * This allows for an efficient implementation in map_merge and map_move. */
@@ -13,7 +14,8 @@
 #define MIN_STEP_X 4
 #define MIN_STEP_Y 2
 
-#define MAX_MAP_PROXIMITY_DISTANCE 8
+#define MAX_MAP_PROXIMITY_DISTANCE 10
+#define PROX_MAP_SEND_PERIOD 6
 
 typedef char check_minstep_is_valid[(0 < MAP_INTERNAL_DATA_SIZE(MIN_STEP_X,MIN_STEP_Y)) ? 1 : -1];
 
@@ -35,6 +37,7 @@ static void desired_position(Position* into, Sensors* from) {
 void proximity_reset(ProxMapState* prox_map, Sensors* sens) {
     desired_position(&prox_map->lower_left, sens);
     map_clear(map_get_proximity());
+    prox_map->time_sent = hal_get_time();
 }
 
 static void maybe_move(ProxMapState* prox_map, Sensors* sens) {
@@ -61,7 +64,8 @@ static void map_set_field_guarded(Map* map, int x, int y, FieldType type) {
     }
 }
 
-static void enter_new_sensor_data(Map* map, Sensors* sens, double x, double y, unsigned int sensor_num, double sensor_phi) {
+static void enter_new_sensor_data(Map* map, Sensors* sens, double x, double y,
+        unsigned int sensor_num, double sensor_phi) {
     double r = 0;
     double temp_x, temp_y;
     double distance = 5.3 / 2 + sens->proximity[sensor_num];
@@ -85,11 +89,11 @@ static void enter_new_sensor_data(Map* map, Sensors* sens, double x, double y, u
 }
 
 static void enter_new_data(ProxMapState* prox_map, Sensors* sens) {
-    /* FIXME:
+    /* FIXME: Use filtered proximity data! */
+    /* This will do all of the following:
      * - if a proximity sensor is on, add a wall (FIELD_WALL)
      * - if a proximity sensor is off, remove all walls for the next 7 cm (FIELD_FREE)
-     * - except when there's VICTOR standing in the way.
-     *      * You'll need to invent some constant "IR_OPENING_ANGLE" for that.
+     * - except when there's VICTOR standing in the way.  (-> Proximity Filter)
      * - check whether x/y are legal coordinates with map_get_width(), map_get_height() */
     double rel_x = sens->current.x - prox_map->lower_left.x;
     double rel_y = sens->current.y - prox_map->lower_left.y;
@@ -102,16 +106,19 @@ static void enter_new_data(ProxMapState* prox_map, Sensors* sens) {
     enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_45, -45 / M_PI);
     enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_90, -90 / M_PI);
     enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_150, -150 / M_PI);
-    /* map_set_field(map, x, y, FIELD_FREE); */
+}
+
+static void proximity_send(ProxMapState* prox_map) {
+    t2t_send_update_map(prox_map->lower_left.x, prox_map->lower_left.y,
+        map_get_proximity());
+    map_clear(map_get_proximity());
+    prox_map->time_sent = hal_get_time();
 }
 
 void proximity_step(ProxMapState* prox_map, Sensors* sens) {
     maybe_move(prox_map, sens);
     enter_new_data(prox_map, sens);
-}
-
-void proximity_send(ProxMapState* prox_map) {
-    t2t_send_update_map(prox_map->lower_left.x, prox_map->lower_left.y,
-        map_get_proximity());
-    map_clear(map_get_proximity());
+    if (smc_time_passed_p(prox_map->time_sent, PROX_MAP_SEND_PERIOD)) {
+        proximity_send(prox_map);
+    }
 }

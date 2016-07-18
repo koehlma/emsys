@@ -8,6 +8,7 @@ void controller_reset(Controller* c, Sensors* sens) {
     pa_reset(&c->pickup_artist);
     pe_reset(&c->path_exec);
     pf_reset(&c->path_finder);
+    proximity_reset(&c->prox_map, sens);
     rhr_reset(&c->rhr);
     irs_reset(&c->ir_stab);
     tce_reset(&c->cop_eyes);
@@ -72,11 +73,9 @@ void controller_step(ControllerInput* in, Controller* c, Sensors* sens) {
         break;
     }
 
-    /* Update the internal map if necessary: */
-    /* FIXME: pf_update_map(&c->path_finder, bluetooth_data) */
-
-    /* Update the to-be-sent map if necessary: */
-    /* FIXME: T2T_update_map(&c->path_finder, sens) */
+    /* Internal map is updated "automatically" by the "echoed" UpdateMap
+     * packets.  So we only send the proxmap here. */
+    proximity_step(&c->prox_map, sens);
 }
 
 static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens) {

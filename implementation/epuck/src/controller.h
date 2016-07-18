@@ -8,6 +8,7 @@
 #include "path-exec.h"
 #include "path-finder.h"
 #include "pickup-artist.h"
+#include "prox-map.h"
 #include "rhr.h"
 #include "sensors.h"
 #include "traffic-cop-eyes.h"
@@ -21,6 +22,7 @@ typedef struct Controller {
     PathExecState path_exec;
     PathFinderState path_finder;
     PickupState pickup_artist;
+    ProxMapState prox_map;
     RhrState rhr;
     IRSState ir_stab;
     TCEState cop_eyes;
