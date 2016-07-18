@@ -71,7 +71,7 @@ class Server:
         self.detector.data_event += self.on_data
 
         self.controller = controller
-        self.controller.device_new_event += self.on_device_new
+        self.controller.map_updated_event += self.on_map_updated
 
         self.host = host or '0.0.0.0'
         self.port = port or 8080
@@ -122,13 +122,10 @@ class Server:
     def on_device_new(self, device):
         device.package_event += self.on_package
 
-    def on_package(self, device, source, target, command, payload):
-        if command != Commands.T2T_UPDATE_MAP:
-            return
-        image = base64.b64encode(device.map.get_image())
+    def on_map_updated(self):
+        image = base64.b64encode(self.controller.map.get_image())
         data = {
             'event': 'map_data',
-            'color': device.color,
             'image': image.decode('ascii')
         }
         self.loop.call_soon_threadsafe(self.send_map, json.dumps(data))

@@ -66,7 +66,7 @@
 
                 self.process_message = function (data) {
                     if (data['event'] == 'map_data') {
-                        var img = $('#map_' + data['color']);
+                        var img = $('#map');
                         img.attr('src', 'data:image/jpeg;base64,' + data['image']);
                     }
                 };
@@ -301,14 +301,7 @@
                     </div>
                     <div id="map_container" class="tab">
                         <h1 class="page-header">Map</h1>
-                        <div>
-                            <h2>Red</h2>
-                            <img id="map_red" src="unknown">
-                        </div>
-                        <div>
-                            <h2>Blue</h2>
-                            <img id="map_blue" src="unknown">
-                        </div>
+                        <img id="map" src="unknown">
                     </div>
                 </div>
             </div>

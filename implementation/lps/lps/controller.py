@@ -8,9 +8,11 @@ import time
 import bluetooth
 
 from lps.constants import VICTIM_HUE, BROADCAST_ADDRESS
+from lps.commands import Commands
 from lps.event import Event
 from lps.tinbot import TinBot
 from lps.victim import Victim
+from lps.map import Map
 
 
 class Controller:
@@ -24,6 +26,8 @@ class Controller:
 
         self.devices_visible_event = Event()
 
+        self.map_updated_event = Event()
+
         self.devices = {}
 
         self.broadcast_lock = threading.Lock()
@@ -33,6 +37,8 @@ class Controller:
 
         self.thread = threading.Thread(target=self.run)
 
+        self.map = Map()
+
     def start(self):
         self.thread.start()
 
@@ -40,6 +46,11 @@ class Controller:
         with self.broadcast_lock:
             for device in self.devices.values():
                 device.send(command, payload, source, target)
+            if command == Commands.T2T_UPDATE_MAP:
+                x, y, *patch = Commands.T2T_UPDATE_MAP.decode(payload)
+                self.map.patch(x, y, patch)
+        if command == Commands.T2T_UPDATE_MAP:
+            self.map_updated_event.fire()
 
     def discover(self):
         with self.discover_lock:
