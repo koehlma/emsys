@@ -10,15 +10,9 @@
 #define NUM_EDGES (VERTICES_PER_COL * (VERTICES_PER_ROW - 1) + VERTICES_PER_ROW * (VERTICES_PER_COL - 1))
 #define MAX_PATH_LENGTH (NUM_VERTICES + 1)
 
-typedef struct Edge {
-    int u, v;
-} Edge;
-
 typedef struct BellmanFordLocals {
     int distances[NUM_VERTICES];
     int pred[NUM_VERTICES];
-    Edge edges[NUM_EDGES];
-    int edge_cnt;
 } BellmanFordLocals;
 
 typedef struct BellmanFord {
