@@ -50,6 +50,8 @@ int main() {
             case FIELD_WALL:
                 printf("XX");
                 break;
+            case NUM_FIELD:
+                /* Fall-through */
             default:
                 printf("??");
                 break;
