@@ -138,6 +138,7 @@ void blind_step(BlindInputs* inputs, BlindState* blind) {
                     /* Whee! */
                     blind->locals.state_big = BLIND_follow_path;
                     blind->locals.state_leaf = BLIND_LEAF_wait_path_zero;
+                    hal_set_powersave(0);
                     blind->run_choice = BLIND_RUN_CHOICE_none;
                     #ifdef LOG_TRANSITIONS_BLIND_COP
                     hal_print("BC:fp/rtv-v->fp/wpz");
@@ -170,6 +171,7 @@ void blind_step(BlindInputs* inputs, BlindState* blind) {
                     blind->dst_x = inputs->origin_x;
                     blind->dst_y = inputs->origin_y;
                     blind->is_victim = 0;
+                    hal_set_powersave(0);
                     #ifdef LOG_TRANSITIONS_BLIND_COP
                     hal_print("BC:fp/do->fp/oh");
                     #endif
@@ -180,6 +182,7 @@ void blind_step(BlindInputs* inputs, BlindState* blind) {
                 if (inputs->path_completed) {
                     blind->locals.state_big = BLIND_party;
                     blind->run_choice = BLIND_RUN_CHOICE_none;
+                    smc_halt();
                     #ifdef LOG_TRANSITIONS_BLIND_COP
                     hal_print("BC:fp/oh->party/*");
                     #endif
