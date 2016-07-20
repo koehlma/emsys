@@ -37,10 +37,7 @@ void controller_step(ExactPosition* origin, Controller* c, Sensors* sens) {
     if (c->moderator.found_victim_xy) {
         /* If the moderator didn't set 'found_victim_xy', but
          * allows us to continue, then victim_xy isn't known to anyone. */
-        ExactPosition p;
-        p.x = c->moderator.victim_x;
-        p.y = c->moderator.victim_y;
-        filter_proximity(p, sens);
+        filter_proximity(c->moderator.victim, sens);
     }
     approx_step(&c->approx, sens);
     inquire_new_vicdir_data(&c->vic_finder, sens);
@@ -93,8 +90,8 @@ void controller_step(ExactPosition* origin, Controller* c, Sensors* sens) {
 static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens) {
     ModInputs inputs;
     inputs.t2t_data = &sens->t2t.moderate;
-    inputs.own_victim_x = c->vic_finder.victim_x;
-    inputs.own_victim_y = c->vic_finder.victim_y;
+    inputs.own_victim.x = c->vic_finder.victim_x;
+    inputs.own_victim.y = c->vic_finder.victim_y;
     inputs.found_victim_xy = c->vic_finder.found_victim_xy;
     inputs.give_up = c->pickup_artist.is_dead;
 
@@ -130,8 +127,7 @@ static void inquire_blind_decision(Controller* c, ExactPosition* origin, Sensors
     inputs.path_completed = c->path_finder.path_completed;
     inputs.victim_attached = sens->victim_attached;
     inputs.origin = *origin;
-    inputs.victim.x = c->moderator.victim_x;
-    inputs.victim.y = c->moderator.victim_y;
+    inputs.victim = c->moderator.victim;
     blind_step(&inputs, &c->blind);
 }
 
