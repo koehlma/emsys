@@ -108,20 +108,28 @@ button}, and $h$ shall mean \enquote{the horn is ringing}.
     error -> error [label="true"];
 }
 
-FIXME: Is this the kind of monitor they were asking for?
+\section*{Problem 2: Timed Games}
+
+\subsection*{Part (a)}
+
+\digraph[width=\textwidth]{p2a}{
+	init [style=invis,label="",shape=none];
+	stable [style=bold, label="stable cl1<=5 cl2<=5"];
+	crash [label="crashed"];
+	init -> stable [label="cl1:=0 cl2:=0"];
+	stable -> stable [label="(spin1 | cl1<=5) reset cl1"];
+	stable -> stable [label="(spin2 | cl2<=5) reset cl2"];
+	stable -> crash [label="(crash1 | cl1 >=5)", style=dashed];
+	stable -> crash [label="(crash2 | cl2 >=5)" style=dashed];
+}
+
+\subsection*{Part (b)}
+
+The winning region consists of the location stable. Crashed does not belong to the winning region.
 
 \subsection*{Part (c)}
 
-FIXME
-
-\subsection*{Part (d)}
-
-FIXME
-
-
-\section*{Problem 2: Timed Games}
-
-FIXME
+A winning strategy is for example: Wait for three time units then spin plate one and two and repeat that.
 
 
 \end{document}
