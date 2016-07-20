@@ -33,7 +33,7 @@ void t2t_receive_phi_correction(struct TinBot* bot, double phi_correct, unsigned
     buf->have_incoming_fix = 1;
 }
 
-void t2t_receive_found_xy(TinBot* bot, int is_ours, int x, int y, int iteration) {
+void t2t_receive_found_xy(TinBot* bot, int is_ours, double x, double y, int iteration) {
     struct T2TData_Moderate* buf = &bot->rx_buffer.moderate;
 
     if (buf->newest_own_INTERNAL == -1 && buf->newest_theirs == -1) {

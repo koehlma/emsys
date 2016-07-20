@@ -25,8 +25,8 @@ typedef struct T2TData {
         unsigned int someone_docked_p;
         unsigned int someone_completed_p;
         /* Data */
-        int seen_x;
-        int seen_y;
+        double seen_x;
+        double seen_y;
         /* newest_* must both be signed types */
         int newest_own_INTERNAL; /* Move to own struct? */
         int newest_theirs;

@@ -25,7 +25,7 @@ void t2t_receive_phi_correction(struct TinBot* bot, double phi_correct, unsigned
 /* 'Our' packages: MUST
  * 'Their' packages: MUST
  * Please set the 'is_ours' flag. */
-void t2t_receive_found_xy(struct TinBot* bot, int is_ours, int x, int y, int iteration);
+void t2t_receive_found_xy(struct TinBot* bot, int is_ours, double x, double y, int iteration);
 
 /* 'Our' packages: MUST
  * 'Their' packages: MUST */
