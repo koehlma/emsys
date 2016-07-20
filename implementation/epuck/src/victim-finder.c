@@ -21,13 +21,15 @@ static ExactPosition compute_position(double* data);
 
 void vf_reset(VFState* vf) {
     int i;
-    vf->locals.state = VF_noinfo;
     vf->found_victim_xy = 0;
     vf->victim_x = -1;
     vf->victim_y = -1;
     for(i = 0; i < 6; ++i) {
         vf->locals.data[i] = 0;
     }
+    /* Make sure that any intersection would lie outside the maze. */
+    vf->locals.data[Y1] = -10;
+    vf->locals.data[Y2] = -10;
 }
 
 static ExactPosition compute_position(double* data) {
@@ -97,50 +99,22 @@ static ExactPosition compute_position(double* data) {
     return pos;
 }
 
-void vf_step(VFInputs* inputs, VFState* vf, Sensors* sens) {
+void vf_apply(double victim_angle, VFState* vf, Sensors* sens) {
     ExactPosition computed_victim;
-    switch(vf->locals.state) {
-        case VF_noinfo:
-            if(inputs->found_victim_phi) {
-                vf->locals.data[X1]   = sens->current.x;
-                vf->locals.data[Y1]   = sens->current.y;
-                vf->locals.data[PHI1] = inputs->victim_angle;
-                vf->locals.state = VF_someinfo;
-            }
-            break;
-        case VF_someinfo:
-            if(inputs->found_victim_phi == 0) {
-                vf->locals.state = VF_waitfornewinfo;
-            }
-            break;
-        case VF_waitfornewinfo:
-            if(inputs->found_victim_phi) {
-                vf->locals.state = VF_enoughinfo;
-                vf->locals.data[X2]   = vf->locals.data[X1];
-                vf->locals.data[Y2]   = vf->locals.data[Y1];
-                vf->locals.data[PHI2] = vf->locals.data[PHI1];
-                vf->locals.data[X1]   = sens->current.x;
-                vf->locals.data[Y1]   = sens->current.y;
-                vf->locals.data[PHI1] = inputs->victim_angle;
-                computed_victim = compute_position(vf->locals.data);
-                if(computed_victim.x >= 1 && computed_victim.x <= 200
-                        && computed_victim.y >= 1 && computed_victim.y <= 200) {
-                    vf->victim_x = computed_victim.x;
-                    vf->victim_y = computed_victim.y;
-                    vf->found_victim_xy = 1;
-                    /* DO NOT send the T2T paket yet.
-                     * That's the moderator's job. */
-                }
-            }
-            break;
-        case VF_enoughinfo:
-            if(inputs->found_victim_phi == 0) {
-                vf->locals.state = VF_waitfornewinfo;
-            }
-            break;
-        default:
-            hal_print("Invalid state in victim finder. VICTOR, where are you??");
-            assert(0);
-            vf_reset(vf);
+
+    vf->locals.data[X2]   = vf->locals.data[X1];
+    vf->locals.data[Y2]   = vf->locals.data[Y1];
+    vf->locals.data[PHI2] = vf->locals.data[PHI1];
+    vf->locals.data[X1]   = sens->current.x;
+    vf->locals.data[Y1]   = sens->current.y;
+    vf->locals.data[PHI1] = victim_angle;
+    computed_victim = compute_position(vf->locals.data);
+    if(computed_victim.x >= 1 && computed_victim.x <= 200
+            && computed_victim.y >= 1 && computed_victim.y <= 200) {
+        vf->victim_x = computed_victim.x;
+        vf->victim_y = computed_victim.y;
+        vf->found_victim_xy = 1;
+        /* DO NOT send the T2T paket yet.
+         * That's the moderator's job. */
     }
 }

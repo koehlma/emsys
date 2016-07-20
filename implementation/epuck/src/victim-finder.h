@@ -3,14 +3,8 @@
 
 #include "sensors.h"
 
-typedef struct VFInputs {
-    double victim_angle;
-    unsigned int found_victim_phi;
-} VFInputs;
-
 typedef struct VFLocals {
     double data[6];
-    int state;
 } VFLocals;
 
 typedef struct {
@@ -21,6 +15,6 @@ typedef struct {
 } VFState;
 
 void vf_reset(VFState* vf);
-void vf_step(VFInputs* inputs, VFState* vf, Sensors* sens);
+void vf_apply(double victim_angle, VFState* vf, Sensors* sens);
 
 #endif /* EPUCK_VICTIM_FINDER_H */

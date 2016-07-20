@@ -19,7 +19,7 @@ void controller_reset(Controller* c, Sensors* sens) {
 static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens);
 static void inquire_blind_decision(Controller* c, ControllerInput* in, Sensors* sens);
 static void inquire_eyes_decision(Controller* c, Sensors* sens);
-static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c, Sensors* sens);
+static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c);
 static void run_victim_finder(Controller* c, Sensors* sens);
 static void run_path_finder_executer(Controller* c, Sensors* sens);
 
@@ -43,7 +43,7 @@ void controller_step(ControllerInput* in, Controller* c, Sensors* sens) {
 
     /* Do we need to reset any of the state machines? */
     if (old_choice != c->blind.run_choice) {
-        reset_appropriately(old_choice, c, sens);
+        reset_appropriately(old_choice, c);
     }
 
     /* Now we know what to do. */
@@ -117,8 +117,7 @@ static void inquire_eyes_decision(Controller* c, Sensors* sens) {
     tce_step(&inputs, &c->cop_eyes, sens);
 }
 
-static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c, Sensors* sens) {
-    VFInputs inputs;
+static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c) {
     switch (old_choice) {
         case BLIND_RUN_CHOICE_none:
             /* Nothing to do here. */
@@ -128,9 +127,6 @@ static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c, S
             break;
         case BLIND_RUN_CHOICE_victim_finder:
             vd_reset(&c->vic_dir);
-            /* Make sure that Victim Finder is *definitely* deactivated. */
-            inputs.found_victim_phi = 0;
-            vf_step(&inputs, &c->vic_finder, sens);
             break;
         case BLIND_RUN_CHOICE_pickup_artist:
             /* It will/should never run twice, but reset it anyways. */
@@ -171,9 +167,7 @@ static void run_path_finder_executer(Controller* c, Sensors* sens) {
 }
 
 static void run_victim_finder(Controller* c, Sensors* sens) {
-    VFInputs inputs;
     vd_step(&c->vic_dir, sens);
-    inputs.found_victim_phi = c->vic_dir.victim_found;
-    inputs.victim_angle = c->vic_dir.victim_phi;
-    vf_step(&inputs, &c->vic_finder, sens);
+    /*inputs.victim_angle = c->vic_dir.victim_phi;
+    vf_step(&inputs, &c->vic_finder, sens); FIXME */
 }
