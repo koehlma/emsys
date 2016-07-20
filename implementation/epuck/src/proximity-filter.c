@@ -23,9 +23,13 @@ static double dist_with_ray(double angle, ExactPosition rel) {
     return rel.x * dx + rel.y * dy;
 }
 
-static void filter_proximity_single(Sensors* sens, unsigned int index, double angle, double victim_phi, ExactPosition rel) {
+static void filter_proximity_single(Sensors* sens, unsigned int index, ExactPosition rel) {
+    double victim_phi = atan2(rel.y, rel.x);
+    double angle = prox_sensor_angle[index];
+
     /* Is the center of the victim in the "cone of sight"? */
-    if (fmod(fabs(sens->current.phi + angle - victim_phi), 2 * M_PI) < APERTURE_ANGLE) {
+    if (fmod(fabs(sens->current.phi + angle - victim_phi),
+             2 * M_PI) < APERTURE_ANGLE) {
         sens->proximity[index] = 100;
         return;
     }
@@ -45,7 +49,7 @@ static void filter_proximity_single(Sensors* sens, unsigned int index, double an
 
 /* Do not pass 'victim' by reference. */
 void filter_proximity(ExactPosition victim, Sensors* sens) {
-    double victim_phi, dist;
+    double dist;
     victim.x -= sens->current.x;
     victim.y -= sens->current.y;
     dist = sqrt(fabs(victim.x * victim.x) + fabs(victim.y * victim.y));
@@ -54,13 +58,12 @@ void filter_proximity(ExactPosition victim, Sensors* sens) {
         return;
     }
 
-    victim_phi = atan2(victim.y, victim.x);
-    filter_proximity_single(sens, PROXIMITY_P_20, 20*M_PI/180, victim_phi, victim);
-    filter_proximity_single(sens, PROXIMITY_P_45, 45*M_PI/180, victim_phi, victim);
-    filter_proximity_single(sens, PROXIMITY_P_90, 90*M_PI/180, victim_phi, victim);
-    filter_proximity_single(sens, PROXIMITY_P_150, 150*M_PI/180, victim_phi, victim);
-    filter_proximity_single(sens, PROXIMITY_M_150, -150*M_PI/180, victim_phi, victim);
-    filter_proximity_single(sens, PROXIMITY_M_90, -90*M_PI/180, victim_phi, victim);
-    filter_proximity_single(sens, PROXIMITY_M_45, -45*M_PI/180, victim_phi, victim);
-    filter_proximity_single(sens, PROXIMITY_M_20, -20*M_PI/180, victim_phi, victim);
+    filter_proximity_single(sens, PROXIMITY_P_20, victim);
+    filter_proximity_single(sens, PROXIMITY_P_45, victim);
+    filter_proximity_single(sens, PROXIMITY_P_90, victim);
+    filter_proximity_single(sens, PROXIMITY_P_150, victim);
+    filter_proximity_single(sens, PROXIMITY_M_150, victim);
+    filter_proximity_single(sens, PROXIMITY_M_90, victim);
+    filter_proximity_single(sens, PROXIMITY_M_45, victim);
+    filter_proximity_single(sens, PROXIMITY_M_20, victim);
 }

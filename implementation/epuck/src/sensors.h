@@ -5,8 +5,7 @@
 #include "t2t-data.h"
 
 enum Proximity_Order {
-    /* If you change this, please also change:
-     * - rhr.c -> find_wall -> sense_angles */
+    /* If you change this, please also change 'prox_sensor_angle' below. */
     PROXIMITY_M_20,
     PROXIMITY_M_45,
     PROXIMITY_M_90,
@@ -32,7 +31,9 @@ typedef struct LPS_Data {
     double x, y ,phi;
 } LPS_Data;
 
-extern const double ir_sensor_angle[6];
+extern const double ir_sensor_angle[NUM_IR];
+/* Defined in state-machine-common.c: */
+extern const double prox_sensor_angle[NUM_PROXIMITY];
 
 typedef struct Sensors {
     double proximity[NUM_PROXIMITY];
