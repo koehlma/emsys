@@ -17,6 +17,10 @@ from matplotlib import pyplot
 MAP_PROX_SIZE = 16
 MAP_MAX_WIDTH = 100
 MAP_MAX_HEIGHT = 100
+BITS_PER_FIELD = 2
+FIELD_MASK = (1 << BITS_PER_FIELD) - 1
+PROX_CELLS_X = int(MAP_PROX_SIZE / 4)
+PROX_CELLS_Y = int(MAP_PROX_SIZE / 2)
 
 
 COLORMAP_1 = colors.ListedColormap(numpy.array([[1, 1, 1], [0.5, 0.5, 0.5]]))
@@ -30,13 +34,25 @@ class Field(enum.IntEnum):
     WALL = 2
 
 
+def calculate_bit_offset(x, y, width=MAP_PROX_SIZE, height=MAP_PROX_SIZE):
+    x = ((x & ~0b11) << 1) + (x & 0b11)
+    return (x + (y >> 1) * 2 * width + (y & 1) * 4) * BITS_PER_FIELD
+
+
+def get_field(x, y, data, width=MAP_PROX_SIZE, height=MAP_PROX_SIZE):
+    bit_offset = calculate_bit_offset(x, y, width, height)
+    raw_char = data[bit_offset >> 3]
+    bit_idx = bit_offset & 0b111
+    return (raw_char >> bit_idx) & FIELD_MASK
+
+
 class Map:
     def __init__(self):
         self.array = numpy.zeros((100, 100), dtype=numpy.uint8)
         # access with: self.array[y][x]
 
     def update(self, x, y, field):
-        if field != 0:
+        if field != Field.UNKNOWN:
             self.array[y][x] = field
 
     def patch(self, ll_x, ll_y, data):
@@ -44,29 +60,13 @@ class Map:
         assert(0 <= ll_x and ll_x + MAP_PROX_SIZE < MAP_MAX_WIDTH)
         assert(0 <= ll_y and ll_y + MAP_PROX_SIZE < MAP_MAX_HEIGHT)
         assert(len(data) == MAP_PROX_SIZE * MAP_PROX_SIZE / 4)
-        for x, y in itertools.product(
-                range(int(MAP_PROX_SIZE / 4)), range(int(MAP_PROX_SIZE / 2))):
-            # First, the byte of the "upper" four fields:
-            val = data[int(0 + x + y * 2 * (MAP_PROX_SIZE / 4))]
-            self.update(ll_x + x * 4 + 0, ll_y + y * 2 + 0, (val >> 0) & 0b11)
-            self.update(ll_x + x * 4 + 1, ll_y + y * 2 + 0, (val >> 2) & 0b11)
-            self.update(ll_x + x * 4 + 2, ll_y + y * 2 + 0, (val >> 4) & 0b11)
-            self.update(ll_x + x * 4 + 3, ll_y + y * 2 + 0, (val >> 6) & 0b11)
-            # Then, the byte of the "lower" four fields:
-            val = data[int(1 + x + y * 2 * (MAP_PROX_SIZE / 4))]
-            self.update(ll_x + x * 4 + 0, ll_y + y * 2 + 1, (val >> 0) & 0b11)
-            self.update(ll_x + x * 4 + 1, ll_y + y * 2 + 1, (val >> 2) & 0b11)
-            self.update(ll_x + x * 4 + 2, ll_y + y * 2 + 1, (val >> 4) & 0b11)
-            self.update(ll_x + x * 4 + 3, ll_y + y * 2 + 1, (val >> 6) & 0b11)
-        # Yeah, that's pretty convoluted.  However, it allows for several nice
-        # optimizations in map_merge without exploding the alignment
-        # properties that need to be obeyed by prox-map.c, function
-        # 'desired_position'
+        for x, y in itertools.product(range(MAP_PROX_SIZE), range(MAP_PROX_SIZE)):
+            self.update(ll_x + x, ll_y + y, get_field(x, y, data))
 
     def get_image(self, close=True):
         buffer = io.BytesIO()
         figure = pyplot.figure()
-        if numpy.max(m.array) == 2:
+        if numpy.max(self.array) == 2:
             color_map = COLORMAP_2
         else:
             color_map = COLORMAP_1
