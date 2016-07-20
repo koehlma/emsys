@@ -12,7 +12,7 @@ void t2t_send_heartbeat(void);
 
 void t2t_send_found_phi(double x, double y, double victim_phi);
 
-void t2t_send_found_xy(int x, int y, int iteration);
+void t2t_send_found_xy(double x, double y, int iteration);
 
 void t2t_send_update_map(int x, int y, Map* map);
 

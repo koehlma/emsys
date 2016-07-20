@@ -52,7 +52,7 @@ class Commands(Command, enum.Enum):
 
     T2T_HEARTBEAT = 0x30
     T2T_VICTIM_PHI = 0x31, '3f'
-    T2T_VICTIM_XY = 0x32, '3H'
+    T2T_VICTIM_XY = 0x32, '2fh'
     T2T_UPDATE_MAP = 0x33, 'hh64B'
     T2T_DOCKED = 0x34
     T2T_COMPLETED = 0x35

@@ -48,11 +48,11 @@ void send_found_phi(double x, double y, double victim_phi) {
     hal_send_done(CMD_VICTIM_PHI, 0);
 }
 
-void t2t_send_found_xy(int x, int y, int iteration) {
-    char buffer[2 * 3] BUFFER_ALIGN;
-    ((int16_t*) buffer)[0] = (int16_t)x;
-    ((int16_t*) buffer)[1] = (int16_t)y;
-    ((int16_t*) buffer)[2] = (int16_t)iteration;
+void t2t_send_found_xy(double x, double y, int iteration) {
+    char buffer[2 * 4 + 2] BUFFER_ALIGN;
+    ((float*) buffer)[0] = (float) x;
+    ((float*) buffer)[1] = (float) y;
+    ((int16_t*) buffer)[4] = (int16_t) iteration;
     hal_send_put(buffer, sizeof(buffer));
     hal_send_done(CMD_T2T_VICTIM_XY, 1);
 }
@@ -93,8 +93,14 @@ void t2t_parse_phi_correction(TinBot* bot, char* data, unsigned int length) {
 }
 
 void t2t_parse_found_xy(TinBot* bot, int is_ours, char* data, unsigned int length) {
-    assert(length == 6);
-    t2t_receive_found_xy(bot, is_ours, ((int16_t*) data)[0], ((int16_t*) data)[1], ((int16_t*) data)[2]);
+    float x, y;
+    int iteration;
+
+    assert(length == 4 + 4 + 2);
+    x = ((float*) data)[0];
+    y = ((float*) data)[1];
+    iteration = ((int16_t*) data)[4];
+    t2t_receive_found_xy(bot, is_ours, x, y, iteration);
 }
 
 void t2t_parse_update_map(TinBot* bot, char* data, unsigned int length) {

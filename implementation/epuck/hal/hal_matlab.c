@@ -17,8 +17,6 @@
 /* Should be the same to check package length during testing. */
 #define TIN_PACKAGE_MAX_LENGTH 128
 
-static Mode mode = ALONE;
-
 /* Currently, "TinBot Software > Chart > Explore > debug_info > size" is set to 10 */
 typedef char check_debug_array_length_against_matlab[(DEBUG_CAT_NUM <= 10) ? 1 : -1];
 
@@ -90,7 +88,7 @@ static void tx_package(MatlabBot* sender, char command, MatlabBot* receiver) {
         case CMD_VICTIM_PHI:
             if (is_ours) {
                 /* "Yeah, it's totally the right one, little Bot." */
-                update_victim_phi(receiver->tinbot, ((float*)sender->com_buf)[2]);
+                t2t_receive_phi_correction(receiver->tinbot, ((float*)sender->com_buf)[2], 1);
             }
             break;
         case CMD_T2T_VICTIM_PHI:
@@ -198,7 +196,7 @@ long matlab_create_bot() {
     matlab_bot->com_buf_used = 0;
     matlab_select_bot((long)matlab_bot, 0);
     matlab_bot->raw_time = 0;
-    set_mode(matlab_bot->tinbot, mode);
+    set_mode(matlab_bot->tinbot, 0 /* ALONE */);
     setup(matlab_bot->tinbot);
     for (i = 0; i < DEBUG_CAT_NUM; ++i) {
         matlab_bot->debug_info[i] = 0.0 / 0.0;

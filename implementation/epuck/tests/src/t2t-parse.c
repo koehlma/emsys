@@ -68,13 +68,13 @@ static void test_found_phi2(void) {
 }
 
 static void test_found_xy(void) {
-    unsigned char data[6] = {12, 0, 34, 0, 0, 1};
+    unsigned char data[4 + 4 + 2] = {0xcd, 0xcc, 0x44, 0x41, 0x66, 0x66, 0x36, 0x42, 0, 1};
     ExpectPackage pkg = {CMD_T2T_VICTIM_XY, sizeof(data), NULL, 1};
     pkg.data = data;
     tests_mock_expect_assert_done();
 
     tests_mock_expect_next(&pkg);
-    t2t_send_found_xy(12, 34, 256);
+    t2t_send_found_xy(12.3, 45.6, 256);
     tests_mock_expect_assert_done();
 }
 

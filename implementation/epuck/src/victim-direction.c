@@ -17,7 +17,8 @@
 enum {
     VD_off,
     VD_running,
-    VD_wait,
+    VD_wait_revolved,
+    VD_wait_judgement,
     VD_done
 };
 
@@ -96,10 +97,9 @@ static void compute_result(VDState* vd, Sensors* sens) {
     }
     #endif
     send_found_phi(sens->current.x, sens->current.y, vd->victim_phi);
-    vd->victim_found = 1;
 }
 
-void vd_step(VDState* vd, Sensors* sens){
+void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens){
     switch(vd->locals.state) {
         case VD_off:
             entry_start(vd, sens);
@@ -129,17 +129,25 @@ void vd_step(VDState* vd, Sensors* sens){
                 }
                 if (rot_msecs >= IR_COMPLETION_TIME + 30 /* And a bit more: 0.65 degree */) {
                     vd->locals.time_begin = hal_get_time();
-                    vd->locals.state = VD_wait;
+                    vd->locals.state = VD_wait_revolved;
                     smc_halt();
                 }
             }
             break;
-        case VD_wait:
+        case VD_wait_revolved:
             if (smc_time_passed_p(vd->locals.time_begin, VD_WAIT_ON_LPS_SECS)) {
-                vd->locals.state = VD_done;
+                vd->locals.state = VD_wait_judgement;
                 compute_result(vd, sens);
             }
             break;
+        case VD_wait_judgement:
+            if (input->have_incoming_fix) {
+                if (input->acceptable) {
+                    vd->victim_found = 1;
+                } else {
+                    vd->give_up = 1;
+                }
+            }
         case VD_done:
             break;
         default:

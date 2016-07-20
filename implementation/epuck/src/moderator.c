@@ -46,7 +46,7 @@ void mod_step(ModInputs* inputs, ModState* mod) {
             mod->may_run_p = 0;
             smc_halt();
         } else if (inputs->found_victim_xy) {
-            t2t_send_found_xy((int)(inputs->own_victim_x + 0.5), (int)(inputs->own_victim_y + 0.5), 0);
+            t2t_send_found_xy(inputs->own_victim_x + 0.5, inputs->own_victim_y + 0.5, 0);
             mod->locals.sent_iteration = 0;
             mod->locals.state = MOD_STATE_WAITING_BIDDING;
             mod->may_run_p = 0;

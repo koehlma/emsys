@@ -2,32 +2,68 @@
 #include "proximity-filter.h"
 #include "sensors.h"
 
-#define THRESHOLD 17
-#define APERATURE_ANGLE 15/180*M_PI /* 15 deg */
+#define THRESHOLD_UPPER 17
+#define THRESHOLD_LOWER 5.3
+#define APERTURE_ANGLE (15*M_PI/180) /* 15 deg */
+#define VIC_RADIUS (5.3/2)
 
-static void filter_proximity_single(Sensors* sens, unsigned int index, double angle, double victim_phi) {
-    if (fabsf(fmodf(sens->current.phi + angle, 2*M_PI) - victim_phi) < APERATURE_ANGLE) {
+static double dist_from_ray(double angle, ExactPosition rel) {
+    double dx, dy;
+
+    dx = cos(angle);
+    dy = sin(angle);
+    return fabs(rel.x * dy - rel.y * dx);
+}
+
+static double dist_with_ray(double angle, ExactPosition rel) {
+    double dx, dy;
+
+    dx = cos(angle);
+    dy = sin(angle);
+    return rel.x * dx + rel.y * dy;
+}
+
+static void filter_proximity_single(Sensors* sens, unsigned int index, ExactPosition rel) {
+    double victim_phi = atan2(rel.y, rel.x);
+    double angle = prox_sensor_angle[index];
+
+    /* Is the center of the victim in the "cone of sight"? */
+    if (fmod(fabs(sens->current.phi + angle - victim_phi),
+             2 * M_PI) < APERTURE_ANGLE) {
+        sens->proximity[index] = 100;
+        return;
+    }
+
+    /* Is the victim so close to our "cone of sight" that it's radius intersects
+     * it?  (Even though the center isn't "visible"!)
+     *     => that's the dist_from_ray calls
+     * If so, is the victim really "in front" of us?
+     *     => that's the dist_with_ray call */
+    if (dist_with_ray(angle, rel) > 1
+        && (dist_from_ray(angle - APERTURE_ANGLE, rel) < VIC_RADIUS
+            || dist_from_ray(angle + APERTURE_ANGLE, rel) < VIC_RADIUS)) {
+        /* Yes, it is. */
         sens->proximity[index] = 100;
     }
 }
 
-void filter_proximity(Position victim, Sensors* sens) {
-    double delta_x = victim.x - sens->current.x;
-    double delta_y = victim.y - sens->current.y;
-    double dist = (int) (sqrt(fabs(delta_x * delta_x) + fabs(delta_y * delta_y)));
+/* Do not pass 'victim' by reference. */
+void filter_proximity(ExactPosition victim, Sensors* sens) {
+    double dist;
+    victim.x -= sens->current.x;
+    victim.y -= sens->current.y;
+    dist = sqrt(fabs(victim.x * victim.x) + fabs(victim.y * victim.y));
 
-    if (dist > THRESHOLD) {
+    if (dist > THRESHOLD_UPPER || dist < THRESHOLD_LOWER) {
         return;
     }
 
-    double victim_phi = fmodf(atan2f(delta_y, delta_x) + 2*M_PI, 2*M_PI);
-    filter_proximity_single(sens, PROXIMITY_P_20, 20/180*M_PI, victim_phi);
-    filter_proximity_single(sens, PROXIMITY_P_45, 45/180*M_PI, victim_phi);
-    filter_proximity_single(sens, PROXIMITY_P_90, 90/180*M_PI, victim_phi);
-    filter_proximity_single(sens, PROXIMITY_P_150, 150/180*M_PI, victim_phi);
-    filter_proximity_single(sens, PROXIMITY_M_150, (360-150)/180*M_PI, victim_phi);
-    filter_proximity_single(sens, PROXIMITY_M_90, (360-90)/180*M_PI, victim_phi);
-    filter_proximity_single(sens, PROXIMITY_M_45, (360-45)/180*M_PI, victim_phi);
-    filter_proximity_single(sens, PROXIMITY_M_20, (360-20)/180*M_PI, victim_phi);
-
+    filter_proximity_single(sens, PROXIMITY_P_20, victim);
+    filter_proximity_single(sens, PROXIMITY_P_45, victim);
+    filter_proximity_single(sens, PROXIMITY_P_90, victim);
+    filter_proximity_single(sens, PROXIMITY_P_150, victim);
+    filter_proximity_single(sens, PROXIMITY_M_150, victim);
+    filter_proximity_single(sens, PROXIMITY_M_90, victim);
+    filter_proximity_single(sens, PROXIMITY_M_45, victim);
+    filter_proximity_single(sens, PROXIMITY_M_20, victim);
 }

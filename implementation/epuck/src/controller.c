@@ -17,9 +17,10 @@ void controller_reset(Controller* c, Sensors* sens) {
 }
 
 static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens);
+static void inquire_new_vicdir_data(VFState* vf, Sensors* sens);
 static void inquire_blind_decision(Controller* c, ControllerInput* in, Sensors* sens);
 static void inquire_eyes_decision(Controller* c, Sensors* sens);
-static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c, Sensors* sens);
+static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c);
 static void run_victim_finder(Controller* c, Sensors* sens);
 static void run_path_finder_executer(Controller* c, Sensors* sens);
 
@@ -33,8 +34,10 @@ void controller_step(ControllerInput* in, Controller* c, Sensors* sens) {
     }
 
     approx_step(&c->approx, sens);
+    inquire_new_vicdir_data(&c->vic_finder, sens);
 
-    /* First, the eyes decide whether we need an interrupt. */
+    /* First, the eyes decide whether we need an interruption
+     * (in order to execute Victim Direction). */
     inquire_eyes_decision(c, sens);
 
     /* Now the traffic cop decides "who is allowed to drive". */
@@ -43,7 +46,7 @@ void controller_step(ControllerInput* in, Controller* c, Sensors* sens) {
 
     /* Do we need to reset any of the state machines? */
     if (old_choice != c->blind.run_choice) {
-        reset_appropriately(old_choice, c, sens);
+        reset_appropriately(old_choice, c);
     }
 
     /* Now we know what to do. */
@@ -90,6 +93,26 @@ static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens) {
     return c->moderator.may_run_p;
 }
 
+void inquire_new_vicdir_data(VFState* vf, Sensors* sens) {
+    VFInputs inputs;
+    T2TData_VicDirSingle* vd_buf = &sens->t2t.vicdir_buf1;
+
+    if (vd_buf->new_p) {
+        inputs.x = vd_buf->x;
+        inputs.y = vd_buf->y;
+        inputs.phi = vd_buf->phi;
+        vf_apply(&inputs, vf);
+
+        vd_buf = &sens->t2t.vicdir_buf2;
+        if (vd_buf->new_p) {
+            inputs.x = vd_buf->x;
+            inputs.y = vd_buf->y;
+            inputs.phi = vd_buf->phi;
+            vf_apply(&inputs, vf);
+        }
+    }
+}
+
 static void inquire_blind_decision(Controller* c, ControllerInput* in, Sensors* sens) {
     BlindInputs inputs;
     inputs.found_victim_xy = c->moderator.found_victim_xy;
@@ -117,8 +140,7 @@ static void inquire_eyes_decision(Controller* c, Sensors* sens) {
     tce_step(&inputs, &c->cop_eyes, sens);
 }
 
-static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c, Sensors* sens) {
-    VFInputs inputs;
+static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c) {
     switch (old_choice) {
         case BLIND_RUN_CHOICE_none:
             /* Nothing to do here. */
@@ -128,9 +150,6 @@ static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c, S
             break;
         case BLIND_RUN_CHOICE_victim_finder:
             vd_reset(&c->vic_dir);
-            /* Make sure that Victim Finder is *definitely* deactivated. */
-            inputs.found_victim_phi = 0;
-            vf_step(&inputs, &c->vic_finder, sens);
             break;
         case BLIND_RUN_CHOICE_pickup_artist:
             /* It will/should never run twice, but reset it anyways. */
@@ -171,9 +190,12 @@ static void run_path_finder_executer(Controller* c, Sensors* sens) {
 }
 
 static void run_victim_finder(Controller* c, Sensors* sens) {
-    VFInputs inputs;
-    vd_step(&c->vic_dir, sens);
-    inputs.found_victim_phi = c->vic_dir.victim_found;
-    inputs.victim_angle = c->vic_dir.victim_phi;
-    vf_step(&inputs, &c->vic_finder, sens);
+    vd_step(&sens->t2t.fixdir, &c->vic_dir, sens);
+    if (sens->t2t.fixdir.have_incoming_fix && c->vic_dir.victim_found) {
+        VFInputs inputs;
+        inputs.x = sens->current.x;
+        inputs.y = sens->current.y;
+        inputs.phi = c->vic_dir.victim_phi;
+        vf_apply(&inputs, &c->vic_finder);
+    }
 }

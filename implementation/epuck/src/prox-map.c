@@ -67,10 +67,11 @@ static void map_set_field_guarded(Map* map, int x, int y, FieldType type) {
 }
 
 static void enter_new_sensor_data(Map* map, Sensors* sens, double x, double y,
-        unsigned int sensor_num, double sensor_phi) {
+        unsigned int sensor_num) {
     double r = 0;
     double temp_x, temp_y;
     double distance = 5.3 / 2 + sens->proximity[sensor_num];
+    double sensor_phi = prox_sensor_angle[sensor_num];
     double delta_x = cos(sens->current.phi + sensor_phi) * 0.7;
     double delta_y = sin(sens->current.phi + sensor_phi) * 0.7;
     x += delta_x;
@@ -100,14 +101,14 @@ static void enter_new_data(ProxMapState* prox_map, Sensors* sens) {
     double rel_x = sens->current.x - prox_map->lower_left.x;
     double rel_y = sens->current.y - prox_map->lower_left.y;
     Map* map = map_get_proximity();
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_20, 20 * M_PI / 180);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_45, 45 * M_PI / 180);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_90, 90 * M_PI / 180);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_150, 150 * M_PI / 180);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_20, -20 * M_PI / 180);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_45, -45 * M_PI / 180);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_90, -90 * M_PI / 180);
-    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_150, -150 * M_PI / 180);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_20);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_45);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_90);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_P_150);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_20);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_45);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_90);
+    enter_new_sensor_data(map, sens, rel_x, rel_y, PROXIMITY_M_150);
 }
 
 static void proximity_send(ProxMapState* prox_map) {

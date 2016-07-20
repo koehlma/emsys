@@ -13,6 +13,9 @@ typedef struct PathExecInputs {
 
 typedef struct PathExecLocals {
     hal_time time_entered;
+    double rotation_start_angle;
+    double approx_rot_speed;
+    double init_dir;
     double start_x;
     double start_y;
     double need_rot;

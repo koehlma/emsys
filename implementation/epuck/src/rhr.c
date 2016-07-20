@@ -38,22 +38,13 @@ void rhr_reset(RhrState* rhr) {
 
 static void find_wall(RhrState* rhr, Sensors* sens) {
     /* see virt_proto/software/find_wall.m */
-    static const double sense_angles[NUM_PROXIMITY] = {
-         -20*M_PI/180,
-         -45*M_PI/180,
-         -90*M_PI/180,
-        -150*M_PI/180,
-        +150*M_PI/180,
-         +90*M_PI/180,
-         +45*M_PI/180,
-         +20*M_PI/180};
     static const unsigned int order[NUM_PROXIMITY] =
         {PROXIMITY_M_20, PROXIMITY_M_45, PROXIMITY_P_20, PROXIMITY_M_90,
          PROXIMITY_P_45, PROXIMITY_M_150, PROXIMITY_P_90, PROXIMITY_P_150};
-    /* rot_angles = sense_angles - (-20); */
+    /* rot_angles = prox_sensor_angle - (-20); */
     unsigned i;
 
-    assert(sizeof(sense_angles) / sizeof(sense_angles[0])
+    assert(sizeof(prox_sensor_angle) / sizeof(prox_sensor_angle[0])
             == NUM_PROXIMITY);
     assert(sizeof(sens->proximity) / sizeof(sens->proximity[0])
             == NUM_PROXIMITY);
@@ -63,7 +54,8 @@ static void find_wall(RhrState* rhr, Sensors* sens) {
         unsigned int s = order[i];
         if (sens->ir[s] <= SMC_SENSE_TOL) {
             rhr->wall_p = 1;
-            rhr->wall_rot = sense_angles[s] - (-20.0*M_PI/180.0);
+            /* rot_angles[s] */
+            rhr->wall_rot = prox_sensor_angle[s] - prox_sensor_angle[PROXIMITY_M_20];
             return;
         }
     }

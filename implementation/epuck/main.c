@@ -179,6 +179,10 @@ static void com_on_t2t_heartbeat(TinPackage *package) {
     t2t_parse_heartbeat(&bot);
 }
 
+static void com_on_victim_phi_corr(TinPackage *package) {
+    t2t_parse_phi_correction(&bot, package->data, package->length);
+}
+
 static void com_on_t2t_victim_phi(TinPackage *package) {
     t2t_parse_found_phi(&bot, package->data, package->length);
 }
@@ -203,6 +207,7 @@ static void com_on_t2t_completed(TinPackage *package) {
 
 static void com_register_t2t() {
     tin_com_register(CMD_T2T_HEARTBEAT, com_on_t2t_heartbeat);
+    tin_com_register(CMD_VICTIM_PHI, com_on_victim_phi_corr);
     tin_com_register(CMD_T2T_VICTIM_PHI, com_on_t2t_victim_phi);
     tin_com_register(CMD_T2T_VICTIM_XY, com_on_t2t_victim_xy);
     tin_com_register(CMD_T2T_UPDATE_MAP, com_on_t2t_update_map);

@@ -93,11 +93,11 @@ void hal_send_put(char* buf, unsigned int length) {
         printf("hal_send_put() used with unexpected data:\n");
         printf("\tExpected: 0x");
         for (i = 0; i < length; ++i) {
-            printf("%02x", expect_list->data[i]);
+            printf("%02x", (unsigned char)expect_list->data[i]);
         }
         printf("\n\tActual:   0x");
         for (i = 0; i < length; ++i) {
-            printf("%02x", buf[i]);
+            printf("%02x", (unsigned char)buf[i]);
         }
         printf("\n\tAlready received: %lu bytes\n\tTrailing (not printed): %u bytes\n",
             (unsigned long)(expect_list->data - expect_list->data_orig),

@@ -5,6 +5,19 @@
 const double SMC_SENSE_TOL = 5;
 const double SMC_SECS_PER_DEGREE = (M_PI / 180) / SMC_ROT_PER_SEC;
 
+/* You can check whether all insteances have been caught with this command:
+ * $ grep -rn '0.*SLASH*.*M_PI.*SLASH.*180'
+ * ... where you should replace all SLASHes by a single slash. */
+const double prox_sensor_angle[NUM_PROXIMITY] = {
+     -20*M_PI/180,
+     -45*M_PI/180,
+     -90*M_PI/180,
+    -150*M_PI/180,
+    +150*M_PI/180,
+     +90*M_PI/180,
+     +45*M_PI/180,
+     +20*M_PI/180};
+
 void smc_rot_left() {
     hal_set_speed(-SMC_MOTOR_ROT, SMC_MOTOR_ROT);
 }

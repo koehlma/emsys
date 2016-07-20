@@ -2,6 +2,7 @@
 #define SRC_STATE_MACHINE_COMMON_H
 
 #include "hal.h"
+#include "sensors.h"
 
 /* Some of these must be a macro, as xc16 is too dumb. */
 
