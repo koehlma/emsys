@@ -1,5 +1,6 @@
 #include "controller.h"
 #include "hal.h"
+#include "proximity-filter.h"
 
 void controller_reset(Controller* c, Sensors* sens) {
     approx_reset(&c->approx, sens);
@@ -33,6 +34,14 @@ void controller_step(ControllerInput* in, Controller* c, Sensors* sens) {
         return;
     }
 
+    if (c->moderator.found_victim_xy) {
+        /* If the moderator didn't set 'found_victim_xy', but
+         * allows us to continue, then victim_xy isn't known to anyone. */
+        ExactPosition p;
+        p.x = c->moderator.victim_x;
+        p.y = c->moderator.victim_y;
+        filter_proximity(p, sens);
+    }
     approx_step(&c->approx, sens);
     inquire_new_vicdir_data(&c->vic_finder, sens);
 
