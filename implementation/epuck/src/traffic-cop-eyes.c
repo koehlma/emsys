@@ -11,7 +11,7 @@ enum TCE_STATES {
     TCE_done /* we know the victim's position */
 };
 
-static const double MIN_DIST = 12; /* arbitrary, TODO */
+static const double MIN_DIST = 12;
 
 static double ray_dist(double x, double y, double phi) {
     double ray_orth_x = -sin(phi);
