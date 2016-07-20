@@ -99,15 +99,15 @@ static ExactPosition compute_position(double* data) {
     return pos;
 }
 
-void vf_apply(double victim_angle, VFState* vf, Sensors* sens) {
+void vf_apply(VFInputs* inputs, VFState* vf) {
     ExactPosition computed_victim;
 
     vf->locals.data[X2]   = vf->locals.data[X1];
     vf->locals.data[Y2]   = vf->locals.data[Y1];
     vf->locals.data[PHI2] = vf->locals.data[PHI1];
-    vf->locals.data[X1]   = sens->current.x;
-    vf->locals.data[Y1]   = sens->current.y;
-    vf->locals.data[PHI1] = victim_angle;
+    vf->locals.data[X1]   = inputs->x;
+    vf->locals.data[Y1]   = inputs->y;
+    vf->locals.data[PHI1] = inputs->phi;
     computed_victim = compute_position(vf->locals.data);
     if(computed_victim.x >= 1 && computed_victim.x <= 200
             && computed_victim.y >= 1 && computed_victim.y <= 200) {
