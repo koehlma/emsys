@@ -4,10 +4,6 @@
 #include "sensors.h"
 #include "map.h"
 
-//typedef struct ProximityFilterInput {
-//    Position victim;
-//} ProximityFilterInput;
-
-void filter_proximity(Position victim, Sensors* sens);
+void filter_proximity(ExactPosition victim, Sensors* sens);
 
 #endif /* EPUCK_PROXIMITY_FILTER_H */
