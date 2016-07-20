@@ -166,7 +166,7 @@ static void debug_on_map(TinPackage* package) {
     static TinPackage response = {NULL, NULL, CMD_T2T_UPDATE_MAP, 0, NULL, NULL};
     static char data[68] __attribute__ ((aligned (4)));
     memcpy(data, package->data, 68);
-    response.target = package->source;
+    response.target = BROADCAST_ADDRESS;
     response.length = package->length;
     response.data = data;
     tin_com_send(&response);

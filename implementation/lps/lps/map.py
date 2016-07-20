@@ -19,7 +19,8 @@ MAP_MAX_WIDTH = 100
 MAP_MAX_HEIGHT = 100
 
 
-COLORMAP = colors.ListedColormap(numpy.array([[1, 1, 1], [0.5, 0.5, 0.5], [0, 0, 0]]))
+COLORMAP_1 = colors.ListedColormap(numpy.array([[1, 1, 1], [0.5, 0.5, 0.5]]))
+COLORMAP_2 = colors.ListedColormap(numpy.array([[1, 1, 1], [0.5, 0.5, 0.5], [0, 0, 0]]))
 
 
 # Possible values for a field
@@ -62,10 +63,14 @@ class Map:
         # properties that need to be obeyed by prox-map.c, function
         # 'desired_position'
 
-    def get_image(self):
+    def get_image(self, close=True):
         buffer = io.BytesIO()
         figure = pyplot.figure()
-        pyplot.imshow(self.array, cmap=COLORMAP, interpolation='nearest')
+        if numpy.max(m.array) == 2:
+            color_map = COLORMAP_2
+        else:
+            color_map = COLORMAP_1
+        pyplot.imshow(self.array, cmap=color_map, interpolation='nearest')
         figure.savefig(buffer, format='jpeg', dpi=100)
         pyplot.close(figure)
         return buffer.getvalue()
@@ -73,10 +78,15 @@ class Map:
 
 if __name__ == '__main__':
     from lps.commands import Commands
-    x, y, *patch = Commands.T2T_UPDATE_MAP.decode(b'\x00\x00\x00\x00U\x01\x95\x00\x02\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+    x, y, *patch = Commands.T2T_UPDATE_MAP.decode(b'\x14\x00\x0e\x00\x00\x15\x05\x05\x00P\x00\x01UT\x15\x15TT\x01\x00PP\x15U\x15\x15\x00\x00EUUU\x05\x01\x00\x00TUUUUUUUUAUE\x01\x01U\x00PPAA\x05\x05\x00\x00TU\x00\x00\x15\x15\x00\x00')
+
+    print(patch)
 
     m = Map()
-    print(m.get_image())
+    # print(m.get_image())
     m.patch(x, y, patch)
-    print(m.get_image())
+    with open('output.jpg', 'wb') as output:
+        output.write(m.get_image())
     pyplot.show()
+
+    print(m.array[y:y + 16, x:x + 16])

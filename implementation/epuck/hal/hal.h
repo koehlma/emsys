@@ -5,7 +5,7 @@
 #ifndef HAL_H
 #define HAL_H
 
-#define BROADCAST_ADDRESS 0
+#define BROADCAST_ADDRESS 0xFF
 
 /*
  * TODO: constants for LEDs and ON, OFF
