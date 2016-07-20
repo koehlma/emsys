@@ -88,7 +88,7 @@ static void tx_package(MatlabBot* sender, char command, MatlabBot* receiver) {
         case CMD_VICTIM_PHI:
             if (is_ours) {
                 /* "Yeah, it's totally the right one, little Bot." */
-                /* FIXME update_victim_phi(receiver->tinbot, ((float*)sender->com_buf)[2]); */
+                t2t_receive_phi_correction(receiver->tinbot, ((float*)sender->com_buf)[2], 1);
             }
             break;
         case CMD_T2T_VICTIM_PHI:
