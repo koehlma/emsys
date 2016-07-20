@@ -14,8 +14,6 @@ enum {
     PF_complete
 };
 
-const Position INVALID_POS = {-1, -1};
-
 static int end_of_path_p(Position pos);
 static int invalid_pos(Position pos, Map *map);
 
@@ -28,10 +26,12 @@ static Position map_discretize(double x, double y) {
 
 void pf_reset(PathFinderState* pf) {
     pf->locals.state = PF_inactive;
-    pf->next = INVALID_POS;
+    pf->next.x = -1;
+    pf->next.y = -1;
     pf->no_path = 0;
     pf->locals.path_index = 0;
-    pf->locals.path[0] = INVALID_POS;
+    pf->locals.path[0].x = -1;
+    pf->locals.path[0].y = -1;
     pf->path_completed = 0;
     pf->drive = 0;
     pf->backwards = 0;
@@ -108,7 +108,8 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
                 } else if (end_of_path_p(pf->locals.path[pf->locals.path_index + 1])) {
                     pf->backwards = inputs->is_victim;
                 }
-                pf->next = next_wp;
+                pf->next.x = next_wp.x;
+                pf->next.y = next_wp.y;
             }
             if (inputs->step_see_obstacle) {
                 /* We ran into an obstacle -> internal map must be outdated. */
@@ -128,7 +129,7 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
 }
 
 static int end_of_path_p(Position pos) {
-    return pos.x == INVALID_POS.x && pos.y == INVALID_POS.y;
+    return pos.x == -1 && pos.y == -1;
 }
 
 static int adj(Position origin, Position goal, Map *map);
@@ -176,7 +177,6 @@ static int adj(Position pos, Position goal, Map *map) {
 }
 
 int pf_find_path(Position position, Position goal, Map *map, Position *path) {
-
     BellmanFord state;
     state.adj = &adj;
     state.goal = goal;
@@ -186,8 +186,8 @@ int pf_find_path(Position position, Position goal, Map *map, Position *path) {
 
     find_path(&state);
 
-    if(state.path[0].x == INVALID_POS.x && state.path[0].y == INVALID_POS.y) {
-        path[0] = INVALID_POS;
+    if(state.path[0].x == -1 && state.path[0].y == -1) {
+        path[0] = state.path[0];
         return 0;
     }
 

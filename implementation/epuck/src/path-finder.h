@@ -6,10 +6,6 @@
 #include "sensors.h"
 #include "bellman-ford/bellman-ford.h"
 
-/* Caller must allocate space for MAX_PATH_LENGTH instances of Position. */
-
-extern const Position INVALID_POS;
-
 typedef struct PathFinderInputs {
     Map* map;
     double dest_x;
@@ -28,7 +24,7 @@ typedef struct PathFinderLocals {
 
 typedef struct PathFinderState {
     PathFinderLocals locals;
-    Position next;
+    ExactPosition next;
     unsigned int no_path;
     unsigned int path_completed;
     unsigned int drive;

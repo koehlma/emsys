@@ -188,8 +188,7 @@ static void run_path_finder_executer(Controller* c, Sensors* sens) {
 
     pe_inputs.drive = c->path_finder.drive;
     pe_inputs.backwards = c->path_finder.backwards;
-    pe_inputs.next_x = c->path_finder.next.x;
-    pe_inputs.next_y = c->path_finder.next.y;
+    pe_inputs.next = c->path_finder.next;
     pe_step(&pe_inputs, &c->path_exec, sens);
 }
 

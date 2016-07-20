@@ -70,11 +70,11 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         {
             double start_dir;
             double target_dir;
-            l->start_x = sens->current.x;
-            l->start_y = sens->current.y;
+            l->start.x = sens->current.x;
+            l->start.y = sens->current.y;
             start_dir = sens->current.phi;
-            target_dir = atan2(inputs->next_y - l->start_y,
-                               inputs->next_x - l->start_x);
+            target_dir = atan2(inputs->next.y - l->start.y,
+                               inputs->next.x - l->start.x);
             if(inputs->backwards) {
                 target_dir += M_PI;
             }
@@ -83,12 +83,12 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             l->need_rot = fmod(target_dir - start_dir + M_PI, 2 * M_PI) - M_PI;
             /* Rotation in seconds: */
             l->need_rot /= l->approx_rot_speed;
-            l->normal_x = -(inputs->next_y - l->start_y);
-            l->normal_y =   inputs->next_x - l->start_x;
-            l->need_dist = l->normal_x * l->normal_x + l->normal_y * l->normal_y;
+            l->normal.x = -(inputs->next.y - l->start.y);
+            l->normal.y =   inputs->next.x - l->start.x;
+            l->need_dist = l->normal.x * l->normal.x + l->normal.y * l->normal.y;
             l->need_dist = sqrt(l->need_dist);
-            l->normal_x /= l->need_dist;
-            l->normal_y /= l->need_dist;
+            l->normal.x /= l->need_dist;
+            l->normal.y /= l->need_dist;
             l->need_dist /= SMC_MV_PER_SEC;
 
             /* Code from the transitions */
@@ -138,8 +138,8 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         {
             double stray;
             stray = 0;
-            stray += (inputs->next_x - sens->current.x) * l->normal_x;
-            stray += (inputs->next_y - sens->current.y) * l->normal_y;
+            stray += (inputs->next.x - sens->current.x) * l->normal.x;
+            stray += (inputs->next.y - sens->current.y) * l->normal.y;
             stray = fabs(stray);
             if (stray >= PE_MAX_STRAY) {
                 /* Whoopsie daisy. */

@@ -2,13 +2,13 @@
 #define PATH_EXEC_H
 
 #include "hal.h"
+#include "map.h"
 #include "sensors.h"
 
 typedef struct PathExecInputs {
     unsigned int drive;
     unsigned int backwards;
-    double next_x;
-    double next_y;
+    ExactPosition next;
 } PathExecInputs;
 
 typedef struct PathExecLocals {
@@ -16,12 +16,10 @@ typedef struct PathExecLocals {
     double rotation_start_angle;
     double approx_rot_speed;
     double init_dir;
-    double start_x;
-    double start_y;
+    ExactPosition start;
     double need_rot;
     double need_dist;
-    double normal_x;
-    double normal_y;
+    ExactPosition normal;
     int state;
 } PathExecLocals;
 

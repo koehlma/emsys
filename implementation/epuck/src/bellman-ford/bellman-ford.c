@@ -58,15 +58,16 @@ void find_path(BellmanFord* state) {
     }
     p_len = p_ix;
     if(pred == -1) {
-        state->path[0] = INVALID_POS;
+        state->path[0].x = -1;
+        state->path[0].y = -1;
         assert(locals.distances[goal] == BF_INFINITY);
         p_len = p_ix = 0;
     }
 
     reverse_path(state->path, p_len);
 
-    state->path[p_len] = INVALID_POS;
-
+    state->path[p_len].x = -1;
+    state->path[p_len].y = -1;
 }
 
 /* AUX */
