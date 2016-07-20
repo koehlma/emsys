@@ -2,15 +2,14 @@
 #define BLIND_COP_H
 
 #include "hal.h"
+#include "map.h"
 
 typedef struct BlindInputs {
     unsigned int found_victim_xy;
     unsigned int need_angle;
     unsigned int no_path;
-    double origin_x;
-    double origin_y;
-    double victim_x;
-    double victim_y;
+    ExactPosition origin;
+    ExactPosition victim;
     unsigned int path_completed;
     unsigned int victim_attached;
 } BlindInputs;
@@ -31,8 +30,7 @@ enum BlindRunChoice {
 
 typedef struct BlindState {
     BlindLocals locals;
-    double dst_x;
-    double dst_y;
+    ExactPosition dst;
     enum BlindRunChoice run_choice;
     unsigned int is_victim;
 } BlindState;

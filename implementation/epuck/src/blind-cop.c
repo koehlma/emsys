@@ -79,8 +79,7 @@ void blind_step(BlindInputs* inputs, BlindState* blind) {
             blind->locals.state_big = BLIND_follow_path;
             blind->locals.state_leaf = BLIND_LEAF_run_to_victim;
             blind->run_choice = BLIND_RUN_CHOICE_none;
-            blind->dst_x = inputs->victim_x;
-            blind->dst_y = inputs->victim_y;
+            blind->dst = inputs->victim;
             blind->is_victim = 1;
             #ifdef LOG_TRANSITIONS_BLIND_COP
             hal_print("BC:ir/*->fp/rtv");
@@ -153,8 +152,7 @@ void blind_step(BlindInputs* inputs, BlindState* blind) {
             case BLIND_LEAF_wait_path_zero:
                 if (!inputs->path_completed) {
                     blind->locals.state_leaf = BLIND_LEAF_docking;
-                    blind->dst_x = inputs->origin_x;
-                    blind->dst_y = inputs->origin_y;
+                    blind->dst = inputs->origin;
                     blind->is_victim = 0;
                     #ifdef LOG_TRANSITIONS_BLIND_COP
                     hal_print("BC:fp/wpz->fp/do");
@@ -167,8 +165,7 @@ void blind_step(BlindInputs* inputs, BlindState* blind) {
                     blind->run_choice = BLIND_RUN_CHOICE_pickup_artist;
                 } else {
                     blind->locals.state_leaf = BLIND_LEAF_outta_here;
-                    blind->dst_x = inputs->origin_x;
-                    blind->dst_y = inputs->origin_y;
+                    blind->dst = inputs->origin;
                     blind->is_victim = 0;
                     #ifdef LOG_TRANSITIONS_BLIND_COP
                     hal_print("BC:fp/do->fp/oh");

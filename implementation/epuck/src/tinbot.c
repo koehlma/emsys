@@ -52,12 +52,12 @@ static void setup_alone(TinBot* tinbot) {
 }
 
 static void loop_alone(TinBot* tinbot) {
-    ControllerInput input;
+    ExactPosition origin;
     /* FIXME: Use actual initial lps data */
-    input.origin_x = 50;
-    input.origin_x = 50;
+    origin.x = 50;
+    origin.y = 50;
 
-    controller_step(&input, &tinbot->controller, &tinbot->sens);
+    controller_step(&origin, &tinbot->controller, &tinbot->sens);
 }
 
 

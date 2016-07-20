@@ -19,13 +19,13 @@ void controller_reset(Controller* c, Sensors* sens) {
 
 static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens);
 static void inquire_new_vicdir_data(VFState* vf, Sensors* sens);
-static void inquire_blind_decision(Controller* c, ControllerInput* in, Sensors* sens);
+static void inquire_blind_decision(Controller* c, ExactPosition* origin, Sensors* sens);
 static void inquire_eyes_decision(Controller* c, Sensors* sens);
 static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c);
 static void run_victim_finder(Controller* c, Sensors* sens);
 static void run_path_finder_executer(Controller* c, Sensors* sens);
 
-void controller_step(ControllerInput* in, Controller* c, Sensors* sens) {
+void controller_step(ExactPosition* origin, Controller* c, Sensors* sens) {
     enum BlindRunChoice old_choice;
 
     /* Zeroth, check whether we *want* to execute at all. */
@@ -51,7 +51,7 @@ void controller_step(ControllerInput* in, Controller* c, Sensors* sens) {
 
     /* Now the traffic cop decides "who is allowed to drive". */
     old_choice = c->blind.run_choice;
-    inquire_blind_decision(c, in, sens);
+    inquire_blind_decision(c, origin, sens);
 
     /* Do we need to reset any of the state machines? */
     if (old_choice != c->blind.run_choice) {
@@ -122,17 +122,16 @@ void inquire_new_vicdir_data(VFState* vf, Sensors* sens) {
     }
 }
 
-static void inquire_blind_decision(Controller* c, ControllerInput* in, Sensors* sens) {
+static void inquire_blind_decision(Controller* c, ExactPosition* origin, Sensors* sens) {
     BlindInputs inputs;
     inputs.found_victim_xy = c->moderator.found_victim_xy;
     inputs.need_angle = c->cop_eyes.need_angle;
     inputs.no_path = c->path_finder.no_path;
     inputs.path_completed = c->path_finder.path_completed;
     inputs.victim_attached = sens->victim_attached;
-    inputs.origin_x = in->origin_x;
-    inputs.origin_y = in->origin_y;
-    inputs.victim_x = c->moderator.victim_x;
-    inputs.victim_y = c->moderator.victim_y;
+    inputs.origin = *origin;
+    inputs.victim.x = c->moderator.victim_x;
+    inputs.victim.y = c->moderator.victim_y;
     blind_step(&inputs, &c->blind);
 }
 
@@ -184,8 +183,8 @@ static void run_path_finder_executer(Controller* c, Sensors* sens) {
 
     pf_inputs.compute = 1;
     pf_inputs.is_victim = c->blind.is_victim;
-    pf_inputs.dest_x = c->blind.dst_x;
-    pf_inputs.dest_y = c->blind.dst_y;
+    pf_inputs.dest_x = c->blind.dst.x;
+    pf_inputs.dest_y = c->blind.dst.y;
     pf_inputs.step_complete = c->path_exec.done;
     pf_inputs.step_see_obstacle = c->path_exec.see_obstacle;
     pf_inputs.map = map_get_accumulated();
