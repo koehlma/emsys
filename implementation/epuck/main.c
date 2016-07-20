@@ -342,6 +342,7 @@ ISR(_MI2CInterrupt) {
 
     unsigned int index, data;
 
+    static unsigned int tmp_pickup_data = 0;
     static unsigned int state = 0;
 
     switch (state) {
@@ -358,10 +359,15 @@ ISR(_MI2CInterrupt) {
             for (index = 0; index < 6; index++) {
                 ir_data[index] = (data >> index) & 1;
             }
-            pickup_data = (data >> 6) & 1;
+
+            tmp_pickup_data = (data >> 6) & 1;
+            if (tmp_pickup_data != pickup_data) {
+                update_victim_pickup(&bot, pickup_data);
+                pickup_data = tmp_pickup_data;
+                hal_set_powersave(pickup_data);
+            }
 
             update_ir(&bot, (int*) ir_data);
-            update_victim_pickup(&bot, pickup_data);
 
             I2CCONbits.ACKDT=1;
             I2CCONbits.ACKEN=1;
