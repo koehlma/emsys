@@ -167,7 +167,7 @@ static void run_path_finder_executer(Controller* c, Sensors* sens) {
 }
 
 static void run_victim_finder(Controller* c, Sensors* sens) {
-    vd_step(&c->vic_dir, sens);
+    vd_step(&sens->t2t.fixdir, &c->vic_dir, sens);
     /*inputs.victim_angle = c->vic_dir.victim_phi;
     vf_step(&inputs, &c->vic_finder, sens); FIXME */
 }

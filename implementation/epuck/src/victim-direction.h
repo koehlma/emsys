@@ -3,6 +3,7 @@
 #define EPUCK_VICTIM_DIRECTION_H
 
 #include "sensors.h"
+#include "t2t-data.h"
 
 typedef struct VDLocals {
     hal_time time_begin;
@@ -20,9 +21,10 @@ typedef struct VDState {
     double victim_phi;
     unsigned int victim_found;
     unsigned int give_up;
+    unsigned int digested; /* FIXME */
 } VDState;
 
 void vd_reset(VDState* vd);
-void vd_step(VDState* vd, Sensors* sens);
+void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens);
 
 #endif /* EPUCK_VICTIM_DIRECTION_H */

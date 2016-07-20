@@ -11,15 +11,26 @@ void t2t_receive_heartbeat(TinBot* bot) {
 }
 
 void t2t_receive_found_phi(TinBot* bot, double x, double y, double phi) {
-    bot->rx_buffer.vicdir.x = 1;
-    bot->rx_buffer.vicdir.y = 1;
-    bot->rx_buffer.vicdir.phi = 1;
-    bot->rx_buffer.vicdir.new_p = 1;
+    T2TData_VicDirSingle* buf;
+
+    /* If we receive more than two data points, only use the first and last. */
+    buf = &bot->rx_buffer.vicdir_buf1;
+    if (buf->new_p) {
+        buf = &bot->rx_buffer.vicdir_buf2;
+    }
+
+    buf->x = x;
+    buf->y = y;
+    buf->phi = phi;
+    buf->new_p = 1;
 }
 
 void t2t_receive_phi_correction(struct TinBot* bot, double phi_correct, unsigned int acceptable) {
-    bot->rx_buffer.fixdir.phi_correct = phi_correct;
-    bot->rx_buffer.fixdir.acceptable = acceptable;
+    T2TData_VicFix* buf = &bot->rx_buffer.fixdir;
+
+    buf->phi_correct = phi_correct;
+    buf->acceptable = acceptable;
+    buf->have_incoming_fix = 1;
 }
 
 void t2t_receive_found_xy(TinBot* bot, int is_ours, int x, int y, int iteration) {
@@ -73,7 +84,11 @@ void t2t_receive_completed(TinBot* bot) {
 
 void t2t_data_pump(TinBot* bot) {
     memcpy(&bot->sens.t2t, &bot->rx_buffer, sizeof(T2TData));
+    /* Reset rx_buffer, now that we're done copying it: */
     bot->rx_buffer.moderate.seen_beat = 0;
+    bot->rx_buffer.vicdir_buf1.new_p = 0;
+    bot->rx_buffer.vicdir_buf2.new_p = 0;
+    bot->rx_buffer.fixdir.have_incoming_fix = 0;
 }
 
 void t2t_data_init(T2TData* data) {

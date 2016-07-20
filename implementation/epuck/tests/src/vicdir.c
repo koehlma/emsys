@@ -31,6 +31,7 @@ int main() {
     Sensors sens;
     int i;
     hal_time core_time[NUM_IR];
+    T2TData_VicFix vdf;
 
     /* Initialization */
     vd_reset(&vds);
@@ -46,6 +47,7 @@ int main() {
         core_time[0], core_time[1], core_time[2], core_time[3], core_time[4], core_time[5]);
     printf("Pass time:  %07lu\n", IR_PASS_TIME);
     tests_mock_expect_set_enabled(0);
+    vdf.have_incoming_fix = 0;
 
     /* Running */
     while (hal_get_time() < 20000) {
@@ -55,7 +57,7 @@ int main() {
         if (fabs(hal_get_speed_left()) > 0.5) {
             sens.current.phi = hal_get_time() * 2 * M_PI / IR_COMPLETION_TIME;
         }
-        vd_step(&vds, &sens);
+        vd_step(&vdf, &vds, &sens);
         if (hal_get_time() % 4000 == 0) {
             printf("Debug data: @%5.3f %d%d%d%d%d%d state%1d %5.3f@%1d/%1d %5.1f%% g%5.3f\n",
                 sens.current.phi,
@@ -74,7 +76,7 @@ int main() {
         vds.victim_phi,
         vds.victim_found,
         vds.give_up);
-    if (!vds.victim_found || vds.give_up || fabs(true_victim_phi - vds.victim_phi) > 2 * M_PI / 180) {
+    if (vds.victim_found || vds.give_up || fabs(true_victim_phi - vds.victim_phi) > 2 * M_PI / 180) {
         printf("\t=> and that's BAD!\n");
         return 1;
     }
