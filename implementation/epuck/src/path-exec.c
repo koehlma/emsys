@@ -4,11 +4,15 @@
 #include "pi.h" /* M_PI */
 #include "path-exec.h"
 #include "state-machine-common.h"
+#include "sensors.h"
+
+#define TOLERANCE_ANGLE 0.0349066 /* 2 deg */
 
 enum PE_STATES {
     PE_inactive,
     PE_compute,
     PE_rotate, /* turn to */
+    PE_rot_wait_for_LPS,
     PE_drive, /* tune in */
     PE_profit /* and drop out */
 };
@@ -23,6 +27,7 @@ void pe_reset(PathExecState* pe) {
     pe->done = 0;
     pe->see_obstacle = 0;
     pe->locals.state = PE_inactive;
+    pe->locals.approx_rot_speed = SMC_ROT_PER_SEC;
     /* No further initialization needed because PE_inactive doesn't
        read from locals.time_entered or locals.start_* or locals.need_* */
 }
@@ -42,6 +47,8 @@ static unsigned int near_crash_p(PathExecInputs* inputs, Sensors* sens) {
 void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
     PathExecLocals* l;
     int old_state;
+    hal_time rotation_time;
+    double actually_rotated_per_sec, actually_rotated;
 
     l = &pe->locals;
     old_state = l->state;
@@ -73,6 +80,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             if(inputs->backwards) {
                 target_dir += M_PI;
             }
+            l->init_dir = start_dir;
             l->need_rot = fmod(target_dir - start_dir + M_PI, 2 * M_PI) - M_PI;
             l->need_rot /= SMC_ROT_PER_SEC;
             l->normal_x = -(inputs->next_y - l->start_y);
@@ -94,12 +102,27 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         }
         break;
     case PE_rotate:
-        if (smc_time_passed_p(l->time_entered, l->need_rot)) {
-            l->state = PE_drive;
-            if (inputs->backwards) {
-                smc_move();
+         if (smc_time_passed_p(l->time_entered, l->need_rot * l->approx_rot_speed)) {
+            smc_halt();
+            l->time_entered = hal_get_time();
+            l->state = PE_rot_wait_for_LPS;
+        }
+        break;
+    case PE_rot_wait_for_LPS:
+        if(smc_time_passed_p(l->time_entered, 2.2)) {
+            if (sens->current.phi - l->init_dir > TOLERANCE_ANGLE) {
+                l->state = PE_drive;
+                if (inputs->backwards) {
+                    smc_move();
+                } else {
+                    smc_move_back();
+                }
             } else {
-                smc_move_back();
+                rotation_time = hal_get_time() - l->time_entered;
+                actually_rotated = sens->current.phi - l->rotation_start_angle;
+                actually_rotated_per_sec = actually_rotated / rotation_time;
+                l->approx_rot_speed = actually_rotated_per_sec;
+                l->need_rot = l->need_rot - sens->current.phi;
             }
         }
         break;
