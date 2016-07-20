@@ -17,13 +17,6 @@ enum {
 static int end_of_path_p(Position pos);
 static int invalid_pos(Position pos, Map *map);
 
-static Position map_discretize(double x, double y) {
-    Position res;
-    res.x = (int) (floor(x));
-    res.y = (int) (floor(y));
-    return res;
-}
-
 void pf_reset(PathFinderState* pf) {
     pf->locals.state = PF_inactive;
     pf->next.x = -1;
@@ -42,37 +35,40 @@ static void pathing_failed(PathFinderState* pf) {
     pf->no_path = 1;
 }
 
-
 static void compute_path(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
-    Position dest, pos;
+    Position pos;
     int success;
 
     /* clear destination area */
     Map* map = map_get_accumulated();
     int delta_x, delta_y, x, y;
     for (delta_x = -3; delta_x < 4; delta_x++) {
-        x = (int) inputs->dest_x + delta_x;
+        x = (int)( inputs->dest.x + delta_x );
         if (x >= 0 && x < MAP_MAX_WIDTH ) {
             for (delta_y = -3; delta_y < 4; delta_y++) {
-                y = (int) inputs->dest_y + delta_y;
+                y = (int)( inputs->dest.y + delta_y );
                 if (y >= 0 && y < MAP_MAX_HEIGHT) {
                     map_set_field(map, x, y, FIELD_FREE);
                 }
             }
-
         }
     }
 
     pf->locals.state = PF_running;
-    dest = map_discretize(inputs->dest_x, inputs->dest_y);
-    pos = map_discretize(sens->current.x, sens->current.y);
+    {
+        ExactPosition p;
+        p.x = sens->current.x;
+        p.y = sens->current.y;
+        pos = map_discretize(p);
+    }
     if (invalid_pos(pos, inputs->map)) {
+        assert(0 && "invalid start pos?!");
         /* Uhh */
         pathing_failed(pf);
         return;
     }
     pf->locals.path_index = -1;
-    success = pf_find_path(pos, dest, inputs->map, pf->locals.path);
+    success = pf_find_path(pos, inputs->dest, inputs->map, pf->locals.path);
     if (!success) {
         pathing_failed(pf);
     }
@@ -176,7 +172,7 @@ static int adj(Position pos, Position goal, Map *map) {
     return 1;
 }
 
-int pf_find_path(Position position, Position goal, Map *map, Position *path) {
+int pf_find_path(Position position, ExactPosition goal, Map *map, Position *path) {
     BellmanFord state;
     state.adj = &adj;
     state.goal = goal;

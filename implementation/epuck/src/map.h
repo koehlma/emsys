@@ -52,6 +52,7 @@ typedef struct ExactPosition {
     double x, y;
 } ExactPosition;
 
+Position map_discretize(ExactPosition p);
 
 /* Use this when calling map_[de]serialize.
  * There already exists a check in map_common.c whether this is up-to-date. */
@@ -67,9 +68,9 @@ Map* map_deserialize(unsigned char* buffer);
 /* For "internal" usage (by map_static.c and map_heap.c)
  * Must be a macro, as some platforms (E-Puck) may choose to use this as
  * the size of a static array.
- * 
+ *
  * Arguments will be evaluated multiple times.
- * 
+ *
  * How it works:
  * - if w or h are not sane, require a length of -1, which should break compilation.
  * - otherwise, compute the number of bits and round up. */

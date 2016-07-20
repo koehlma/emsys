@@ -16,7 +16,8 @@ typedef struct BellmanFordLocals {
 
 typedef struct BellmanFord {
     int (*adj)(Position v, Position u, Map* map); /* not the most efficient realization */
-    Position init, goal;
+    Position init;
+    ExactPosition goal;
     Map* map;
     Position* path;
 } BellmanFord;

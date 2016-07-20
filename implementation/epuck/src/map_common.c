@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdint.h>
 #include <stdlib.h> /* abs */
 #include <string.h> /* memset */
@@ -6,6 +7,13 @@
 #include "map.h"
 
 /* ===== Common implementation of map.h ===== */
+
+Position map_discretize(ExactPosition p) {
+    Position res;
+    res.x = (int) (floor(p.x));
+    res.y = (int) (floor(p.y));
+    return res;
+}
 
 /* Layout in memory:
  *

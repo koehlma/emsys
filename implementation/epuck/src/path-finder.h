@@ -8,8 +8,7 @@
 
 typedef struct PathFinderInputs {
     Map* map;
-    double dest_x;
-    double dest_y;
+    ExactPosition dest;
     unsigned int compute;
     unsigned int step_complete;
     unsigned int step_see_obstacle;
@@ -35,6 +34,6 @@ void pf_reset(PathFinderState* pf);
 void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens);
 
 /* Only for testing */
-int pf_find_path(Position position, Position goal, Map *map, Position *path);
+int pf_find_path(Position position, ExactPosition goal, Map *map, Position *path);
 
 #endif /*EPUCK_PATHFINDER_H*/

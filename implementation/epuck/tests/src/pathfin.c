@@ -9,7 +9,8 @@ int main(void){
 	const int size = 16;
 	int i;
     int success;
-    Position start, goal;
+    Position start;
+    ExactPosition goal;
     Map* map;
     Position* path;
 

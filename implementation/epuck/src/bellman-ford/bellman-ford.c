@@ -14,11 +14,11 @@ static int pos2v(Position pos);
 static Position v2pos(int v);
 static void init_bellman_ford(BellmanFord* state);
 static void reverse_path(Position* path, int path_length);
-int generate_potential_neighbours(int* buffer, int v);
+static int generate_potential_neighbours(int* buffer, int v);
 
 void find_path(BellmanFord* state) {
     int init = pos2v(state->init);
-    int goal = pos2v(state->goal);
+    int goal = pos2v(map_discretize(state->goal));
     int curr_v, p_ix, pred, p_len;
     const int weight = 1;
     int new_cost_curr, change;
@@ -111,7 +111,7 @@ static void init_bellman_ford(BellmanFord* state) {
     locals.distances[pos2v(state->init)] = 0;
 }
 
-int generate_potential_neighbours(int* buffer, int v) {
+static int generate_potential_neighbours(int* buffer, int v) {
     int i = 0;
     if (v % VERTICES_PER_ROW > 0) {
         buffer[i] = v - 1;
