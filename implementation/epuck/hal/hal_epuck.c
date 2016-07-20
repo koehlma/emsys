@@ -14,9 +14,7 @@
 
 typedef char check_map_proximity_size[(MAP_PROXIMITY_BUF_SIZE < TIN_PACKAGE_MAX_LENGTH) ? 1 : -1];
 
-static struct {
-    double left, right;
-} motor_wrapper;
+static hal_epuck_motor_wrapper motor_wrapper;
 
 const double ir_sensor_angle[6] = {
     7*M_PI/4,

@@ -145,7 +145,7 @@ static void loop_mergeonly(TinBot* tinbot) {
 }
 
 
-static TinMode modes[] = {
+static TinMode modes[6] = {
         {setup_alone, loop_alone},
         {setup_full, loop_full},
         {setup_rhr, loop_rhr},

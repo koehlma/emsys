@@ -15,7 +15,7 @@
 static volatile int ir_data[8] = {0};
 
 static volatile double lps_data[3] = {0};
-static volatile unsigned lps_updated = 0;
+static volatile unsigned int lps_updated = 0;
 
 static volatile unsigned int pickup_data;
 
@@ -40,7 +40,7 @@ static TinBot bot;
 static char my_com_addr;
 
 /* default mode executed on start command */
-static Mode mode = ALONE;
+static unsigned char mode = 0;
 
 
 /* periodically check for new data from extension board */
@@ -112,7 +112,7 @@ static void com_on_reset(TinPackage* package) {
 
 static void com_on_set_mode(TinPackage* package) {
     do_reset = 1;
-    mode = (Mode) package->data[0];
+    mode = package->data[0];
 }
 
 static void com_on_update_lps(TinPackage* package) {
