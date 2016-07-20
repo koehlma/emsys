@@ -22,8 +22,8 @@ static ExactPosition compute_position(double* data);
 void vf_reset(VFState* vf) {
     int i;
     vf->found_victim_xy = 0;
-    vf->victim_x = -1;
-    vf->victim_y = -1;
+    vf->victim.x = -1;
+    vf->victim.y = -1;
     for(i = 0; i < 6; ++i) {
         vf->locals.data[i] = 0;
     }
@@ -111,8 +111,7 @@ void vf_apply(VFInputs* inputs, VFState* vf) {
     computed_victim = compute_position(vf->locals.data);
     if(computed_victim.x >= 1 && computed_victim.x <= 200
             && computed_victim.y >= 1 && computed_victim.y <= 200) {
-        vf->victim_x = computed_victim.x;
-        vf->victim_y = computed_victim.y;
+        vf->victim = computed_victim;
         vf->found_victim_xy = 1;
         /* DO NOT send the T2T packet yet.
          * That's the moderator's job. */

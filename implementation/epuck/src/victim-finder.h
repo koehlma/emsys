@@ -1,6 +1,7 @@
 #ifndef EPUCK_VICTIM_FINDER_H
 #define EPUCK_VICTIM_FINDER_H
 
+#include "map.h"
 #include "sensors.h"
 
 typedef struct VFInputs {
@@ -16,8 +17,7 @@ typedef struct VFLocals {
 typedef struct {
     VFLocals locals;
     unsigned int found_victim_xy;
-    double victim_x;
-    double victim_y;
+    ExactPosition victim;
 } VFState;
 
 void vf_reset(VFState* vf);

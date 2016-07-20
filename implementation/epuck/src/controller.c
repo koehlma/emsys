@@ -90,8 +90,7 @@ void controller_step(ExactPosition* origin, Controller* c, Sensors* sens) {
 static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens) {
     ModInputs inputs;
     inputs.t2t_data = &sens->t2t.moderate;
-    inputs.own_victim.x = c->vic_finder.victim_x;
-    inputs.own_victim.y = c->vic_finder.victim_y;
+    inputs.own_victim = c->vic_finder.victim;
     inputs.found_victim_xy = c->vic_finder.found_victim_xy;
     inputs.give_up = c->pickup_artist.is_dead;
 

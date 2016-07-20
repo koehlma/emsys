@@ -25,9 +25,9 @@ int main() {
     assert(vfs.found_victim_xy);
 
     printf("Actual %.1f,%.1f expected %.1f,%.1f\n",
-        vfs.victim_x, vfs.victim_y, the_test.res.x, the_test.res.y);
-    if (fabs(vfs.victim_x - the_test.res.x) < 0.01
-        || fabs(vfs.victim_y - the_test.res.y) < 0.01) {
+        vfs.victim.x, vfs.victim.y, the_test.res.x, the_test.res.y);
+    if (fabs(vfs.victim.x - the_test.res.x) < 0.01
+        || fabs(vfs.victim.y - the_test.res.y) < 0.01) {
         printf("\t=> and that's GOOD!\n");
     } else {
         printf("\t=> and that's BAD!\n");
