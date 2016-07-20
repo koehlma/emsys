@@ -42,9 +42,27 @@ static void pathing_failed(PathFinderState* pf) {
     pf->no_path = 1;
 }
 
+
 static void compute_path(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
     Position dest, pos;
     int success;
+
+    /* clear destination area */
+    Map* map = map_get_accumulated();
+    int delta_x, delta_y, x, y;
+    for (delta_x = -3; delta_x < 4; delta_x++) {
+        x = (int) inputs->dest_x + delta_x;
+        if (x >= 0 && x < MAP_MAX_WIDTH ) {
+            for (delta_y = -3; delta_y < 4; delta_y++) {
+                y = (int) inputs->dest_y + delta_y;
+                if (y >= 0 && y < MAP_MAX_HEIGHT) {
+                    map_set_field(map, x, y, FIELD_FREE);
+                }
+            }
+
+        }
+    }
+
     pf->locals.state = PF_running;
     dest = map_discretize(inputs->dest_x, inputs->dest_y);
     pos = map_discretize(sens->current.x, sens->current.y);
