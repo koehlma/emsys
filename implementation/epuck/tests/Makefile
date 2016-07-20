@@ -19,7 +19,7 @@ LFLAGS?=-Weverything -lm
 # For libubsan, add "-fsanitize=undefined" to CFLAGS, and "-lubsan" to LFLAGS
 
 TBSRCS:=$(wildcard ../src/*.c) $(wildcard ../src/bellman-ford/*.c)
-TBHEADERS:=$(wildcard ../src/*.h) $(wildcard ../src/astar/*.h) $(wildcard ../*.h) ../hal/hal.h mock.h ../hal/map_heap.h
+TBHEADERS:=$(wildcard ../src/*.h) $(wildcard ../src/bellman-ford/*.h) $(wildcard ../*.h) ../hal/hal.h mock.h ../hal/map_heap.h
 TBOBJS:=$(patsubst ../src/%.c,${OBJDIR}/%_tb.o,${TBSRCS})
 TESTOBJS:=$(patsubst src/%.c,${OBJDIR}/%_test.o,${TESTS})
 TESTBINS:=$(patsubst src/%.c,${BINDIR}/%,${TESTS})

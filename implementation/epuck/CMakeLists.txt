@@ -42,7 +42,6 @@ set(SOURCE_FILES
         ${LIB_PATH}/src/utils.c
 
         src/approximator.c
-        src/astar/astar.c
         src/blind-cop.c
         src/controller.c
         src/ir-stabilizer.c
@@ -64,7 +63,9 @@ set(SOURCE_FILES
 
         hal/hal_epuck.c
         hal/map_static.c
-        src/bellman-ford/bellman-ford.c)
+        src/bellman-ford/bellman-ford.c
+        src/proximity-filter.c
+        )
 
 add_executable(${CMAKE_PROJECT_NAME}.elf ${SOURCE_FILES})
 
