@@ -52,7 +52,7 @@ void t2t_send_found_xy(double x, double y, int iteration) {
     char buffer[2 * 4 + 2] BUFFER_ALIGN;
     ((float*) buffer)[0] = (float) x;
     ((float*) buffer)[1] = (float) y;
-    ((int*) buffer)[4] = iteration;
+    ((int16_t*) buffer)[4] = (int16_t) iteration;
     hal_send_put(buffer, sizeof(buffer));
     hal_send_done(CMD_T2T_VICTIM_XY, 1);
 }
