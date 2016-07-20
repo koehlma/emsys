@@ -38,10 +38,6 @@ void update_victim_pickup(TinBot* tinbot, unsigned int grabbed) {
     tinbot->sens.victim_attached = !!grabbed;
 }
 
-void update_victim_phi(TinBot* tinbot, double phi) {
-
-}
-
 void update_lps(TinBot* tinbot, double x, double y, double phi) {
     tinbot->sens.lps.x = x;
     tinbot->sens.lps.y = y;
@@ -169,6 +165,6 @@ void loop(TinBot* tinbot) {
     modes[tinbot->mode].loop(tinbot);
 }
 
-void set_mode(TinBot* tinbot, Mode mode) {
+void set_mode(TinBot* tinbot, unsigned int mode) {
     tinbot->mode = mode;
 }
