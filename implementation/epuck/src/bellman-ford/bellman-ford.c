@@ -1,6 +1,5 @@
 #include <limits.h>
 #include <assert.h>
-#include <stdio.h>
 #include "bellman-ford.h"
 #include "path-finder.h"
 
@@ -22,7 +21,7 @@ void find_path(BellmanFord* state) {
     int goal = pos2v(state->goal);
     int curr_v, p_ix, pred, p_len;
     const int weight = 1;
-    int new_cost_curr, new_cost_neigh, change;
+    int new_cost_curr, change;
     int neighbour_buffer[4];
     int num_neighbours, neighbour_ix;
     int neigh_v;
@@ -36,6 +35,9 @@ void find_path(BellmanFord* state) {
             for(neighbour_ix = 0; neighbour_ix < num_neighbours; ++neighbour_ix) {
                 neigh_v = neighbour_buffer[neighbour_ix];
 
+                if(!state->adj(v2pos(curr_v), v2pos(neigh_v), state->map))
+                    continue;
+
                 /* update curr if apropos */
                 new_cost_curr = locals.distances[neigh_v] + weight;
                 if (new_cost_curr < locals.distances[curr_v]) {
@@ -43,16 +45,7 @@ void find_path(BellmanFord* state) {
                     locals.pred[curr_v] = neigh_v;
                     change = 1;
                 }
-                /* update neighbour if apropos */
-                new_cost_neigh = locals.distances[curr_v] + weight;
-                if (new_cost_neigh < locals.distances[neigh_v]) {
-                    locals.distances[neigh_v] = new_cost_neigh;
-                    locals.pred[neigh_v] = curr_v;
-                    change = 1;
-                }
             }
-
-
         }
     } while (change);
 
@@ -119,7 +112,7 @@ static void init_bellman_ford(BellmanFord* state) {
 
 int generate_potential_neighbours(int* buffer, int v) {
     int i = 0;
-    if (v % VERTICES_PER_ROW >= 0) {
+    if (v % VERTICES_PER_ROW > 0) {
         buffer[i] = v - 1;
         i += 1;
     }
