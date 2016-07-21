@@ -1,124 +1,137 @@
 #include <assert.h>
 #include <limits.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #include "bellman-ford.h"
-#include "path-finder.h"
+#include "hal.h"
 
 #define LOG_BELLMAN_FORD
 
-/* we have a strict upper limit for the maximal path size, therefore the following macro is
- * save and agrees with normal int comparison */
-/* We need the - k for k  > 1 such that we do not get an overflow */
-#define BF_INFINITY (INT_MAX - 5)
+typedef char check_max_vertices_num[(NUM_VERTICES < 32767) ? 1 : -1];
 
-static int pos2v(Position pos);
-static Position v2pos(int v);
-static void init_bellman_ford(BellmanFord* state);
-static void reverse_path(Position* path, int path_length);
-static int generate_potential_neighbours(int* buffer, int v);
+static int16_t pos2v(Position pos);
+static Position v2pos(int16_t v);
+static unsigned int init_bellman_ford(BellmanFord* state);
+static int generate_potential_neighbours(int16_t* buffer, int16_t v);
+
+static unsigned int bellman_ford_cycle(BellmanFord* state) {
+    int neigh_idx, neigh_num;
+    int16_t neigh_buf[4];
+
+    int16_t curr_v, neigh_v;
+    unsigned int change = 0;
+
+    change = 0;
+    /* In each step, propagate our own "short" distance to our neighbors. */
+    for (curr_v = 0; curr_v < NUM_VERTICES; ++curr_v) {
+        if (state->distances_[curr_v] < 0) {
+            /* "Infinitely far away; from holyday."
+             * -- artist Somaaa, in track 'Soma Holiday' */
+            continue;
+        }
+        neigh_num = generate_potential_neighbours(neigh_buf, curr_v);
+        for (neigh_idx = 0; neigh_idx < neigh_num; ++neigh_idx) {
+            neigh_v = neigh_buf[neigh_idx];
+            if (!bf_adjacent_p(v2pos(curr_v), v2pos(neigh_v))) {
+                continue;
+            }
+
+            /* Update neighbor if apropriate
+             * (Overflow-aware code) */
+            if (state->distances_[neigh_v] < 0
+                || state->distances_[curr_v]
+                   <= state->distances_[neigh_v] - 2) {
+                /* "If we're at least two closer" \iff
+                 * "If we are a shortcut, from our neighbor's point of view" */
+                state->distances_[neigh_v] =
+                    1 + state->distances_[curr_v];
+                state->succ[neigh_v] = curr_v;
+                change = 1;
+            }
+        }
+    }
+
+    return change;
+}
+
+#ifdef LOG_BELLMAN_FORD
+static void print_path(BellmanFord* state) {
+    char buf[50];
+    int printed;
+    int16_t i;
+
+    hal_print("===BEGIN DUMP PATH===");
+    sprintf(buf, "start=(%d,%d)", state->init.x, state->init.y);
+    hal_print(buf);
+    printed = 0;
+    for (i = state->init_v; i >= 0; i = state->succ[i]) {
+        ExactPosition pt;
+        int printed_here;
+        pt = bf_v2pos(state, i);
+        if (printed > 50 - (1 + 6 + 1 + 6 + 2) - 1) {
+            hal_print(buf);
+            printed = 0;
+        }
+        printed_here = sprintf(buf + printed, "(%.1f,%.1f),",
+            /* DO NOT CHANGE THE FORMAT SPECIFIER! (Unless you know
+             * how to change the "printed > ..." expression below.) */
+            pt.x, pt.y);
+        if (printed_here < 0) {
+            printed_here = sprintf(buf + printed, "?");
+        }
+        printed += printed_here;
+    }
+    if (printed != 0) {
+        hal_print(buf);
+    }
+    sprintf(buf, "goal=(%.1f,%.1f)", state->goal.x, state->goal.y);
+    hal_print(buf);
+    hal_print("===END DUMP PATH===");
+}
+#endif
 
 void find_path(BellmanFord* state) {
-    int init = pos2v(state->init);
-    int goal = pos2v(map_discretize(state->goal));
-    int curr_v, p_ix, pred, p_len;
-    const int weight = 1;
-    int new_cost_curr, change;
-    int neighbour_buffer[4];
-    int num_neighbours, neighbour_ix;
-    int neigh_v;
-
-    init_bellman_ford(state);
-
-    do {
-        change = 0;
-        for (curr_v = 0; curr_v < NUM_VERTICES; ++curr_v) {
-            num_neighbours = generate_potential_neighbours(neighbour_buffer, curr_v);
-            for(neighbour_ix = 0; neighbour_ix < num_neighbours; ++neighbour_ix) {
-                neigh_v = neighbour_buffer[neighbour_ix];
-
-                if(!bf_adjacent_p(v2pos(curr_v), v2pos(neigh_v), state->map))
-                    continue;
-
-                /* update curr if apropos */
-                new_cost_curr = state->locals->distances[neigh_v] + weight;
-                if (new_cost_curr < state->locals->distances[curr_v]) {
-                    state->locals->distances[curr_v] = new_cost_curr;
-                    state->locals->pred[curr_v] = neigh_v;
-                    change = 1;
-                }
-            }
-        }
-    } while (change);
-
-    pred = goal;
-    p_ix = 0;
-    while(pred != -1 && pred != init) {
-        state->path[p_ix] = v2pos(pred);
-        pred = state->locals->pred[pred];
-        ++p_ix;
-    }
-    p_len = p_ix;
-    if(pred == -1) {
-        state->path[0].x = -1;
-        state->path[0].y = -1;
-        assert(state->locals->distances[goal] == BF_INFINITY);
-        p_len = p_ix = 0;
+    if (!init_bellman_ford(state)) {
+        state->init_v = -1;
+        #ifdef LOG_BELLMAN_FORD
+        hal_print("BF: Invalid start/end");
+        #endif
+        return;
     }
 
-    reverse_path(state->path, p_len);
-
-    state->path[p_len].x = -1;
-    state->path[p_len].y = -1;
+    while (bellman_ford_cycle(state))
+        {}
 
     #ifdef LOG_BELLMAN_FORD
-    {
-        char buf[50];
-        int i, printed;
-
-        hal_print("===BEGIN DUMP PATH===");
-        sprintf(buf, "start=(%d,%d)", state->init.x, state->init.y);
-        hal_print(buf);
-        printed = 0;
-        for (i = 0; i < p_len; ++i) {
-            int printed_here = sprintf(buf + printed, "(%d,%d),",
-                /* DO NOT CHANGE THE FORMAT SPECIFIER! (Unless you know
-                 * how to change the "printed > ..." expression below.) */
-                state->path[i].x, state->path[i].y);
-            if (printed_here < 0) {
-                printed_here = sprintf(buf + printed, "?");
-            }
-            printed += printed_here;
-            if (printed > 50 - (1 + 5 + 1 + 5 + 2) - 1) {
-                hal_print(buf);
-                printed = 0;
-            }
-
-        }
-        if (printed != 0) {
-            hal_print(buf);
-        }
-        sprintf(buf, "goal=(%.2f,%.2f)", state->goal.x, state->goal.y);
-        hal_print(buf);
-        hal_print("===END DUMP PATH===");
-    }
+    print_path(state);
     #endif
+
+    if (state->init_v != state->goal_v && state->succ[state->init_v] == -1) {
+        /* There is no path.  (And no spoon.) */
+        state->init_v = -1;
+    } else {
+        state->init_v = state->succ[state->init_v];
+    }
 }
 
 /* AUX */
 
-static void reverse_path(Position* path, int len) {
-    int border = len/2; /* same border for odd AND even length */
-    int i;
-    Position tmp;
-    for(i = 0; i < border; ++i){
-        tmp = path[(len - i) - 1];
-        path[(len - i) - 1] = path[i];
-        path[i] = tmp;
+ExactPosition bf_v2pos(BellmanFord* state, int16_t v) {
+    ExactPosition res;
+    Position buf;
+
+    if (v == state->goal_v) {
+        return state->goal;
     }
+
+    buf = v2pos(v);
+    res.x = buf.x;
+    res.y = buf.y;
+    return res;
 }
 
-static Position v2pos(int v) {
+static Position v2pos(int16_t v) {
     Position res;
     assert(v < NUM_VERTICES);
     res.y = v / VERTICES_PER_ROW;
@@ -129,39 +142,48 @@ static Position v2pos(int v) {
     return res;
 }
 
-static int pos2v(Position pos) {
+static int16_t pos2v(Position pos) {
     int x = pos.x / STEPPING_DIST;
     int y = pos.y / STEPPING_DIST;
     int res = y * VERTICES_PER_ROW + x;
-    assert(res < NUM_VERTICES);
-    return res;
-}
-
-static void init_bellman_ford(BellmanFord* state) {
-    int i;
-    for(i = 0; i < NUM_VERTICES; ++i){
-        state->locals->distances[i] = BF_INFINITY;
-        state->locals->pred[i] = -1;
+    if (map_invalid_pos(pos)) {
+        return -1;
     }
-    state->locals->distances[pos2v(state->init)] = 0;
+    assert(0 <= res && res < NUM_VERTICES);
+    return (int16_t)res;
 }
 
-static int generate_potential_neighbours(int* buffer, int v) {
+static unsigned int init_bellman_ford(BellmanFord* state) {
+    int i;
+    state->init_v = pos2v(state->init);
+    state->goal_v = pos2v(map_discretize(state->goal));
+    if (state->init_v < 0 || state->init_v < 0) {
+        return 0;
+    }
+    for(i = 0; i < NUM_VERTICES; ++i){
+        state->distances_[i] = -1;
+        state->succ[i] = -1;
+    }
+    state->distances_[state->goal_v] = 0;
+    return 1;
+}
+
+static int generate_potential_neighbours(int16_t* buffer, int16_t v) {
     int i = 0;
     if (v % VERTICES_PER_ROW > 0) {
-        buffer[i] = v - 1;
+        buffer[i] = (int16_t)(v - 1);
         i += 1;
     }
     if (v % VERTICES_PER_ROW < VERTICES_PER_ROW - 1) {
-        buffer[i] = v + 1;
+        buffer[i] = (int16_t)(v + 1);
         i += 1;
     }
     if (v / VERTICES_PER_ROW > 0) {
-        buffer[i] = v - VERTICES_PER_ROW;
+        buffer[i] = (int16_t)(v - VERTICES_PER_ROW);
         i += 1;
     }
     if (v / VERTICES_PER_ROW < VERTICES_PER_COL - 1) {
-        buffer[i] = v + VERTICES_PER_ROW;
+        buffer[i] = (int16_t)(v + VERTICES_PER_ROW);
         i += 1;
     }
     return i;

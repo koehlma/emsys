@@ -1,12 +1,10 @@
 #include <math.h>
-#include <bellman-ford/bellman-ford.h>
-#include <hal/map_heap.h>
 #include <stdlib.h>
 
-#include "hal.h"
+#include "bellman-ford/bellman-ford.h"
+#include "map.h"
 #include "path-finder.h"
 #include "pi.h"
-#include "map.h"
 
 #define LOG_TRANSITIONS_PATH_FINDER
 
@@ -16,17 +14,12 @@ enum {
     PF_complete
 };
 
-static int end_of_path_p(Position pos);
-static int invalid_pos(Position pos, Map *map);
-
 void pf_reset(PathFinderState* pf) {
     pf->locals.state = PF_inactive;
     pf->next.x = -1;
     pf->next.y = -1;
     pf->no_path = 0;
-    pf->locals.path_index = 0;
-    pf->locals.path[0].x = -1;
-    pf->locals.path[0].y = -1;
+    pf->locals.next_v = -1;
     pf->path_completed = 0;
     pf->drive = 0;
     pf->backwards = 0;
@@ -34,16 +27,17 @@ void pf_reset(PathFinderState* pf) {
 
 static void pathing_failed(PathFinderState* pf) {
     pf->locals.state = PF_complete;
+    pf->locals.next_v = -1;
     pf->no_path = 1;
 }
 
 static void compute_path(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
+    int delta_x, delta_y, x, y;
+    Map* map;
     Position pos;
-    int success;
 
     /* clear destination area */
-    Map* map = map_get_accumulated();
-    int delta_x, delta_y, x, y;
+    map = map_get_accumulated();
     for (delta_x = -3; delta_x < 4; delta_x++) {
         x = (int)( inputs->dest.x + delta_x );
         if (x >= 0 && x < MAP_MAX_WIDTH ) {
@@ -57,22 +51,11 @@ static void compute_path(PathFinderInputs* inputs, PathFinderState* pf, Sensors*
     }
 
     pf->locals.state = PF_running;
-    {
-        ExactPosition p;
-        p.x = sens->current.x;
-        p.y = sens->current.y;
-        pos = map_discretize(p);
-    }
-    if (invalid_pos(pos, inputs->map)) {
-        assert(0 && "invalid start pos?!");
-        /* Uhh */
-        pathing_failed(pf);
-        return;
-    }
-    pf->locals.path_index = -1;
-    success = pf_find_path(pos, inputs->dest, inputs->map, pf->locals.path,
-        &pf->locals.bf_loc);
-    if (!success) {
+    pf->locals.next_v = -2;
+    pos.x = (int) sens->current.x;
+    pos.y = (int) sens->current.y;
+    pf_find_path(pos, inputs->dest, &pf->locals.bf_state);
+    if (-1 == pf->locals.bf_state.init_v) {
         pathing_failed(pf);
     }
 }
@@ -87,8 +70,8 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
         case PF_running:
             pf->drive = 1;
             assert(!inputs->step_complete || !inputs->step_see_obstacle);
-            if (inputs->step_complete || pf->locals.path_index < 0) {
-                Position next_wp;
+            assert(pf->locals.next_v != -1);
+            if (inputs->step_complete || pf->locals.next_v == -2) {
                 #ifdef LOG_TRANSITIONS_PATH_FINDER
                 hal_print("pf:feed next");
                 #endif
@@ -102,20 +85,20 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
                  *    Why would this happen anyway?
                  *      (PathExec already checks for stray!)
                  */
-                pf->locals.path_index++;
-                assert(pf->locals.path_index >= 0);
-                next_wp = pf->locals.path[pf->locals.path_index];
-                if (end_of_path_p(next_wp)) {
+                pf->locals.next_v = pf->locals.bf_state.succ[pf->locals.next_v];
+                assert(pf->locals.next_v >= -1);
+                if (-1 == pf->locals.next_v) {
                     #ifdef LOG_TRANSITIONS_PATH_FINDER
                     hal_print("pf:->end!");
                     #endif
                     pf->locals.state = PF_complete;
                     pf->path_completed = 1;
-                } else if (end_of_path_p(pf->locals.path[pf->locals.path_index + 1])) {
-                    pf->backwards = inputs->is_victim;
+                } else {
+                    pf->next = bf_v2pos(&pf->locals.bf_state, pf->locals.next_v);
+                    if (-1 == pf->locals.bf_state.succ[pf->locals.next_v]) {
+                        pf->backwards = inputs->is_victim;
+                    }
                 }
-                pf->next.x = next_wp.x;
-                pf->next.y = next_wp.y;
             }
             if (inputs->step_see_obstacle) {
                 #ifdef LOG_TRANSITIONS_PATH_FINDER
@@ -137,21 +120,15 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
     }
 }
 
-static int end_of_path_p(Position pos) {
-    return pos.x == -1 && pos.y == -1;
-}
-
-static int invalid_pos(Position pos, Map *map) {
-    return pos.x >= map_get_width(map) || pos.x < 0 || pos.y >= map_get_height(map) || pos.y < 0;
-}
 static int occupied(Position *pos, Map *map) {
     return map_get_field(map, pos->x, pos->y) == FIELD_WALL;
 }
 
 static const int APPROX_RADIUS = 2;
-int bf_adjacent_p(Position pos, Position goal, Map *map) {
+unsigned int bf_adjacent_p(Position pos, Position goal) {
     int i;
     Position test;
+    Map* map;
     int delta_x = (goal.x > pos.x) - (goal.x < pos.x);
     int delta_y = (goal.y > pos.y) - (goal.y < pos.y);
     int delta_x_orth = 1 - abs(delta_x);
@@ -159,7 +136,7 @@ int bf_adjacent_p(Position pos, Position goal, Map *map) {
 
     assert(delta_x == 0 || delta_y == 0);
     assert(pos.x == goal.x || pos.y == goal.y);
-
+    map = map_get_accumulated();
 
     while(pos.x != goal.x || pos.y != goal.y) {
         if(abs(delta_x) == 1){
@@ -170,7 +147,7 @@ int bf_adjacent_p(Position pos, Position goal, Map *map) {
             test.y = pos.y;
         }
         for(i = 0; i < APPROX_RADIUS * 2 + 1; ++i) {
-            if (!invalid_pos(test, map) && occupied(&test, map)) {
+            if (!map_invalid_pos(test) && occupied(&test, map)) {
                 return 0;
             }
 
@@ -183,21 +160,9 @@ int bf_adjacent_p(Position pos, Position goal, Map *map) {
     return 1;
 }
 
-int pf_find_path(Position position, ExactPosition goal, Map *map, Position *path, BellmanFordLocals* locals) {
-    BellmanFord state;
+void pf_find_path(Position position, ExactPosition goal, BellmanFord* state) {
+    state->goal = goal;
+    state->init = position;
 
-    state.goal = goal;
-    state.init = position;
-    state.path = path;
-    state.map = map;
-    state.locals = locals;
-
-    find_path(&state);
-
-    if(state.path[0].x == -1 && state.path[0].y == -1) {
-        path[0] = state.path[0];
-        return 0;
-    }
-
-    return 1;
+    find_path(state);
 }

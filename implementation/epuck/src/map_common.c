@@ -15,6 +15,11 @@ Position map_discretize(ExactPosition p) {
     return res;
 }
 
+unsigned int map_invalid_pos(Position pos) {
+    return pos.x >= MAP_MAX_WIDTH || pos.x < 0
+        || pos.y >= MAP_MAX_HEIGHT || pos.y < 0;
+}
+
 /* Layout in memory:
  *
  * ABCDIJKLQRST..

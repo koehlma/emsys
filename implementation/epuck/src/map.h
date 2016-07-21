@@ -54,6 +54,8 @@ typedef struct ExactPosition {
 
 Position map_discretize(ExactPosition p);
 
+unsigned int map_invalid_pos(Position pos);
+
 /* Use this when calling map_[de]serialize.
  * There already exists a check in map_common.c whether this is up-to-date. */
 #define MAP_PROXIMITY_BUF_SIZE 64
