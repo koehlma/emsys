@@ -7,8 +7,7 @@
 
 int main(void){
 	int i;
-    Position start;
-    ExactPosition goal;
+    ExactPosition start, goal;
     Map* map;
     MapContainer mc;
     BellmanFord* bf_state;
@@ -23,8 +22,8 @@ int main(void){
         map_set_field(map, i, 3, FIELD_WALL);
     }
 
-	start.x = 0;
-    start.y = 0;
+	start.x = 1;
+    start.y = 1;
 	goal.x = 9.1;
     goal.y = 9.1;
 

@@ -13,7 +13,7 @@
 
 typedef struct BellmanFord {
     /* --- Input --- */
-    Position init; /* FIXME: Make me an ExactPosition! */
+    ExactPosition init;
     ExactPosition goal;
     /* --- Locals --- */
     /* Distance to the goal. */

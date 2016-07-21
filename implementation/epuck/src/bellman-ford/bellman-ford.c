@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <limits.h>
+#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -10,7 +11,7 @@
 
 typedef char check_max_vertices_num[(NUM_VERTICES < 32767) ? 1 : -1];
 
-static int16_t pos2v(Position pos);
+static int16_t pos2v(ExactPosition pos);
 static Position v2pos(int16_t v);
 static unsigned int init_bellman_ford(BellmanFord* state);
 static int generate_potential_neighbours(int16_t* buffer, int16_t v);
@@ -62,7 +63,7 @@ static void print_path(BellmanFord* state) {
     int16_t i;
 
     hal_print("===BEGIN DUMP PATH===");
-    sprintf(buf, "start=(%d,%d)", state->init.x, state->init.y);
+    sprintf(buf, "start=(%.1f,%.1f)", state->init.x, state->init.y);
     hal_print(buf);
     printed = 0;
     for (i = state->init_v; i >= 0; i = state->succ[i]) {
@@ -142,13 +143,16 @@ static Position v2pos(int16_t v) {
     return res;
 }
 
-static int16_t pos2v(Position pos) {
-    int x = pos.x / STEPPING_DIST;
-    int y = pos.y / STEPPING_DIST;
-    int res = y * VERTICES_PER_ROW + x;
-    if (map_invalid_pos(pos)) {
+static int16_t pos2v(ExactPosition pos) {
+    int x, y, res;
+
+    if (map_invalid_pos(map_discretize(pos))) {
         return -1;
     }
+
+    x = (int)(floor(pos.x / STEPPING_DIST + 0.5));
+    y = (int)(floor(pos.y / STEPPING_DIST + 0.5));
+    res = y * VERTICES_PER_ROW + x;
     assert(0 <= res && res < NUM_VERTICES);
     return (int16_t)res;
 }
@@ -156,7 +160,7 @@ static int16_t pos2v(Position pos) {
 static unsigned int init_bellman_ford(BellmanFord* state) {
     int i;
     state->init_v = pos2v(state->init);
-    state->goal_v = pos2v(map_discretize(state->goal));
+    state->goal_v = pos2v(state->goal);
     if (state->init_v < 0 || state->init_v < 0) {
         return 0;
     }

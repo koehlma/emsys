@@ -34,7 +34,7 @@ static void pathing_failed(PathFinderState* pf) {
 static void compute_path(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
     int delta_x, delta_y, x, y;
     Map* map;
-    Position pos;
+    ExactPosition pos;
 
     /* clear destination area */
     map = map_get_accumulated();
@@ -52,8 +52,8 @@ static void compute_path(PathFinderInputs* inputs, PathFinderState* pf, Sensors*
 
     pf->locals.state = PF_running;
     pf->locals.next_v = -2;
-    pos.x = (int) sens->current.x;
-    pos.y = (int) sens->current.y;
+    pos.x = sens->current.x;
+    pos.y = sens->current.y;
     pf_find_path(pos, inputs->dest, &pf->locals.bf_state);
     if (-1 == pf->locals.bf_state.init_v) {
         pathing_failed(pf);
@@ -160,7 +160,7 @@ unsigned int bf_adjacent_p(Position pos, Position goal) {
     return 1;
 }
 
-void pf_find_path(Position position, ExactPosition goal, BellmanFord* state) {
+void pf_find_path(ExactPosition position, ExactPosition goal, BellmanFord* state) {
     state->goal = goal;
     state->init = position;
 

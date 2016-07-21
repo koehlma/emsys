@@ -38,8 +38,7 @@ typedef struct PathFinderState {
 void pf_reset(PathFinderState* pf);
 void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens);
 
-/* Only for testing */
-/* FIXME: Change position to "ExactPosition init" */
-void pf_find_path(Position position, ExactPosition goal, BellmanFord* bf_state);
+/* Only exposed for testing */
+void pf_find_path(ExactPosition position, ExactPosition goal, BellmanFord* bf_state);
 
 #endif /*EPUCK_PATHFINDER_H*/
