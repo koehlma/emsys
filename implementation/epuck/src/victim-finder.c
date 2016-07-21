@@ -101,7 +101,6 @@ static ExactPosition compute_position(double* data) {
 
 void vf_apply(VFInputs* inputs, VFState* vf) {
     ExactPosition computed_victim;
-<<<<<<< a5384b28d27b3e0a551bbaae808f9037837a325e
 
     vf->locals.data[X2]   = vf->locals.data[X1];
     vf->locals.data[Y2]   = vf->locals.data[Y1];
