@@ -116,9 +116,9 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             if (actually_rotated <= TOLERANCE_ANGLE) {
                 l->state = PE_drive;
                 if (inputs->backwards) {
-                    smc_move();
-                } else {
                     smc_move_back();
+                } else {
+                    smc_move();
                 }
             } else {
                 actually_rotated_per_sec = actually_rotated / l->need_rot;
