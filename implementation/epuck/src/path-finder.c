@@ -131,18 +131,20 @@ unsigned int bf_adjacent_p(Position pos, Position goal) {
     Map* map;
     int delta_x = (goal.x > pos.x) - (goal.x < pos.x);
     int delta_y = (goal.y > pos.y) - (goal.y < pos.y);
-    int delta_x_orth = 1 - abs(delta_x);
-    int delta_y_orth = 1 - abs(delta_y);
+    int delta_x_orth = -delta_x;
+    int delta_y_orth = delta_y;
 
     assert(delta_x == 0 || delta_y == 0);
     assert(pos.x == goal.x || pos.y == goal.y);
     map = map_get_accumulated();
 
     while(pos.x != goal.x || pos.y != goal.y) {
-        if(abs(delta_x) == 1){
+        if (delta_y_orth != 0) {
+            assert(delta_x_orth == 0);
             test.x = pos.x;
             test.y = pos.y - APPROX_RADIUS;
         } else {
+            assert(delta_y_orth == 0);
             test.x = pos.x - APPROX_RADIUS;
             test.y = pos.y;
         }
