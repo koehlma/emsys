@@ -19,9 +19,6 @@ static volatile unsigned int lps_updated = 0;
 
 static volatile unsigned int pickup_data;
 
-static volatile double victim_phi = -1;
-static volatile unsigned int victim_phi_updated = 0;
-
 static volatile unsigned int state = STATE_STARTUP;
 
 static volatile unsigned int loop_counter = 0;
@@ -322,13 +319,6 @@ int main() {
                 lps_updated = 0;
             })
             update_lps(&bot, x, y, phi);
-        }
-        if (victim_phi_updated) {
-            SYNCHRONIZED({
-                phi = victim_phi;
-                victim_phi_updated = 0;
-            })
-            update_victim_phi(&bot, phi);
         }
         SYNCHRONIZED({
             t2t_data_pump(&bot);
