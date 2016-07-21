@@ -10,8 +10,8 @@
 
 Position map_discretize(ExactPosition p) {
     Position res;
-    res.x = (int) (floor(p.x));
-    res.y = (int) (floor(p.y));
+    res.x = (int) (floor(p.x + 0.5));
+    res.y = (int) (floor(p.y + 0.5));
     return res;
 }
 

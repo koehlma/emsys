@@ -9,7 +9,6 @@
 #define VERTICES_PER_COL ((MAP_MAX_HEIGHT + STEPPING_DIST - 1) / STEPPING_DIST)
 #define VERTICES_PER_ROW ((MAP_MAX_WIDTH  + STEPPING_DIST - 1) / STEPPING_DIST)
 #define NUM_VERTICES (VERTICES_PER_COL * VERTICES_PER_ROW)
-#define MAX_PATH_LENGTH (NUM_VERTICES + 1)
 
 typedef struct BellmanFord {
     /* --- Input --- */
@@ -28,7 +27,8 @@ typedef struct BellmanFord {
     int16_t succ[NUM_VERTICES];
 } BellmanFord;
 
-unsigned int bf_adjacent_p(Position v, Position u); /* not the most efficient realization */
+/* Not the most efficient realization */
+unsigned int bf_adjacent_p(ExactPosition v, ExactPosition u);
 
 void find_path(BellmanFord* state);
 

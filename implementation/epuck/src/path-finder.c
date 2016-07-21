@@ -125,36 +125,30 @@ static int occupied(Position *pos, Map *map) {
 }
 
 static const int APPROX_RADIUS = 2;
-unsigned int bf_adjacent_p(Position pos, Position goal) {
+unsigned int bf_adjacent_p(ExactPosition e_pos, ExactPosition e_goal) {
     int i;
-    Position test;
+    int delta_x, delta_y, delta_x_orth, delta_y_orth;
+    Position test, pos, goal;
     Map* map;
-    int delta_x = (goal.x > pos.x) - (goal.x < pos.x);
-    int delta_y = (goal.y > pos.y) - (goal.y < pos.y);
-    int delta_x_orth = -delta_x;
-    int delta_y_orth = delta_y;
+
+    pos = map_discretize(e_pos);
+    goal = map_discretize(e_goal);
+    delta_x = (goal.x > pos.x) - (goal.x < pos.x);
+    delta_y = (goal.y > pos.y) - (goal.y < pos.y);
+    delta_x_orth = -delta_x;
+    delta_y_orth = delta_y;
 
     assert(delta_x == 0 || delta_y == 0);
     assert(pos.x == goal.x || pos.y == goal.y);
     map = map_get_accumulated();
 
     while(pos.x != goal.x || pos.y != goal.y) {
-        if (delta_y_orth != 0) {
-            assert(delta_x_orth == 0);
-            test.x = pos.x;
-            test.y = pos.y - APPROX_RADIUS;
-        } else {
-            assert(delta_y_orth == 0);
-            test.x = pos.x - APPROX_RADIUS;
-            test.y = pos.y;
-        }
-        for(i = 0; i < APPROX_RADIUS * 2 + 1; ++i) {
-            if (!map_invalid_pos(test) && occupied(&test, map)) {
+        for(i = -APPROX_RADIUS; i <= APPROX_RADIUS; ++i) {
+            test.x = pos.x + delta_x_orth * i;
+            test.y = pos.y + delta_y_orth * i;
+            if (map_invalid_pos(test) || occupied(&test, map)) {
                 return 0;
             }
-
-            test.x += delta_x_orth;
-            test.y += delta_y_orth;
         }
         pos.x += delta_x;
         pos.y += delta_y;

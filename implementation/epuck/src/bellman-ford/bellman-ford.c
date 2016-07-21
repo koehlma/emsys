@@ -11,8 +11,11 @@
 
 typedef char check_max_vertices_num[(NUM_VERTICES < 32767) ? 1 : -1];
 
+#define DIST_BETWEEN_ROWS (MAP_MAX_HEIGHT * 1.0 / VERTICES_PER_COL)
+#define DIST_BETWEEN_COLS (MAP_MAX_WIDTH * 1.0 / VERTICES_PER_ROW)
+
 static int16_t pos2v(ExactPosition pos);
-static Position v2pos(int16_t v);
+static ExactPosition v2pos(int16_t v);
 static unsigned int init_bellman_ford(BellmanFord* state);
 static int generate_potential_neighbours(int16_t* buffer, int16_t v);
 
@@ -119,27 +122,23 @@ void find_path(BellmanFord* state) {
 /* AUX */
 
 ExactPosition bf_v2pos(BellmanFord* state, int16_t v) {
-    ExactPosition res;
-    Position buf;
-
     if (v == state->goal_v) {
         return state->goal;
     }
 
-    buf = v2pos(v);
-    res.x = buf.x;
-    res.y = buf.y;
-    return res;
+    return v2pos(v);
 }
 
-static Position v2pos(int16_t v) {
-    Position res;
-    assert(v < NUM_VERTICES);
-    res.y = v / VERTICES_PER_ROW;
-    res.y *= STEPPING_DIST;
-    res.x = v % VERTICES_PER_COL;
-    res.x *= STEPPING_DIST;
-    assert(res.y < MAP_MAX_HEIGHT);
+static ExactPosition v2pos(int16_t v) {
+    int log_x, log_y;
+    ExactPosition res;
+
+    assert(0 <= v && v < NUM_VERTICES);
+    log_y = v / VERTICES_PER_ROW;
+    log_x = v % VERTICES_PER_COL;
+    res.x = log_x * DIST_BETWEEN_COLS + DIST_BETWEEN_COLS / 2;
+    res.y = log_y * DIST_BETWEEN_ROWS + DIST_BETWEEN_ROWS / 2;
+
     return res;
 }
 
@@ -150,10 +149,19 @@ static int16_t pos2v(ExactPosition pos) {
         return -1;
     }
 
-    x = (int)(floor(pos.x / STEPPING_DIST + 0.5));
-    y = (int)(floor(pos.y / STEPPING_DIST + 0.5));
+/* I hate doing this. */
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
+    x = (int)(floor(pos.x / DIST_BETWEEN_COLS));
+    x = MIN(MAX(0,x),VERTICES_PER_ROW-1);
+    y = (int)(floor(pos.y / DIST_BETWEEN_ROWS));
+    y = MIN(MAX(0,y),VERTICES_PER_COL-1);
+#undef MIN
+#undef MAX
     res = y * VERTICES_PER_ROW + x;
     assert(0 <= res && res < NUM_VERTICES);
+    printf("v<--pos v=%2d <-> log=(%d,%d) <-> phys(%4.1f,%4.1f)\n",
+        res, x, y, pos.x, pos.y);
     return (int16_t)res;
 }
 
