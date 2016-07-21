@@ -102,8 +102,7 @@ button}, and $h$ shall mean \enquote{the horn is ringing}.
     nothing -> ring [label="h"];
     not -> ring [label="h"];
     not -> not [label="!h"];
-    ring -> not [label="b && !h"];
-    ring -> nothing [label="!b && !h"];
+    ring -> nothing [label="!h"];
     ring -> error [label="h"];
     error -> error [label="true"];
 }
