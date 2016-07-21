@@ -8,6 +8,8 @@
 #include "pi.h"
 #include "map.h"
 
+#define LOG_TRANSITIONS_PATH_FINDER
+
 enum {
     PF_inactive,
     PF_running,
@@ -86,6 +88,10 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
             assert(!inputs->step_complete || !inputs->step_see_obstacle);
             if (inputs->step_complete || pf->locals.path_index < 0) {
                 Position next_wp;
+                #ifdef LOG_TRANSITIONS_PATH_FINDER
+                hal_print("pf:feed next");
+                #endif
+                /* Need a full cycle of drive=0 */
                 pf->drive = 0;
                 pf->backwards = 0;
                 /* Q: Why not check here for the position again?  Like this:
@@ -99,6 +105,9 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
                 assert(pf->locals.path_index >= 0);
                 next_wp = pf->locals.path[pf->locals.path_index];
                 if (end_of_path_p(next_wp)) {
+                    #ifdef LOG_TRANSITIONS_PATH_FINDER
+                    hal_print("pf:->end!");
+                    #endif
                     pf->locals.state = PF_complete;
                     pf->path_completed = 1;
                 } else if (end_of_path_p(pf->locals.path[pf->locals.path_index + 1])) {
@@ -108,6 +117,9 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
                 pf->next.y = next_wp.y;
             }
             if (inputs->step_see_obstacle) {
+                #ifdef LOG_TRANSITIONS_PATH_FINDER
+                hal_print("pf:recompute");
+                #endif
                 /* We ran into an obstacle -> internal map must be outdated. */
                 compute_path(inputs, pf, sens);
                 pf->drive = 0;
@@ -174,6 +186,7 @@ static int adj(Position pos, Position goal, Map *map) {
 
 int pf_find_path(Position position, ExactPosition goal, Map *map, Position *path) {
     BellmanFord state;
+
     state.adj = &adj;
     state.goal = goal;
     state.init = position;

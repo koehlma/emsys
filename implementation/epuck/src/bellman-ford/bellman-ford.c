@@ -1,7 +1,11 @@
-#include <limits.h>
 #include <assert.h>
+#include <limits.h>
+#include <stdio.h>
+
 #include "bellman-ford.h"
 #include "path-finder.h"
+
+#define LOG_BELLMAN_FORD
 
 /* we have a strict upper limit for the maximal path size, therefore the following macro is
  * save and agrees with normal int comparison */
@@ -68,6 +72,39 @@ void find_path(BellmanFord* state) {
 
     state->path[p_len].x = -1;
     state->path[p_len].y = -1;
+
+    #ifdef LOG_BELLMAN_FORD
+    {
+        char buf[50];
+        int i, printed;
+
+        hal_print("===BEGIN DUMP PATH===");
+        sprintf(buf, "start=(%d,%d)", state->init.x, state->init.y);
+        hal_print(buf);
+        printed = 0;
+        for (i = 0; i < p_len; ++i) {
+            int printed_here = sprintf(buf + printed, "(%d,%d),",
+                /* DO NOT CHANGE THE FORMAT SPECIFIER! (Unless you know
+                 * how to change the "printed > ..." expression below.) */
+                state->path[i].x, state->path[i].y);
+            if (printed_here < 0) {
+                printed_here = sprintf(buf + printed, "?");
+            }
+            printed += printed_here;
+            if (printed > 50 - (1 + 5 + 1 + 5 + 2) - 1) {
+                hal_print(buf);
+                printed = 0;
+            }
+            
+        }
+        if (printed != 0) {
+            hal_print(buf);
+        }
+        sprintf(buf, "goal=(%.2f,%.2f)", state->goal.x, state->goal.y);
+        hal_print(buf);
+        hal_print("===END DUMP PATH===");
+    }
+    #endif
 }
 
 /* AUX */
