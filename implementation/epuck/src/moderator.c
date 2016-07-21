@@ -3,6 +3,8 @@
 #include "t2t.h"
 #include "t2t-parse.h"
 
+#define LOG_TRANSITIONS_MOD
+
 enum {
     MOD_STATE_SEARCHING,
     MOD_STATE_WAITING_BIDDING,
@@ -45,12 +47,18 @@ void mod_step(ModInputs* inputs, ModState* mod) {
             mod->locals.state = MOD_STATE_WAITING_WATCHING;
             mod->may_run_p = 0;
             smc_halt();
+            #ifdef LOG_TRANSITIONS_MOD
+            hal_print("mod:search->wait");
+            #endif
         } else if (inputs->found_victim_xy) {
             t2t_send_found_xy(inputs->own_victim.x, inputs->own_victim.y, 0);
             mod->locals.sent_iteration = 0;
             mod->locals.state = MOD_STATE_WAITING_BIDDING;
             mod->may_run_p = 0;
             smc_halt();
+            #ifdef LOG_TRANSITIONS_MOD
+            hal_print("mod:search->bid");
+            #endif
         }
         break;
     case MOD_STATE_WAITING_BIDDING:
@@ -61,12 +69,18 @@ void mod_step(ModInputs* inputs, ModState* mod) {
             mod->victim.x = inputs->t2t_data->seen_x;
             mod->victim.y = inputs->t2t_data->seen_y;
             mod->found_victim_xy = 1;
+            #ifdef LOG_TRANSITIONS_MOD
+            hal_print("mod:bid->rescue");
+            #endif
         } else if (inputs->t2t_data->newest_theirs >= mod->locals.sent_iteration) {
             /* Other Tin Bot was faster. */
             mod->locals.sent_iteration = inputs->t2t_data->newest_theirs;
             mod->locals.state = MOD_STATE_WAITING_WATCHING;
             /* Should already be 0 anyway. */
             mod->may_run_p = 0;
+            #ifdef LOG_TRANSITIONS_MOD
+            hal_print("mod:bid->wait");
+            #endif
         }
         break;
     case MOD_STATE_WAITING_WATCHING:
@@ -79,6 +93,9 @@ void mod_step(ModInputs* inputs, ModState* mod) {
         if (inputs->t2t_data->seen_beat) {
             /* Reset timer manually, as we can't change state. */
             mod->locals.time_entered = hal_get_time();
+            #ifdef LOG_TRANSITIONS_MOD
+            hal_print("mod:wait->wait (HB)");
+            #endif
         } else if (smc_time_passed_p(mod->locals.time_entered, T2T_HEARTBEAT_TIMEOUT_SECS)) {
             /* They died.  Acknowledge the dead, and use the coordinates they
              * sent.  We do this because there's no guarantee that *we* ever
@@ -88,6 +105,9 @@ void mod_step(ModInputs* inputs, ModState* mod) {
             t2t_send_found_xy(inputs->t2t_data->seen_x, inputs->t2t_data->seen_y, mod->locals.sent_iteration);
             mod->locals.state = MOD_STATE_WAITING_BIDDING;
             mod->may_run_p = 0;
+            #ifdef LOG_TRANSITIONS_MOD
+            hal_print("mod:wait->bid");
+            #endif
         }
         break;
     case MOD_STATE_RESCUEING:
@@ -96,9 +116,15 @@ void mod_step(ModInputs* inputs, ModState* mod) {
             smc_halt();
             mod->locals.state = MOD_STATE_DEAD;
             mod->may_run_p = 0;
+            #ifdef LOG_TRANSITIONS_MOD
+            hal_print("mod:rescue->dead");
+            #endif
         } else if (smc_time_passed_p(mod->locals.time_entered, T2T_HEARTBEAT_PERIOD_SECS)) {
             mod->locals.time_entered = hal_get_time();
             t2t_send_heartbeat();
+            #ifdef LOG_TRANSITIONS_MOD
+            hal_print("mod:rescue->rescue (HB)");
+            #endif
         }
         break;
     case MOD_STATE_DEAD:
