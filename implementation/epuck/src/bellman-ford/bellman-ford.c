@@ -26,7 +26,7 @@ static unsigned int bellman_ford_cycle(BellmanFord* state) {
     change = 0;
     /* In each step, propagate our own "short" distance to our neighbors. */
     for (curr_v = 0; curr_v < NUM_VERTICES; ++curr_v) {
-        if (state->distances_[curr_v] < 0) {
+        if (state->distances[curr_v] < 0) {
             /* "Infinitely far away; from holyday."
              * -- artist Somaaa, in track 'Soma Holiday' */
             continue;
@@ -40,13 +40,13 @@ static unsigned int bellman_ford_cycle(BellmanFord* state) {
 
             /* Update neighbor if apropriate
              * (Overflow-aware code) */
-            if (state->distances_[neigh_v] < 0
-                || state->distances_[curr_v]
-                   <= state->distances_[neigh_v] - 2) {
+            if (state->distances[neigh_v] < 0
+                || state->distances[curr_v]
+                   <= state->distances[neigh_v] - 2) {
                 /* "If we're at least two closer" \iff
                  * "If we are a shortcut, from our neighbor's point of view" */
-                state->distances_[neigh_v] =
-                    1 + state->distances_[curr_v];
+                state->distances[neigh_v] =
+                    1 + state->distances[curr_v];
                 state->succ[neigh_v] = curr_v;
                 change = 1;
             }
@@ -165,10 +165,10 @@ static unsigned int init_bellman_ford(BellmanFord* state) {
         return 0;
     }
     for(i = 0; i < NUM_VERTICES; ++i){
-        state->distances_[i] = -1;
+        state->distances[i] = -1;
         state->succ[i] = -1;
     }
-    state->distances_[state->goal_v] = 0;
+    state->distances[state->goal_v] = 0;
     return 1;
 }
 

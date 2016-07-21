@@ -17,7 +17,7 @@ typedef struct BellmanFord {
     ExactPosition goal;
     /* --- Locals --- */
     /* Distance to the goal. */
-    int16_t distances_[NUM_VERTICES]; /* FIXME: Renamed during sanity check, as a marker. */
+    int16_t distances[NUM_VERTICES];
     /* --- Output --- */
     /* If there is no path, init_v will be set to -1.
      * Otherwise, it's the first waypoint. */
