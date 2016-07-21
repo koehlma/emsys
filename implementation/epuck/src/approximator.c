@@ -2,13 +2,10 @@
 #include "hal.h"
 #include "pi.h"
 
-void approx_reset(ApproxState* approx, Sensors* sens) {
+void approx_reset(ApproxState* approx) {
     approx->prev_motor_left = 0;
     approx->prev_motor_right = 0;
     approx->prev_t = hal_get_time();
-    sens->current.x = 0;
-    sens->current.y = 0;
-    sens->current.phi = 0;
 }
 
 static const double tinbot_diameter = 5.3;

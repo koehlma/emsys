@@ -64,7 +64,7 @@ static void loop_alone(TinBot* tinbot) {
 /* Mode - MapOnly */
 static void setup_maponly(TinBot* tinbot) {
     hal_print("Tin Bot Setup: Alone");
-    approx_reset(&tinbot->controller.approx, &tinbot->sens);
+    approx_reset(&tinbot->controller.approx);
     proximity_reset(&tinbot->controller.prox_map, &tinbot->sens);
 }
 
@@ -90,7 +90,7 @@ static void loop_full(TinBot* tinbot) {
 /* Mode - RHR */
 static void setup_rhr(TinBot* tinbot) {
     hal_print("Tin Bot Setup: RHR");
-    approx_reset(&tinbot->controller.approx, &tinbot->sens);
+    approx_reset(&tinbot->controller.approx);
     rhr_reset(&tinbot->controller.rhr);
 }
 
@@ -103,7 +103,7 @@ static void loop_rhr(TinBot* tinbot) {
 static void setup_vicdir(TinBot* tinbot) {
     hal_print("Tin Bot Setup: VicDir");
     vd_reset(&tinbot->controller.vic_dir);
-    approx_reset(&tinbot->controller.approx, &tinbot->sens);
+    approx_reset(&tinbot->controller.approx);
 }
 
 static void loop_vicdir(TinBot* tinbot) {

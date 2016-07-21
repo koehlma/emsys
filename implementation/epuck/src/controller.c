@@ -3,7 +3,7 @@
 #include "proximity-filter.h"
 
 void controller_reset(Controller* c, Sensors* sens) {
-    approx_reset(&c->approx, sens);
+    approx_reset(&c->approx);
     blind_reset(&c->blind);
     mod_reset(&c->moderator);
     pa_reset(&c->pickup_artist);

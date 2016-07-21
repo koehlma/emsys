@@ -11,7 +11,7 @@ typedef struct ApproxState {
     hal_time prev_t;
 } ApproxState;
 
-void approx_reset(ApproxState* approx, Sensors* sens);
+void approx_reset(ApproxState* approx);
 void approx_step(ApproxState* approx, Sensors* sens);
 
 #endif /* EPUCK_APPROXIMATOR_H */
