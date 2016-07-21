@@ -53,7 +53,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
 
     if (!inputs->drive) {
         /* We just got notified that we shouldn't be running anymore. */
-        l->state = PE_inactive;
+        pe_reset(pe);
         /* It's okay to 'halt()' many times per second. */
         smc_halt();
         /* Don't set 'time_entered'; not needed. */
