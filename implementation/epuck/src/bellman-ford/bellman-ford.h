@@ -15,12 +15,14 @@ typedef struct BellmanFordLocals {
 } BellmanFordLocals;
 
 typedef struct BellmanFord {
-    int (*adj)(Position v, Position u, Map* map); /* not the most efficient realization */
     Position init;
     ExactPosition goal;
     Map* map;
     Position* path;
+    BellmanFordLocals* locals;
 } BellmanFord;
+
+int bf_adjacent_p(Position v, Position u, Map* map); /* not the most efficient realization */
 
 void find_path(BellmanFord* state);
 

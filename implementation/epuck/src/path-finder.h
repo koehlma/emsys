@@ -16,6 +16,7 @@ typedef struct PathFinderInputs {
 } PathFinderInputs;
 
 typedef struct PathFinderLocals {
+    BellmanFordLocals bf_loc;
     Position path[MAX_PATH_LENGTH];
     int path_index; /* Must be signed */
     int state;
@@ -34,6 +35,6 @@ void pf_reset(PathFinderState* pf);
 void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens);
 
 /* Only for testing */
-int pf_find_path(Position position, ExactPosition goal, Map *map, Position *path);
+int pf_find_path(Position position, ExactPosition goal, Map *map, Position *path, BellmanFordLocals* locals);
 
 #endif /*EPUCK_PATHFINDER_H*/

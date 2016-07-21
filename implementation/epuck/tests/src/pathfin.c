@@ -13,6 +13,9 @@ int main(void){
     ExactPosition goal;
     Map* map;
     Position* path;
+    BellmanFordLocals* locals;
+
+    locals = malloc(sizeof(BellmanFordLocals));
 
     /* Build a map */
     map = map_heap_alloc(size, size);
@@ -27,7 +30,7 @@ int main(void){
 
 	printf("Starting search\n");
 	path = (Position*) malloc((MAX_PATH_LENGTH + 1) * sizeof(Position));
-	success = pf_find_path(start, goal, map, path);
+	success = pf_find_path(start, goal, map, path, locals);
     assert(success);
 
     printf("Found path:\n(%d, %d)", start.x, start.y);
@@ -41,6 +44,7 @@ int main(void){
     printf("\n\tEVALUATE BY HAND!\n");
 
     free(path);
+    free(locals);
     map_heap_free(map);
 
 	return 0;

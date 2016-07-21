@@ -12,8 +12,6 @@
 /* We need the - k for k  > 1 such that we do not get an overflow */
 #define BF_INFINITY (INT_MAX - 5)
 
-static BellmanFordLocals locals;
-
 static int pos2v(Position pos);
 static Position v2pos(int v);
 static void init_bellman_ford(BellmanFord* state);
@@ -39,14 +37,14 @@ void find_path(BellmanFord* state) {
             for(neighbour_ix = 0; neighbour_ix < num_neighbours; ++neighbour_ix) {
                 neigh_v = neighbour_buffer[neighbour_ix];
 
-                if(!state->adj(v2pos(curr_v), v2pos(neigh_v), state->map))
+                if(!bf_adjacent_p(v2pos(curr_v), v2pos(neigh_v), state->map))
                     continue;
 
                 /* update curr if apropos */
-                new_cost_curr = locals.distances[neigh_v] + weight;
-                if (new_cost_curr < locals.distances[curr_v]) {
-                    locals.distances[curr_v] = new_cost_curr;
-                    locals.pred[curr_v] = neigh_v;
+                new_cost_curr = state->locals->distances[neigh_v] + weight;
+                if (new_cost_curr < state->locals->distances[curr_v]) {
+                    state->locals->distances[curr_v] = new_cost_curr;
+                    state->locals->pred[curr_v] = neigh_v;
                     change = 1;
                 }
             }
@@ -57,14 +55,14 @@ void find_path(BellmanFord* state) {
     p_ix = 0;
     while(pred != -1 && pred != init) {
         state->path[p_ix] = v2pos(pred);
-        pred = locals.pred[pred];
+        pred = state->locals->pred[pred];
         ++p_ix;
     }
     p_len = p_ix;
     if(pred == -1) {
         state->path[0].x = -1;
         state->path[0].y = -1;
-        assert(locals.distances[goal] == BF_INFINITY);
+        assert(state->locals->distances[goal] == BF_INFINITY);
         p_len = p_ix = 0;
     }
 
@@ -95,7 +93,7 @@ void find_path(BellmanFord* state) {
                 hal_print(buf);
                 printed = 0;
             }
-            
+
         }
         if (printed != 0) {
             hal_print(buf);
@@ -142,10 +140,10 @@ static int pos2v(Position pos) {
 static void init_bellman_ford(BellmanFord* state) {
     int i;
     for(i = 0; i < NUM_VERTICES; ++i){
-        locals.distances[i] = BF_INFINITY;
-        locals.pred[i] = -1;
+        state->locals->distances[i] = BF_INFINITY;
+        state->locals->pred[i] = -1;
     }
-    locals.distances[pos2v(state->init)] = 0;
+    state->locals->distances[pos2v(state->init)] = 0;
 }
 
 static int generate_potential_neighbours(int* buffer, int v) {

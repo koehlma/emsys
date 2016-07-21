@@ -70,7 +70,8 @@ static void compute_path(PathFinderInputs* inputs, PathFinderState* pf, Sensors*
         return;
     }
     pf->locals.path_index = -1;
-    success = pf_find_path(pos, inputs->dest, inputs->map, pf->locals.path);
+    success = pf_find_path(pos, inputs->dest, inputs->map, pf->locals.path,
+        &pf->locals.bf_loc);
     if (!success) {
         pathing_failed(pf);
     }
@@ -140,8 +141,6 @@ static int end_of_path_p(Position pos) {
     return pos.x == -1 && pos.y == -1;
 }
 
-static int adj(Position origin, Position goal, Map *map);
-
 static int invalid_pos(Position pos, Map *map) {
     return pos.x >= map_get_width(map) || pos.x < 0 || pos.y >= map_get_height(map) || pos.y < 0;
 }
@@ -150,7 +149,7 @@ static int occupied(Position *pos, Map *map) {
 }
 
 static const int APPROX_RADIUS = 2;
-static int adj(Position pos, Position goal, Map *map) {
+int bf_adjacent_p(Position pos, Position goal, Map *map) {
     int i;
     Position test;
     int delta_x = (goal.x > pos.x) - (goal.x < pos.x);
@@ -184,14 +183,14 @@ static int adj(Position pos, Position goal, Map *map) {
     return 1;
 }
 
-int pf_find_path(Position position, ExactPosition goal, Map *map, Position *path) {
+int pf_find_path(Position position, ExactPosition goal, Map *map, Position *path, BellmanFordLocals* locals) {
     BellmanFord state;
 
-    state.adj = &adj;
     state.goal = goal;
     state.init = position;
     state.path = path;
     state.map = map;
+    state.locals = locals;
 
     find_path(&state);
 
