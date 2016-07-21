@@ -101,6 +101,7 @@ static ExactPosition compute_position(double* data) {
 
 void vf_apply(VFInputs* inputs, VFState* vf) {
     ExactPosition computed_victim;
+<<<<<<< a5384b28d27b3e0a551bbaae808f9037837a325e
 
     vf->locals.data[X2]   = vf->locals.data[X1];
     vf->locals.data[Y2]   = vf->locals.data[Y1];
@@ -114,7 +115,7 @@ void vf_apply(VFInputs* inputs, VFState* vf) {
         vf->victim_x = computed_victim.x;
         vf->victim_y = computed_victim.y;
         vf->found_victim_xy = 1;
-        /* DO NOT send the T2T paket yet.
+        /* DO NOT send the T2T packet yet.
          * That's the moderator's job. */
     }
 }

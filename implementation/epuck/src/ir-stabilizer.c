@@ -10,6 +10,7 @@ enum {
 void irs_reset(IRSState* irs) {
     irs->locals.state = IRS_NOTHING;
     irs->ir_stable = 0;
+    irs->locals.entry = 0;
 }
 
 void irs_step(IRSState* irs, Sensors* sens) {

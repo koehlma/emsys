@@ -37,6 +37,7 @@ void vd_reset(VDState* vd){
     vd->give_up = 0;
     vd->locals.counter_total = 1;
     vd->locals.counter_on = 0;
+    vd->locals.time_begin = 0;
     vd->locals.weighted_sum = 0;
     vd->locals.gap_phi = -1;
 }
