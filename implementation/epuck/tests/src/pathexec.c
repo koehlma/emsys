@@ -1,0 +1,98 @@
+#include <assert.h>
+#include <stdio.h>
+
+#include "approximator.h"
+#include "mock.h"
+#include "path-exec.h"
+
+#define SIM_STEP 10
+/* One rotation (16.8 seconds) plus 50 cm */
+#define SIM_TIMEOUT ((17+50)*1000)
+#define SIM_REPORT_PERIOD 5000
+#define SIM_TOLERANCE 1.0
+
+static unsigned int someone_failed = 0;
+
+static void try_go_to(ExactPosition from, double from_phi, ExactPosition to, unsigned int backwards) {
+    PathExecInputs pe_in;
+    PathExecState pe_state;
+    Sensors sens;
+    int i;
+    ApproxState approx;
+    hal_time time_start = hal_get_time();
+    hal_time last_report = time_start;
+    double dist;
+
+    printf("PE test: (%.1f,%.1f)@%.2f -> (%.1f,%.1f) [back=%d]\n",
+        from.x, from.y, from_phi,
+        to.x, to.y,
+        backwards);
+
+    /* Set up test environment */
+    pe_reset(&pe_state);
+    pe_in.drive = 1;
+    pe_in.backwards = backwards;
+    pe_in.next = to;
+    for (i = 0; i < NUM_PROXIMITY; ++i) {
+        sens.proximity[i] = 100;
+    }
+    sens.current.x = from.x;
+    sens.current.y = from.y;
+    sens.current.phi = from_phi;
+    /* Set up helpers and everything they read: */
+    sens.lps.x = -1;
+    approx_reset(&approx);
+    hal_set_speed(0, 0);
+
+    /* Actual test */
+    do {
+        if (hal_get_time() - last_report >= SIM_REPORT_PERIOD) {
+            printf("\t[%6lu] (% 5.1f,% 5.1f)@% .2f, state=%d, mot_l=% .1f, mot_r=% .1f\n",
+                hal_get_time() - time_start,
+                sens.current.x, sens.current.y, sens.current.phi,
+                pe_state.locals.state,
+                hal_get_speed_left(), hal_get_speed_right());
+            last_report = hal_get_time();
+        }
+        pe_step(&pe_in, &pe_state, &sens);
+        tests_mock_tick(SIM_STEP/2);
+        approx_step(&approx, &sens);
+        assert(hal_get_time() - time_start < SIM_TIMEOUT);
+        assert(!pe_state.see_obstacle);
+        tests_mock_tick(SIM_STEP/2);
+    } while (!pe_state.done);
+    printf("\t[%6lu] (% 5.1f,% 5.1f)@% .2f, state=%d, mot_l=% .1f, mot_r=% .1f FINISH\n",
+        hal_get_time() - time_start,
+        sens.current.x, sens.current.y, sens.current.phi,
+        pe_state.locals.state,
+        hal_get_speed_left(), hal_get_speed_right());
+    to.x -= sens.current.x;
+    to.y -= sens.current.y;
+    dist = sqrt(to.x * to.x + to.y * to.y);
+    if (dist > SIM_TOLERANCE) {
+        printf("\t=> dist is %.3f and that's BAD!\n", dist);
+        someone_failed = 1;
+    } else {
+        printf("\t=> dist is %.3f and that's GOOD\n", dist);
+    }
+}
+
+int main() {
+    ExactPosition from, to;
+
+    from.x = 5.0;
+    from.y = 1.0;
+    to.x = 15.0;
+    to.y = 2.0;
+    try_go_to(from, 0.0 * M_PI / 180, to, 0);
+    try_go_to(from, 0.0 * M_PI / 180, to, 1);
+
+    from.x = 12.0;
+    from.y = 1.0;
+    to.x = 7.5;
+    to.y = 6.5;
+    try_go_to(from, -135.0 * M_PI / 180, to, 0);
+    try_go_to(from, -135.0 * M_PI / 180, to, 1);
+
+    return !!someone_failed;
+}
