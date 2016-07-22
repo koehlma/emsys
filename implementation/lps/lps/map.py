@@ -52,13 +52,13 @@ class Map:
         # access with: self.array[y][x]
 
     def update(self, x, y, field):
-        if field != Field.UNKNOWN:
+        if 0 <= x < 100 and 0 <= y < 100 and field != Field.UNKNOWN:
             self.array[y][x] = field
 
     def patch(self, ll_x, ll_y, data):
         # If the data is bad, don't enter it at all
-        assert(0 <= ll_x and ll_x + MAP_PROX_SIZE < MAP_MAX_WIDTH)
-        assert(0 <= ll_y and ll_y + MAP_PROX_SIZE < MAP_MAX_HEIGHT)
+        assert(0 <= ll_x < MAP_MAX_WIDTH)
+        assert(0 <= ll_y < MAP_MAX_HEIGHT)
         assert(len(data) == MAP_PROX_SIZE * MAP_PROX_SIZE / 4)
         for x, y in itertools.product(range(MAP_PROX_SIZE), range(MAP_PROX_SIZE)):
             self.update(ll_x + x, ll_y + y, get_field(x, y, data))
