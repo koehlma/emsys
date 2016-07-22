@@ -151,21 +151,28 @@ static int run_case(FieldType* input, FieldType* patch, FieldType* expected) {
      * in contrast to PIC.) */
     map_merge(m, 4, 2, prox);
 
-    printf("patched map: (ExpectedActual, ExpectedActual, ...)\n");
     all_good = 1;
     for (y = 0; y < data_height; ++y) {
         for (x = 0; x < data_width; ++x) {
             FieldType expect, actual;
             expect = expected[x + y * data_width];
             actual = map_get_field(m, x, y);
-            printf("%d%d,", expect, map_get_field(m, x, y));
             all_good &= expect == actual;
         }
-        printf("\n");
     }
 
     if (!all_good) {
         printf(" BAD\n");
+        printf("patched map: (ExpectedActual, ExpectedActual, ...)\n");
+        for (y = 0; y < data_height; ++y) {
+            for (x = 0; x < data_width; ++x) {
+                FieldType expect, actual;
+                expect = expected[x + y * data_width];
+                actual = map_get_field(m, x, y);
+                printf("%d%d,", expect, map_get_field(m, x, y));
+            }
+            printf("\n");
+        }
     } else {
         printf(" GOOD\n");
     }

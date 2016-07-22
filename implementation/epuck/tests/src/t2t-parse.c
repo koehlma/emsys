@@ -122,7 +122,7 @@ static void test_completed(void) {
     tests_mock_expect_assert_done();
 }
 
-#define RUN(x) x(); printf(#x " passed\n")
+#define RUN(x) x()
 
 int main() {
     RUN(test_heartbeat);
