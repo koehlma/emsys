@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "bellman-ford/bellman-ford.h"
+#include "log_config.h"
 #include "map.h"
 #include "path-finder.h"
 #include "pi.h"
@@ -156,9 +157,46 @@ unsigned int bf_adjacent_p(ExactPosition e_pos, ExactPosition e_goal) {
     return 1;
 }
 
+#ifdef LOG_EXPENSIVE_PATH_FINDER
+/* (no space.c) */ static char map_buf[MAP_MAX_WIDTH + 1];
+#endif
+
 void pf_find_path(ExactPosition position, ExactPosition goal, BellmanFord* state) {
     state->goal = goal;
     state->init = position;
+
+    #ifdef LOG_EXPENSIVE_PATH_FINDER
+    {
+        int x, y;
+        Map* m;
+
+        hal_print("PF:Begin map dump");
+        m = map_get_accumulated();
+        for (y = 0; y < MAP_MAX_HEIGHT; ++y) {
+            for (x = 0; x < MAP_MAX_WIDTH; ++x) {
+                switch (map_get_field(m, x, MAP_MAX_HEIGHT - y - 1)) {
+                case FIELD_UNKNOWN:
+                    map_buf[x] = ' ';
+                    break;
+                case FIELD_FREE:
+                    map_buf[x] = '_';
+                    break;
+                case FIELD_WALL:
+                    map_buf[x] = 'X';
+                    break;
+                case NUM_FIELD:
+                    /* fall-through */
+                default:
+                    map_buf[x] = '?';
+                    break;
+                }
+            }
+            map_buf[MAP_MAX_WIDTH] = 0;
+            hal_print(map_buf);
+        }
+        hal_print("PF:End map dump");
+    }
+    #endif
 
     find_path(state);
 }
