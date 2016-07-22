@@ -3,11 +3,29 @@
 
 #include "hal.h"
 #include "map.h"
+#include "mock.h"
 #include "prox-map.h"
-#include "map_heap.h"
+
+static FieldType expected[] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0,
+    0, 2, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0,
+    0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 2,
+    0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0,
+    0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 2,
+    0, 2, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0,
+};
 
 int main() {
-    int x, y;
     ProxMapState pm;
     Sensors sens;
 
@@ -31,34 +49,13 @@ int main() {
 
     /* Initialize ProxMap */
     proximity_reset(&pm, &sens);
-    printf("ProxMap initialized to low_left=(%d,%d)\n", pm.lower_left.x, pm.lower_left.y);
+    printf("\tinitialized to low_left=(%d,%d)\n", pm.lower_left.x, pm.lower_left.y);
 
     /* Run it: */
     proximity_step(&pm, &sens);
 
-    /* Print it: */
-    printf("ProxMap, low_left=(%d,%d) is:\n", pm.lower_left.x, pm.lower_left.y);
-    for (y = MAP_PROXIMITY_SIZE; y > 0; --y) {
-        for (x = 0; x < MAP_PROXIMITY_SIZE; ++x) {
-            switch (map_get_field(map_get_proximity(), x, y - 1)) {
-            case FIELD_UNKNOWN:
-                printf(" .");
-                break;
-            case FIELD_FREE:
-                printf("__");
-                break;
-            case FIELD_WALL:
-                printf("XX");
-                break;
-            case NUM_FIELD:
-                /* Fall-through */
-            default:
-                printf("??");
-                break;
-            }
-        }
-        printf("\n");
-    }
+    /* Check it: */
+    tests_assert_equal(expected, map_get_proximity());
 
     /* Makes us stronger: */
     map_heap_free(map_heap_container->prox);

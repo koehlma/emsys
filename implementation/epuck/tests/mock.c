@@ -197,3 +197,44 @@ void hal_set_heartbeat(unsigned int enabled) {
     /* FIXME: Ignore or test it? */
     (void)enabled;
 }
+
+Map* tests_load(FieldType* data, int width, int height) {
+    int x, y;
+    Map* m;
+    m = map_heap_alloc(width, height);
+    for (y = 0; y < height; ++y) {
+        for (x = 0; x < width; ++x) {
+            map_set_field(m, x, y, data[x + y * width]);
+        }
+    }
+    return m;
+}
+
+void tests_assert_equal(FieldType* expected, Map* actual_map) {
+    int x, y;
+    unsigned int all_good;
+
+    all_good = 1;
+    for (y = 0; y < map_get_height(actual_map); ++y) {
+        for (x = 0; x < map_get_width(actual_map); ++x) {
+            FieldType expect, actual;
+            expect = expected[x + y * map_get_width(actual_map)];
+            actual = map_get_field(actual_map, x, y);
+            all_good &= expect == actual;
+        }
+    }
+
+    if (!all_good) {
+        printf("\tMAP MISMATCH: (ExpectedActual, ExpectedActual, ...)\n");
+        for (y = 0; y < map_get_height(actual_map); ++y) {
+            printf("\t");
+            for (x = 0; x < map_get_width(actual_map); ++x) {
+                FieldType expect, actual;
+                expect = expected[x + y * map_get_width(actual_map)];
+                actual = map_get_field(actual_map, x, y);
+                printf("%d%d,", expect, actual);
+            }
+            printf("\n");
+        }
+    }
+}

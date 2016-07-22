@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "hal.h"
-#include "map_heap.h"
+#include "mock.h"
 
 #define data_width 20
 #define data_height 20
@@ -128,64 +128,27 @@ static FieldType types_patched_empty[] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 typedef char check_empty_afterwards_length[(sizeof(types_patched_empty) == sizeof(types_init)) ? 1 : -1];
 
-static int run_case(FieldType* input, FieldType* patch, FieldType* expected) {
-    int x, y, all_good;
+static void run_case(FieldType* input, FieldType* patch, FieldType* expected) {
     Map* m;
     Map* prox;
 
     /* Test setup */
-    m = map_heap_alloc(data_width, data_height);
-    for (y = 0; y < data_height; ++y) {
-        for (x = 0; x < data_width; ++x) {
-            map_set_field(m, x, y, input[x + y * data_width]);
-        }
-    }
-    prox = map_heap_alloc(MAP_PROXIMITY_SIZE, MAP_PROXIMITY_SIZE);
-    for (y = 0; y < MAP_PROXIMITY_SIZE; ++y) {
-        for (x = 0; x < MAP_PROXIMITY_SIZE; ++x) {
-            map_set_field(prox, x, y, patch[x + y * MAP_PROXIMITY_SIZE]);
-        }
-    }
+    m = tests_load(input, data_width, data_height);
+    prox = tests_load(patch, MAP_PROXIMITY_SIZE, MAP_PROXIMITY_SIZE);
 
     /* Run it. (Don't use this as a benchmark, x86 has caches and stuff
      * in contrast to PIC.) */
     map_merge(m, 4, 2, prox);
 
-    all_good = 1;
-    for (y = 0; y < data_height; ++y) {
-        for (x = 0; x < data_width; ++x) {
-            FieldType expect, actual;
-            expect = expected[x + y * data_width];
-            actual = map_get_field(m, x, y);
-            all_good &= expect == actual;
-        }
-    }
+    tests_assert_equal(expected, m);
 
-    if (!all_good) {
-        printf(" BAD\n");
-        printf("patched map: (ExpectedActual, ExpectedActual, ...)\n");
-        for (y = 0; y < data_height; ++y) {
-            for (x = 0; x < data_width; ++x) {
-                FieldType expect, actual;
-                expect = expected[x + y * data_width];
-                actual = map_get_field(m, x, y);
-                printf("%d%d,", expect, map_get_field(m, x, y));
-            }
-            printf("\n");
-        }
-    } else {
-        printf(" GOOD\n");
-    }
     map_heap_free(m);
     map_heap_free(prox);
-
-    return all_good;
 }
 
 int main(void) {
-    int all_good = 1;
-    all_good &= run_case(types_empty, types_patch, types_patched_empty);
-    all_good &= run_case(types_init, types_patch, types_after_update);
+    run_case(types_empty, types_patch, types_patched_empty);
+    run_case(types_init, types_patch, types_after_update);
     printf("\tDONE\n");
-    return !all_good;
+    return 0;
 }
