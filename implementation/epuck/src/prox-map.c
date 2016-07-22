@@ -27,8 +27,8 @@ static void desired_position(Position* into, Sensors* from) {
 #define MAX(a,b) (((a)>(b))?(a):(b))
     into->x = MAX(into->x, 0);
     into->y = MAX(into->y, 0);
-    into->x = MIN(into->x, MAP_MAX_WIDTH - MIN_STEP_X);
-    into->y = MIN(into->y, MAP_MAX_HEIGHT - MIN_STEP_Y);
+    into->x = MIN(into->x, MAP_MAX_WIDTH - MAP_PROXIMITY_SIZE);
+    into->y = MIN(into->y, MAP_MAX_HEIGHT - MAP_PROXIMITY_SIZE);
 #undef MIN
 #undef MAX
     assert(into->x % MIN_STEP_X == 0 && into->y % MIN_STEP_Y == 0);
