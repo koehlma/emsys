@@ -6,7 +6,13 @@
 #include "state-machine-common.h"
 #include "sensors.h"
 
+#define LOG_TRANSITIONS_PATH_EXEC
+
 #define TOLERANCE_ANGLE (5 * M_PI / 180)
+/* If we moved *back* by this much, restart. */
+#define PE_PROGRESS_MIN (-1.2)
+/* If we aren't at least this close to the victim, restart. */
+#define PE_DIST_TOLERANCE (4)
 
 enum PE_STATES {
     PE_inactive,
@@ -121,6 +127,9 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
                     smc_move();
                 }
             } else {
+                #ifdef LOG_TRANSITIONS_PATH_EXEC
+                hal_print("PE:rerotate");
+                #endif
                 actually_rotated_per_sec = actually_rotated / l->need_rot;
                 l->approx_rot_speed = actually_rotated_per_sec;
                 l->state = PE_compute;
@@ -130,6 +139,9 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
     case PE_drive:
         /* FIXME: use filtered proximity data */
         if (near_crash_p(inputs, sens)) {
+            #ifdef LOG_TRANSITIONS_PATH_EXEC
+            hal_print("PE:nearcrash");
+            #endif
             smc_halt();
             l->state = PE_profit;
             pe->see_obstacle = 1;
@@ -142,16 +154,47 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             stray += (inputs->next.y - sens->current.y) * l->normal.y;
             stray = fabs(stray);
             if (stray >= PE_MAX_STRAY) {
+                #ifdef LOG_TRANSITIONS_PATH_EXEC
+                hal_print("PE:strayed->restart");
+                #endif
                 /* Whoopsie daisy. */
                 l->state = PE_compute;
                 smc_halt();
                 break;
             }
         }
-        if (smc_time_passed_p(l->time_entered, l->need_dist)) {
-            l->state = PE_profit;
-            smc_halt();
-            pe->done = 1;
+        {
+            double progress, dist;
+            progress = inputs->next.x - sens->current.x;
+            dist = inputs->next.y - sens->current.y;
+            dist = sqrt(dist * dist + progress * progress);
+
+            progress = 0;
+            progress += -(inputs->next.x - sens->current.x) * l->normal.y;
+            progress +=  (inputs->next.y - sens->current.y) * l->normal.x;
+            progress = fabs(progress);
+            if (progress <= PE_PROGRESS_MIN) {
+                /* Whoopsie daisy. */
+                #ifdef LOG_TRANSITIONS_PATH_EXEC
+                hal_print("PE:went back->restart");
+                #endif
+                l->state = PE_compute;
+                smc_halt();
+                break;
+            }
+            if (smc_time_passed_p(l->time_entered, l->need_dist)) {
+                if (dist < PE_DIST_TOLERANCE) {
+                    l->state = PE_profit;
+                    smc_halt();
+                    pe->done = 1;
+                } else {
+                    #ifdef LOG_TRANSITIONS_PATH_EXEC
+                    hal_print("PE:too far away->restart");
+                    #endif
+                    l->state = PE_compute;
+                    smc_halt();
+                }
+            }
         }
         break;
     case PE_profit:
