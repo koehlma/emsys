@@ -36,12 +36,12 @@ static void try_go_to(ExactPosition from, double from_phi, ExactPosition to, uns
     for (i = 0; i < NUM_PROXIMITY; ++i) {
         sens.proximity[i] = 100;
     }
-    sens.current.x = from.x;
-    sens.current.y = from.y;
-    sens.current.phi = from_phi;
+    sens.lps.x = from.x;
+    sens.lps.y = from.y;
+    sens.lps.phi = from_phi;
     /* Set up helpers and everything they read: */
     sens.lps.x = -1;
-    approx_reset(&approx);
+    approx_reset(&approx, &sens);
     hal_set_speed(0, 0);
 
     /* Actual test */

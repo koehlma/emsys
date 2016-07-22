@@ -28,9 +28,10 @@ typedef struct Controller {
     TCEState cop_eyes;
     VDState vic_dir;
     VFState vic_finder;
+    ExactPosition origin;
 } Controller;
 
 void controller_reset(Controller* c, Sensors* sens);
-void controller_step(ExactPosition* origin, Controller* c, Sensors* sens);
+void controller_step(Controller* c, Sensors* sens);
 
 #endif

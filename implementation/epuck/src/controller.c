@@ -3,7 +3,10 @@
 #include "proximity-filter.h"
 
 void controller_reset(Controller* c, Sensors* sens) {
-    approx_reset(&c->approx);
+    approx_reset(&c->approx, sens);
+    c->origin.x = sens->current.x;
+    c->origin.y = sens->current.y;
+    assert(!map_invalid_pos(map_discretize(c->origin)));
     blind_reset(&c->blind);
     mod_reset(&c->moderator);
     pa_reset(&c->pickup_artist);
@@ -19,13 +22,13 @@ void controller_reset(Controller* c, Sensors* sens) {
 
 static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens);
 static void inquire_new_vicdir_data(VFState* vf, Sensors* sens);
-static void inquire_blind_decision(Controller* c, ExactPosition* origin, Sensors* sens);
+static void inquire_blind_decision(Controller* c, Sensors* sens);
 static void inquire_eyes_decision(Controller* c, Sensors* sens);
 static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c);
 static void run_victim_finder(Controller* c, Sensors* sens);
 static void run_path_finder_executer(Controller* c, Sensors* sens);
 
-void controller_step(ExactPosition* origin, Controller* c, Sensors* sens) {
+void controller_step(Controller* c, Sensors* sens) {
     enum BlindRunChoice old_choice;
 
     /* Zeroth, check whether we *want* to execute at all. */
@@ -48,7 +51,7 @@ void controller_step(ExactPosition* origin, Controller* c, Sensors* sens) {
 
     /* Now the traffic cop decides "who is allowed to drive". */
     old_choice = c->blind.run_choice;
-    inquire_blind_decision(c, origin, sens);
+    inquire_blind_decision(c, sens);
 
     /* Do we need to reset any of the state machines? */
     if (old_choice != c->blind.run_choice) {
@@ -118,14 +121,14 @@ void inquire_new_vicdir_data(VFState* vf, Sensors* sens) {
     }
 }
 
-static void inquire_blind_decision(Controller* c, ExactPosition* origin, Sensors* sens) {
+static void inquire_blind_decision(Controller* c, Sensors* sens) {
     BlindInputs inputs;
     inputs.found_victim_xy = c->moderator.found_victim_xy;
     inputs.need_angle = c->cop_eyes.need_angle;
     inputs.no_path = c->path_finder.no_path;
     inputs.path_completed = c->path_finder.path_completed;
     inputs.victim_attached = sens->victim_attached;
-    inputs.origin = *origin;
+    inputs.origin = c->origin;
     inputs.victim = c->moderator.victim;
     blind_step(&inputs, &c->blind);
 }

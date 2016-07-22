@@ -52,19 +52,14 @@ static void setup_full(TinBot* tinbot) {
 }
 
 static void loop_full(TinBot* tinbot) {
-    ExactPosition origin;
-    /* FIXME: Use actual initial lps data */
-    origin.x = 50;
-    origin.y = 50;
-
-    controller_step(&origin, &tinbot->controller, &tinbot->sens);
+    controller_step(&tinbot->controller, &tinbot->sens);
 }
 
 
 /* Mode - MapOnly */
 static void setup_maponly(TinBot* tinbot) {
     hal_print("Tin Bot Setup: Map Only");
-    approx_reset(&tinbot->controller.approx);
+    approx_reset(&tinbot->controller.approx, &tinbot->sens);
     proximity_reset(&tinbot->controller.prox_map, &tinbot->sens);
 }
 
@@ -77,7 +72,7 @@ static void loop_maponly(TinBot* tinbot) {
 /* Mode - RHR */
 static void setup_rhr(TinBot* tinbot) {
     hal_print("Tin Bot Setup: RHR");
-    approx_reset(&tinbot->controller.approx);
+    approx_reset(&tinbot->controller.approx, &tinbot->sens);
     rhr_reset(&tinbot->controller.rhr);
 }
 
@@ -90,7 +85,7 @@ static void loop_rhr(TinBot* tinbot) {
 static void setup_vicdir(TinBot* tinbot) {
     hal_print("Tin Bot Setup: VicDir");
     vd_reset(&tinbot->controller.vic_dir);
-    approx_reset(&tinbot->controller.approx);
+    approx_reset(&tinbot->controller.approx, &tinbot->sens);
 }
 
 static void loop_vicdir(TinBot* tinbot) {
