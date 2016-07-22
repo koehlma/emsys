@@ -41,7 +41,7 @@ static unsigned int bellman_ford_cycle(BellmanFord* state) {
                 continue;
             }
 
-            /* Update neighbor if apropriate
+            /* Update neighbor if appropriate
              * (Overflow-aware code) */
             if (state->distances[neigh_v] < 0
                 || state->distances[curr_v]

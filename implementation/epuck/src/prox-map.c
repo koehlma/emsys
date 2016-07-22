@@ -51,7 +51,7 @@ static void maybe_move(ProxMapState* prox_map, Sensors* sens) {
     desired_position(&next, sens);
     /* If (for example) our offset increases, the map-data needs to shift
      * towards the negative.  Thus, we swap the signs here and let
-     * map_move() beleive that we are moving the map-data (and not our
+     * map_move() believe that we are moving the map-data (and not our
      * frame of reference). */
     map_move(map_get_proximity(),
         next.x - prox_map->lower_left.x,
