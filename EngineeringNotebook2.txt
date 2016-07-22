@@ -438,3 +438,29 @@ map_merge Optimierungen:
 => Wir brauchen etwas, das:
 	- ungefähr so schwer wie "alte Plattform" plus Batterie
 	- Idee, um das am Tin Bot zu befestigen
+
+==============================
+
+How to use the Tin Bot:
+
+Implement E-Puck:
+
+    sudo mplab_ipe 
+    device: dsPIC30F6014A
+
+Setup:
+
+    Netzwerkverbindung:
+        IPv4: Manuell 192.168.178.1 24 0.0.0.0
+
+    Terminal:
+        ssh root@192.168.178.2
+        password: tinbot
+        
+        cd lps
+        clear; python -m lps.main
+
+    Browser:
+        http://192.168.178.2:8080
+
+==============================
