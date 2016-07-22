@@ -181,6 +181,56 @@ perl -pnl -e 's%~~(.*)$%,[1],"\1");%g'
     /* ------>8------>8------>8------>8------ */
 }
 
+static void collect_tinpuck() {
+
+/*
+
+The following is a *SINGLE* shell command poduces the following C code:
+
+find -name build -prune -o -name '*.c' -print0 | \
+sort -z | \
+xargs -r0 grep -Prn 'static[^[(]*(\[.*)?$' | \
+perl -pnl -e 's%^\.%tinpuck%g' | \
+perl -pnl -e 's/^([^:]*:\d+):\W*static\W+(?:struct|volatile|const|unsigned|\W+)*(\w*)\W+([^\[; ]*)((?:\[[^\]]+\])*)([^\n]*)$/    USE_SPACE(\1,\2,\3~\4~\5/g' | \
+perl -pnl -e 's%~(\[.*\])~(.*)$%,\1,"\1\2");%g' | \
+perl -pnl -e 's%~~(.*)$%,[1],"\1");%g'
+
+*/
+
+    /* ------8<------8<------8<------8<------ */
+    USE_SPACE(tinpuck/src/adc.c:48,int,tin_proximity_ambient,[8],"[8];");
+    USE_SPACE(tinpuck/src/adc.c:49,int,tin_proximity_reflected,[8],"[8];");
+    USE_SPACE(tinpuck/src/adc.c:50,int,tin_proximity_offset,[8],"[8] = {0, 0, 0, 0, 0, 0, 0, 0};");
+    USE_SPACE(tinpuck/src/adc.c:52,int,tin_proximity_counter,[1]," = 0;");
+    USE_SPACE(tinpuck/src/adc.c:128,int,counter,[1]," = 0;");
+    USE_SPACE(tinpuck/src/adc.c:129,int,sensors,[1]," = 0;");
+    USE_SPACE(tinpuck/src/com.c:27,TinPackage,tx_queue,[1]," = NULL;");
+    USE_SPACE(tinpuck/src/com.c:28,char,tx_address,[1]," = 0;");
+    USE_SPACE(tinpuck/src/com.c:29,int,tx_state,[1]," = STATE_SOURCE;");
+    USE_SPACE(tinpuck/src/com.c:30,int,tx_position,[1]," = 0;");
+    USE_SPACE(tinpuck/src/com.c:32,TinPackage,rx_package,[1],";");
+    USE_SPACE(tinpuck/src/com.c:42,char,rx_data,[TIN_PACKAGE_MAX_LENGTH],"[TIN_PACKAGE_MAX_LENGTH];");
+    USE_SPACE(tinpuck/src/com.c:47,char,rx_data,[TIN_PACKAGE_MAX_LENGTH],"[TIN_PACKAGE_MAX_LENGTH] __attribute__ ((aligned (TINPUCK_COM_RX_ALIGN)));");
+    USE_SPACE(tinpuck/src/com.c:50,char,rx_state,[1]," = STATE_SOURCE;");
+    USE_SPACE(tinpuck/src/com.c:51,int,rx_position,[1]," = 0;");
+    USE_SPACE(tinpuck/src/com.c:52,long,rx_start,[1]," = 0;");
+    USE_SPACE(tinpuck/src/com.c:53,TinPackageCallback,rx_callbacks,[255],"[255] = {NULL};");
+    USE_SPACE(tinpuck/src/com.c:55,TinTask,timeout_task,[1],";");
+    USE_SPACE(tinpuck/src/motors.c:39,int,tin_left_motor_phase,[1]," = 0;");
+    USE_SPACE(tinpuck/src/motors.c:40,int,tin_right_motor_phase,[1]," = 0;");
+    USE_SPACE(tinpuck/src/motors.c:42,int,tin_motors_powersave,[1]," = 1;");
+    USE_SPACE(tinpuck/src/motors.c:44,int,tin_left_speed,[1]," = 0;");
+    USE_SPACE(tinpuck/src/motors.c:45,int,tin_right_speed,[1]," = 0;");
+    USE_SPACE(tinpuck/src/motors.c:47,TinTask,tin_motor_left_task,[1],";");
+    USE_SPACE(tinpuck/src/motors.c:48,TinTask,tin_motor_right_task,[1],";");
+    USE_SPACE(tinpuck/src/motors.c:208,int,on,[1]," = 0;");
+    USE_SPACE(tinpuck/src/motors.c:233,int,on,[1]," = 0;");
+    USE_SPACE(tinpuck/src/rs232.c:48,int,state,[1]," = 0;");
+    USE_SPACE(tinpuck/src/scheduler.c:19,TinTask,tin_task_list_head,[1]," = NULL;");
+    USE_SPACE(tinpuck/src/time.c:19,TinTask,tin_time_task,[1],";");
+    /* ------>8------>8------>8------>8------ */
+}
+
 static void stat_it(const char* name, size_t top) {
     size_t total = 0;
     size_t i, top_total;
@@ -211,6 +261,7 @@ static void stat_it(const char* name, size_t top) {
             top_total * 100.0 / total);
     }
     printf("--- end stats %s ---\n", name);
+    num_entries = 0;
 }
 
 int main() {
@@ -219,15 +270,15 @@ int main() {
     collect_all();
     stat_it("<ALL>", 5);
 
-    num_entries = 0;
+    collect_tinpuck();
+    stat_it("../../libraries/tinpuck/", 4);
+
     collect_tinbot();
     stat_it("tinbot.h", 5);
 
-    num_entries = 0;
     collect_controller();
     stat_it("controller.h", 3);
 
-    num_entries = 0;
     collect_bellman_ford();
     stat_it("bellman_ford.h", 3);
 
