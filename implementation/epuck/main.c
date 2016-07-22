@@ -271,6 +271,8 @@ int main() {
 
     tin_wait(2000);
 
+    tin_set_motors_powersave(0);
+
     tin_calibrate_proximity();
 
     do_reset = 1;
@@ -359,7 +361,7 @@ ISR(_MI2CInterrupt) {
             if (tmp_pickup_data != pickup_data) {
                 update_victim_pickup(&bot, pickup_data);
                 pickup_data = tmp_pickup_data;
-                hal_set_powersave(pickup_data);
+                // hal_set_powersave(pickup_data);
             }
 
             update_ir(&bot, (int*) ir_data);
