@@ -15,6 +15,7 @@ typedef struct TCELocals {
     double last_x;
     double last_y;
     double last_phi;
+    hal_time time_start;
     int state;
 } TCELocals;
 
