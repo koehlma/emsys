@@ -71,6 +71,7 @@ class Map:
         else:
             color_map = COLORMAP_1
         pyplot.imshow(self.array, cmap=color_map, interpolation='nearest')
+        pyplot.gca().invert_yaxis()
         figure.savefig(buffer, format='jpeg', dpi=100)
         pyplot.close(figure)
         return buffer.getvalue()
