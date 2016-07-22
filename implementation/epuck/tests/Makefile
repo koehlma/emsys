@@ -5,8 +5,8 @@
 
 # ==== Configuration -- I don't see a reason why this would ever change =====
 
-TESTS:=$(wildcard src/*.c)
-UTILS:=$(wildcard util/*.c)
+TESTS:=$(sort $(wildcard src/*.c))
+UTILS:=$(sort $(wildcard util/*.c))
 
 OBJDIR:=obj
 BINDIR:=bin
@@ -19,7 +19,8 @@ CFLAGS?=-g -c -O2 -DMAP_MAX_WIDTH=20 -DMAP_MAX_HEIGHT=20 -DCONFIG_MAP_ASSERT_ANY
 LFLAGS?=-Weverything -lm
 # For libubsan, add "-fsanitize=undefined" to CFLAGS, and "-lubsan" to LFLAGS
 
-TBSRCS:=$(wildcard ../src/*.c) $(wildcard ../src/bellman-ford/*.c)
+TBSRCS:=$(sort $(wildcard ../src/*.c) $(wildcard ../src/bellman-ford/*.c))
+# No need to sort the headers
 TBHEADERS:=$(wildcard ../src/*.h) $(wildcard ../src/bellman-ford/*.h) $(wildcard ../*.h) ../hal/hal.h mock.h ../hal/map_heap.h
 TBOBJS:=$(patsubst ../src/%.c,${OBJDIR}/%_tb.o,${TBSRCS})
 
@@ -37,7 +38,7 @@ VALGRINDTARGETS:=$(patsubst src/%.c,valgrind-%,${TESTS})
 
 # ===== Main entry point and abstract commands =====
 
-all: run-all
+all: build run-all
 
 .PHONY: build
 build: ${TESTBINS} ${UTILBINS} ${OBJDIR}/matlab.o
