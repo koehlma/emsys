@@ -45,13 +45,13 @@ void update_lps(TinBot* tinbot, double x, double y, double phi) {
 }
 
 
-/* Mode - Alone */
-static void setup_alone(TinBot* tinbot) {
-    hal_print("Tin Bot Setup: Alone");
+/* Mode - Full */
+static void setup_full(TinBot* tinbot) {
+    hal_print("Tin Bot Setup: FULL");
     controller_reset(&tinbot->controller, &tinbot->sens);
 }
 
-static void loop_alone(TinBot* tinbot) {
+static void loop_full(TinBot* tinbot) {
     ExactPosition origin;
     /* FIXME: Use actual initial lps data */
     origin.x = 50;
@@ -63,7 +63,7 @@ static void loop_alone(TinBot* tinbot) {
 
 /* Mode - MapOnly */
 static void setup_maponly(TinBot* tinbot) {
-    hal_print("Tin Bot Setup: Alone");
+    hal_print("Tin Bot Setup: Map Only");
     approx_reset(&tinbot->controller.approx);
     proximity_reset(&tinbot->controller.prox_map, &tinbot->sens);
 }
@@ -71,19 +71,6 @@ static void setup_maponly(TinBot* tinbot) {
 static void loop_maponly(TinBot* tinbot) {
     approx_step(&tinbot->controller.approx, &tinbot->sens);
     proximity_step(&tinbot->controller.prox_map, &tinbot->sens);
-}
-
-
-/* Mode - Full */
-static void setup_full(TinBot* tinbot) {
-    hal_print("Tin Bot Setup: Full");
-    /* FIXME: NOT IMPLEMENTED */
-    (void)tinbot;
-}
-
-static void loop_full(TinBot* tinbot) {
-    /* FIXME: NOT IMPLEMENTED */
-    (void)tinbot;
 }
 
 
@@ -121,7 +108,7 @@ static void loop_vicdir(TinBot* tinbot) {
 }
 
 
-/* mergeonly - Full */
+/* Mode - mergeonly */
 static void setup_mergeonly(TinBot* tinbot) {
     (void)tinbot;
     hal_print("Tin Bot Setup: mergeonly");
@@ -140,13 +127,12 @@ static void loop_mergeonly(TinBot* tinbot) {
     time = hal_get_time() - time;
     sprintf(mergeonly_printbuf, "merge_only: avg over %ld iter: %.3f us/iter",
         iterations,
-        time * 1000.0 /* 1000 us/s */ / iterations);
+        time * 1000.0 /* 1000 us/ms */ / iterations);
     hal_print(mergeonly_printbuf);
 }
 
 
-static TinMode modes[6] = {
-        {setup_alone, loop_alone},
+static TinMode modes[5] = {
         {setup_full, loop_full},
         {setup_rhr, loop_rhr},
         {setup_mergeonly, loop_mergeonly},

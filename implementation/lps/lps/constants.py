@@ -23,9 +23,8 @@ BROADCAST_ADDRESS = 0xFF
 
 
 class Modes(enum.IntEnum):
-    ALONE = 0
-    FULL = 1
-    RHR = 2
-    MERGEONLY = 3
-    VICDIR = 4
-    MAPONLY = 5
+    FULL = 0
+    RHR = 1
+    MERGEONLY = 2
+    VICDIR = 3
+    MAPONLY = 4
