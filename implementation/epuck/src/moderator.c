@@ -14,6 +14,7 @@ enum {
 
 #define T2T_HEARTBEAT_TIMEOUT_SECS 9
 typedef char check_heartbeat_timeout[(T2T_HEARTBEAT_TIMEOUT_SECS > 1 + T2T_HEARTBEAT_PERIOD_SECS) ? 1 : -1];
+typedef char check_moderator_constant[(MOD_STATE_RESCUEING == 3) ? 1 : -1];
 
 void mod_reset(ModState* mod) {
     mod->may_run_p = 1;

@@ -41,6 +41,9 @@ enum BLIND_LEAF_STATES {
 typedef char check_blind_state_leaf_size[
     (sizeof(enum BLIND_LEAF_STATES) == sizeof(int)) ? 1 : -1];
 
+typedef char check_moderator_constant_big[(BLIND_follow_path == 1) ? 1 : -1];
+typedef char check_moderator_constant_leaf[(BLIND_LEAF_docking == 5) ? 1 : -1];
+
 void blind_reset(BlindState* blind) {
     blind->locals.state_big = BLIND_init_rhr;
     blind->locals.state_leaf = BLIND_LEAF_init_rhr;

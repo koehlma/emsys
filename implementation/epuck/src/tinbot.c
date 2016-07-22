@@ -127,12 +127,43 @@ static void loop_mergeonly(TinBot* tinbot) {
 }
 
 
-static TinMode modes[5] = {
+/* Mode - pathfin */
+static void setup_pathfin(TinBot* tinbot) {
+    hal_print("Tin Bot Setup: Path Finder (80,80), somewhat");
+    controller_reset(&tinbot->controller, &tinbot->sens);
+
+    /* First, persuade the Moderator that we're already rescuing the victim
+     * all along, and that this is fine. */
+    tinbot->controller.moderator.locals.state = 3;
+    tinbot->rx_buffer.moderate.owning_xy_p = 1;
+    /* Call ProxFilter, for fun.
+     * Also, disable TCE's interrupt. */
+    tinbot->controller.moderator.found_victim_xy = 1;
+    /* approx_step can run freely, as approx_reset was called by
+     * controller_reset. */
+    /* Blind Cop needs a special destination, so set it to, uhhh,
+     * let's roll with (80, 80). */
+    tinbot->controller.origin.x = 80.0;
+    tinbot->controller.origin.y = 80.0;
+    /* Next, Blind Cop has lots of internal state. */
+    tinbot->controller.blind.locals.state_big = 1;
+    tinbot->controller.blind.locals.state_leaf = 5;
+    /* The rest should be propagated automatically. */
+}
+
+static void loop_pathfin(TinBot* tinbot) {
+    tinbot->sens.victim_attached = 1;
+    controller_step(&tinbot->controller, &tinbot->sens);
+}
+
+
+static TinMode modes[6] = {
         {setup_full, loop_full},
         {setup_rhr, loop_rhr},
         {setup_mergeonly, loop_mergeonly},
         {setup_vicdir, loop_vicdir},
-        {setup_maponly, loop_maponly}
+        {setup_maponly, loop_maponly},
+        {setup_pathfin, loop_pathfin}
 };
 
 void setup(TinBot* tinbot) {

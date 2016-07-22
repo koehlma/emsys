@@ -28,3 +28,4 @@ class Modes(enum.IntEnum):
     MERGEONLY = 2
     VICDIR = 3
     MAPONLY = 4
+    PATHFIN = 5
