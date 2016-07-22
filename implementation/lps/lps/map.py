@@ -10,6 +10,8 @@ mpl.use('Agg')
 from matplotlib import colors
 from matplotlib import pyplot
 
+from lps.utils import log, WARNING
+
 
 # Keep the following definitions in sync with map.h.
 # The names are identical in order to make the correlation
@@ -60,6 +62,9 @@ class Map:
         assert(0 <= ll_x < MAP_MAX_WIDTH)
         assert(0 <= ll_y < MAP_MAX_HEIGHT)
         assert(len(data) == MAP_PROX_SIZE * MAP_PROX_SIZE / 4)
+        if (not 0 <= ll_x < MAP_MAX_WIDTH - MAP_PROX_SIZE or
+                not 0 <= ll_y < MAP_MAX_HEIGHT - MAP_PROX_SIZE):
+            log('patch out of map ({},{})'.format(ll_x, ll_y), WARNING)
         for x, y in itertools.product(range(MAP_PROX_SIZE), range(MAP_PROX_SIZE)):
             self.update(ll_x + x, ll_y + y, get_field(x, y, data))
 

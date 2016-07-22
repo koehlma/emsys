@@ -16,10 +16,11 @@ try:
     import picamera.array
     import picamera.camera
 except ImportError:
-    print('Waring: Unable to import PiCamera.')
+    print('Warning: Unable to import PiCamera.')
 
 from lps.constants import HUES
 from lps.event import Event
+from lps.utils import log, ERROR
 
 
 class Analyzer:
@@ -122,7 +123,7 @@ class Detector(threading.Thread):
         super().__init__()
         self.data_event = Event()
 
-    def run(self):
+    def loop(self):
         with picamera.camera.PiCamera() as camera:
             camera.resolution = (640, 480)
             camera.start_preview()
@@ -159,6 +160,12 @@ class Detector(threading.Thread):
                     self.data_event.fire(output, positions)
 
             time.sleep(2)
+
+    def run(self):
+        try:
+            self.loop()
+        except Exception as error:
+            log('Detector Error: {}'.format(error), ERROR)
 
 
 def main():

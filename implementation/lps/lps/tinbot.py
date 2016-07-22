@@ -10,7 +10,7 @@ import bluetooth
 from lps.constants import COLOR_MAP, Modes
 from lps.commands import Commands
 from lps.event import Event
-from lps.map import Map
+from lps.utils import log, WARNING
 
 
 class Logger:
@@ -175,6 +175,9 @@ class TinBot:
                     corrected_phi = math.atan2(self.controller.victim.position[1] - y,
                                                self.controller.victim.position[0] - x)
                     corrected_phi %= 2 * math.pi
+                    if not valid:
+                        msg = '[{}] received incorrect victim phi {} ({})'
+                        log(msg.format(self.color, phi, corrected_phi))
                     self.correct_victim_phi(corrected_phi, valid)
                 self.package_event.fire(self, source, target, command, payload)
         except bluetooth.btcommon.BluetoothError:

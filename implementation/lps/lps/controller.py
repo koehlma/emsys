@@ -13,6 +13,7 @@ from lps.event import Event
 from lps.tinbot import TinBot
 from lps.victim import Victim
 from lps.map import Map
+from lps.utils import log, ERROR
 
 
 class Controller:
@@ -81,6 +82,9 @@ class Controller:
 
     # main loop
     def run(self):
-        while True:
-            self.discover()
-            time.sleep(10)
+        try:
+            while True:
+                self.discover()
+                time.sleep(10)
+        except bluetooth.BluetoothError as error:
+            log('Bluetooth Error: {}'.format(error), ERROR)
