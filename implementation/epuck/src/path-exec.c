@@ -119,7 +119,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             double actually_rotated_per_sec, actually_rotated;
             actually_rotated = fabs(sens->current.phi - l->init_dir);
             actually_rotated = fmod(actually_rotated, 2 * M_PI);
-            if (actually_rotated <= TOLERANCE_ANGLE) {
+            if (fabs(actually_rotated - l->need_rot * l->approx_rot_speed) <= TOLERANCE_ANGLE) {
                 l->state = PE_drive;
                 if (inputs->backwards) {
                     smc_move_back();
