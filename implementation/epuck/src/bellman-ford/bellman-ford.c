@@ -160,8 +160,6 @@ static int16_t pos2v(ExactPosition pos) {
 #undef MAX
     res = y * VERTICES_PER_ROW + x;
     assert(0 <= res && res < NUM_VERTICES);
-    printf("v<--pos v=%2d <-> log=(%d,%d) <-> phys(%4.1f,%4.1f)\n",
-        res, x, y, pos.x, pos.y);
     return (int16_t)res;
 }
 

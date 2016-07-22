@@ -77,25 +77,6 @@ static ExactPosition compute_position(double* data) {
         pos.x = -1;
         pos.y = -1;
     }
-    /*
-    printf(
-        "Have (%f|%f), which has a distance of %f and %f each.\n",
-        xy[0], xy[1],
-        v1_orth[0] * (xy[0] - o1[0]) + v1_orth[1] * (xy[1] - o1[1]),
-        v2_orth[0] * (xy[0] - o2[0]) + v2_orth[1] * (xy[1] - o2[1]));
-    printf(
-        "  %08.2f"" %08.2f""     x     %08.2f\n"
-        "                     *     =\n"
-        "  %08.2f"" %08.2f""     y     %08.2f\n",
-        M[0], M[1], b[0],
-        M[2], M[3], b[1]);
-    printf(
-        "  From input data:\n"
-        "  %8.2f %8.2f %8.2f\n"
-        "  %8.2f %8.2f %8.2f\n",
-        data[X1], data[Y1], data[PHI1],
-        data[X2], data[Y2], data[PHI2]);
-    */
     return pos;
 }
 
