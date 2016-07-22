@@ -46,6 +46,7 @@ The following is a *SINGLE* shell command poduces the following C code:
 
 find \( -name build -o -name tests -o -name map-optimize -o -name map_heap.c -o -name hal_matlab.c \) -prune \
   -o -name '*.c' -print0 | \
+sort -z | \
 xargs -r0 grep -Prn 'static[^[(]*(\[.*)?$' | \
 perl -pnl -e 's/^([^:]*:\d+):\W*static\W+(?:struct|volatile|const|unsigned|\W+)*(\w*)\W+([^\[; ]*)((?:\[[^\]]+\])*)([^\n]*)$/    USE_SPACE(\1,\2,\3~\4~\5/g' | \
 perl -pnl -e 's%~(\[.*\])~(.*)$%,\1,"\1\2");%g' | \
@@ -54,22 +55,6 @@ perl -pnl -e 's%~~(.*)$%,[1],"\1");%g'
 */
 
     /* ------8<------8<------8<------8<------ */
-    USE_SPACE(./src/traffic-cop-eyes.c:14,double,MIN_DIST,[1]," = 12;");
-    USE_SPACE(./src/approximator.c:11,double,tinbot_diameter,[1]," = 5.3;");
-    USE_SPACE(./src/approximator.c:16,int,status,[1]," = 0;");
-    USE_SPACE(./src/path-finder.c:127,int,APPROX_RADIUS,[1]," = 2;");
-    USE_SPACE(./src/blind-cop.c:11,double,NO_PATH_TIMEOUT_SECS,[1]," = 40;");
-    USE_SPACE(./src/rhr.c:27,double,RHR_CONF_CORNER_D,[1]," = 9.5;");
-    USE_SPACE(./src/rhr.c:28,double,RHR_CONF_CORNER_X,[1]," = 11;");
-    USE_SPACE(./src/rhr.c:29,double,RHR_CONF_WALL_THRESH,[1]," = 2;");
-    USE_SPACE(./src/rhr.c:30,double,RHR_CONF_WALL_D,[1]," = 1;");
-    USE_SPACE(./src/rhr.c:31,double,RHR_CONF_STROKE_THRESH,[1]," = 1.8;");
-    USE_SPACE(./src/rhr.c:41,int,order,[NUM_PROXIMITY],"[NUM_PROXIMITY] =");
-    USE_SPACE(./src/path-exec.c:24,double,PE_MAX_STRAY,[1]," = 10;");
-    USE_SPACE(./src/victim-direction.c:27,double,VD_MIN_ON,[1]," = 9.0 / 360.0;");
-    USE_SPACE(./src/tinbot.c:130,char,mergeonly_printbuf,[100],"[100];");
-    USE_SPACE(./src/tinbot.c:133,long,iterations,[1]," = 10000;");
-    USE_SPACE(./src/tinbot.c:148,TinMode,modes,[6],"[6] = {");
     USE_SPACE(./hal/hal_epuck.c:17,hal_epuck_motor_wrapper,motor_wrapper,[1],";");
     USE_SPACE(./hal/hal_epuck.c:58,TinPackage,send_buf,[1]," = {0, 0, 0, 0, NULL, NULL, 0, NULL};");
     USE_SPACE(./hal/hal_epuck.c:59,int,send_buf_sending,[1]," = 0;");
@@ -102,8 +87,24 @@ perl -pnl -e 's%~~(.*)$%,[1],"\1");%g'
     USE_SPACE(./main.c:129,char,data,[4 * 11 + 2 + 6 + 1],"[4 * 11 + 2 + 6 + 1] __attribute__ ((aligned (4)));");
     USE_SPACE(./main.c:163,TinPackage,response,[1]," = {NULL, NULL, CMD_T2T_UPDATE_MAP, 0, NULL, NULL};");
     USE_SPACE(./main.c:164,char,data,[68],"[68] __attribute__ ((aligned (4)));");
-    USE_SPACE(./main.c:340,int,tmp_pickup_data,[1]," = 0;");
-    USE_SPACE(./main.c:341,int,state,[1]," = 0;");
+    USE_SPACE(./main.c:342,int,tmp_pickup_data,[1]," = 0;");
+    USE_SPACE(./main.c:343,int,state,[1]," = 0;");
+    USE_SPACE(./src/approximator.c:14,double,tinbot_diameter,[1]," = 5.3;");
+    USE_SPACE(./src/approximator.c:19,int,status,[1]," = 0;");
+    USE_SPACE(./src/blind-cop.c:11,double,NO_PATH_TIMEOUT_SECS,[1]," = 40;");
+    USE_SPACE(./src/path-exec.c:30,double,PE_MAX_STRAY,[1]," = 10;");
+    USE_SPACE(./src/path-finder.c:127,int,APPROX_RADIUS,[1]," = 2;");
+    USE_SPACE(./src/rhr.c:27,double,RHR_CONF_CORNER_D,[1]," = 9.5;");
+    USE_SPACE(./src/rhr.c:28,double,RHR_CONF_CORNER_X,[1]," = 11;");
+    USE_SPACE(./src/rhr.c:29,double,RHR_CONF_WALL_THRESH,[1]," = 2;");
+    USE_SPACE(./src/rhr.c:30,double,RHR_CONF_WALL_D,[1]," = 1;");
+    USE_SPACE(./src/rhr.c:31,double,RHR_CONF_STROKE_THRESH,[1]," = 1.8;");
+    USE_SPACE(./src/rhr.c:41,int,order,[NUM_PROXIMITY],"[NUM_PROXIMITY] =");
+    USE_SPACE(./src/tinbot.c:112,char,mergeonly_printbuf,[100],"[100];");
+    USE_SPACE(./src/tinbot.c:115,long,iterations,[1]," = 10000;");
+    USE_SPACE(./src/tinbot.c:130,TinMode,modes,[5],"[5] = {");
+    USE_SPACE(./src/traffic-cop-eyes.c:15,double,MIN_DIST,[1]," = 12;");
+    USE_SPACE(./src/victim-direction.c:27,double,VD_MIN_ON,[1]," = 9.0 / 360.0;");
     /* ------>8------>8------>8------>8------ */
 }
 
@@ -133,7 +134,7 @@ static void collect_controller() {
 The following is a *SINGLE* shell command poduces the following C code:
 
 echo '<SECTION>' | \
-perl -pnl -e 's/^\W*(?:static|struct|volatile|const|unsigned|\W+)*(\w*)\W+([^\[; ]*)((?:\[[^\]]+\])*)([^\n]*)$/    USE_SPACE(controller.h,\1,\2~\3~\4/g' | \
+perl -pnl -e 's/^\W*(?:static|struct|volatile|const|unsigned|\W+)*(\w*)\W+([^\[; ]*)((?:\[[^\]]+\])*)([^\n]*)$/    USE_SPACE(controller.h:19-30,\1,\2~\3~\4/g' | \
 perl -pnl -e 's%~(\[.*\])~(.*)$%,\1,"\1\2");%g' | \
 perl -pnl -e 's%~~(.*)$%,[1],"\1");%g'
 
@@ -152,6 +153,31 @@ perl -pnl -e 's%~~(.*)$%,[1],"\1");%g'
     USE_SPACE(controller.h:19-30,TCEState,cop_eyes,[1],";");
     USE_SPACE(controller.h:19-30,VDState,vic_dir,[1],";");
     USE_SPACE(controller.h:19-30,VFState,vic_finder,[1],";");
+    USE_SPACE(controller.h:19-30,ExactPosition,origin,[1],";");
+    /* ------>8------>8------>8------>8------ */
+}
+
+static void collect_bellman_ford() {
+/*
+
+The following is a *SINGLE* shell command poduces the following C code:
+
+echo '<SECTION>' | \
+perl -pnl -e 's/^\W*(?:static|struct|volatile|const|unsigned|\W+)*(\w*)\W+([^\[; ]*)((?:\[[^\]]+\])*)([^\n]*)$/    USE_SPACE(bellman-ford.h:14-27,\1,\2~\3~\4/g' | \
+perl -pnl -e 's%~(\[.*\])~(.*)$%,\1,"\1\2");%g' | \
+perl -pnl -e 's%~~(.*)$%,[1],"\1");%g'
+
+(Needs some manual editing due to comments.)
+
+*/
+
+    /* ------8<------8<------8<------8<------ */
+    USE_SPACE(bellman-ford.h:14-27,ExactPosition,init,[1],";");
+    USE_SPACE(bellman-ford.h:14-27,ExactPosition,goal,[1],";");
+    USE_SPACE(bellman-ford.h:14-27,int16_t,distances,[NUM_VERTICES],"[NUM_VERTICES];");
+    USE_SPACE(bellman-ford.h:14-27,int16_t,init_v,[1],";");
+    USE_SPACE(bellman-ford.h:14-27,int16_t,goal_v,[1],";");
+    USE_SPACE(bellman-ford.h:14-27,int16_t,succ,[NUM_VERTICES],"[NUM_VERTICES];");
     /* ------>8------>8------>8------>8------ */
 }
 
@@ -200,6 +226,10 @@ int main() {
     num_entries = 0;
     collect_controller();
     stat_it("controller.h", 3);
+
+    num_entries = 0;
+    collect_bellman_ford();
+    stat_it("bellman_ford.h", 3);
 
     printf("===== END STATISTICS =====\n");
     return 0;
