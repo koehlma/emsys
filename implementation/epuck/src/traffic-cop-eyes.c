@@ -1,9 +1,8 @@
 #include "hal.h"
 #include "pi.h"
+#include "log_config.h"
 #include "state-machine-common.h"
 #include "traffic-cop-eyes.h"
-
-#define LOG_TRANSITIONS_COP_EYES
 
 enum TCE_STATES {
     TCE_inactive, /* not enough information about the victim's location */

@@ -1,12 +1,11 @@
 #include <math.h>
 
 #include "hal.h"
+#include "log_config.h"
 #include "pi.h" /* M_PI */
 #include "path-exec.h"
 #include "state-machine-common.h"
 #include "sensors.h"
-
-#define LOG_TRANSITIONS_PATH_EXEC
 
 #define TOLERANCE_ANGLE (5 * M_PI / 180)
 /* If we moved *back* by this much, restart. */

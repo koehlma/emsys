@@ -4,9 +4,8 @@
 
 #include "blind-cop.h"
 #include "hal.h"
+#include "log_config.h"
 #include "state-machine-common.h"
-
-#define LOG_TRANSITIONS_BLIND_COP
 
 static const double NO_PATH_TIMEOUT_SECS = 40;
 

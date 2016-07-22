@@ -6,8 +6,7 @@
 
 #include "bellman-ford.h"
 #include "hal.h"
-
-#define LOG_BELLMAN_FORD
+#include "log_config.h"
 
 typedef char check_max_vertices_num[(NUM_VERTICES < 32767) ? 1 : -1];
 

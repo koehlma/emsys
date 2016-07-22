@@ -1,9 +1,8 @@
+#include "log_config.h"
 #include "moderator.h"
 #include "state-machine-common.h"
 #include "t2t.h"
 #include "t2t-parse.h"
-
-#define LOG_TRANSITIONS_MOD
 
 enum {
     MOD_STATE_SEARCHING,

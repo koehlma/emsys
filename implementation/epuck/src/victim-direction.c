@@ -3,13 +3,12 @@
 #include <stdio.h>
 
 #include "hal/hal.h"
+#include "log_config.h"
 #include "pi.h"
 #include "sensors.h"
 #include "state-machine-common.h"
 #include "victim-direction.h"
 #include "t2t-parse.h"
-
-#define LOG_TRANSITIONS_VICDIR
 
 /* Invariants:
  * state==VD_done \iff precisely one output flag is set
