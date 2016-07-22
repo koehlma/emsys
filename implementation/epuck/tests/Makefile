@@ -6,6 +6,7 @@
 # ==== Configuration -- I don't see a reason why this would ever change =====
 
 TESTS:=$(wildcard src/*.c)
+UTILS:=$(wildcard util/*.c)
 
 OBJDIR:=obj
 BINDIR:=bin
@@ -21,9 +22,15 @@ LFLAGS?=-Weverything -lm
 TBSRCS:=$(wildcard ../src/*.c) $(wildcard ../src/bellman-ford/*.c)
 TBHEADERS:=$(wildcard ../src/*.h) $(wildcard ../src/bellman-ford/*.h) $(wildcard ../*.h) ../hal/hal.h mock.h ../hal/map_heap.h
 TBOBJS:=$(patsubst ../src/%.c,${OBJDIR}/%_tb.o,${TBSRCS})
+
 TESTOBJS:=$(patsubst src/%.c,${OBJDIR}/%_test.o,${TESTS})
 TESTBINS:=$(patsubst src/%.c,${BINDIR}/%,${TESTS})
 RUNTARGETS:=$(patsubst src/%.c,run-%,${TESTS})
+
+UTILOBJS:=$(patsubst util/%.c,${OBJDIR}/%_util.o,${UTILS})
+UTILBINS:=$(patsubst util/%.c,${BINDIR}/%,${UTILS})
+UTILTARGETS:=$(patsubst util/%.c,run-%,${UTILS})
+
 VALGRINDTARGETS:=$(patsubst src/%.c,valgrind-%,${TESTS})
 # mock.o and map_heap.o will be built "by hand".
 
@@ -33,7 +40,7 @@ VALGRINDTARGETS:=$(patsubst src/%.c,valgrind-%,${TESTS})
 all: run-all
 
 .PHONY: build
-build: ${TESTBINS} ${OBJDIR}/matlab.o
+build: ${TESTBINS} ${UTILBINS} ${OBJDIR}/matlab.o
 
 .PHONY: clean
 clean:
@@ -59,13 +66,21 @@ say:
 	true "RUNTARGETS = ${RUNTARGETS}"
 	true "TESTOBJS = ${TESTOBJS}"
 	true "TESTBINS = ${TESTBINS}"
+	true "UTILOBJS = ${UTILOBJS}"
+	true "UTILBINS = ${UTILBINS}"
 
 
 # ===== Synthesized test targets =====
 
 .PHONY: ${RUNTARGETS}
 ${RUNTARGETS}: run-%: ${BINDIR}/%
-	@echo "[TEST] Running $@ test ..."
+	@echo "[TEST] Running test $< ..."
+# This is magic:
+	@$<
+
+.PHONY: ${UTILTARGETS}
+${UTILTARGETS}: run-%: ${BINDIR}/%
+	@echo "[UTIL] Running util $< ..."
 # This is magic:
 	@$<
 
@@ -98,8 +113,16 @@ ${TESTOBJS}: ${OBJDIR}/%_test.o: src/%.c ${TBHEADERS} | dirs
 	@echo "[ CC ] -o $@ $<"
 	@clang ${INCLUDE_FLAGS} ${WARN_FLAGS} ${CFLAGS} -o $@ $<
 
+${UTILOBJS}: ${OBJDIR}/%_util.o: util/%.c ${TBHEADERS} | dirs
+	@echo "[ CC ] -o $@ $<"
+	@clang ${INCLUDE_FLAGS} ${WARN_FLAGS} ${CFLAGS} -o $@ $<
+
 # Binaries
 
 ${TESTBINS}: ${BINDIR}/%: ${OBJDIR}/%_test.o ${OBJDIR}/mock.o ${OBJDIR}/map_heap.o ${TBOBJS} | dirs
+	@echo "[LINK] -o $@"
+	@clang ${LFLAGS} -o $@ $^
+
+${UTILBINS}: ${BINDIR}/%: ${OBJDIR}/%_util.o ${OBJDIR}/mock.o ${OBJDIR}/map_heap.o ${TBOBJS} | dirs
 	@echo "[LINK] -o $@"
 	@clang ${LFLAGS} -o $@ $^
