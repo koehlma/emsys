@@ -41,7 +41,7 @@ VALGRINDTARGETS:=$(patsubst src/%.c,valgrind-%,${TESTS})
 all: build run-all
 
 .PHONY: build
-build: ${TESTBINS} ${UTILBINS} ${OBJDIR}/matlab.o
+build: ${TESTBINS} ${UTILBINS} ${OBJDIR}/matlab.o ${OBJDIR}/map_static.o
 
 .PHONY: clean
 clean:
@@ -103,6 +103,10 @@ ${OBJDIR}/mock.o: mock.c ${TBHEADERS} | dirs
 	@clang ${INCLUDE_FLAGS} ${WARN_FLAGS} ${CFLAGS} -o $@ $<
 
 ${OBJDIR}/map_heap.o: ../hal/map_heap.c ${TBHEADERS} | dirs
+	@echo "[ CC ] -o $@ $<"
+	@clang ${INCLUDE_FLAGS} ${WARN_FLAGS} ${CFLAGS} -o $@ $<
+
+${OBJDIR}/map_static.o: ../hal/map_static.c ${TBHEADERS} | dirs
 	@echo "[ CC ] -o $@ $<"
 	@clang ${INCLUDE_FLAGS} ${WARN_FLAGS} ${CFLAGS} -o $@ $<
 
