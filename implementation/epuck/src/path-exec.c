@@ -136,7 +136,6 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         }
         break;
     case PE_drive:
-        /* FIXME: use filtered proximity data */
         if (near_crash_p(inputs, sens)) {
             #ifdef LOG_TRANSITIONS_PATH_EXEC
             hal_print("PE:nearcrash");

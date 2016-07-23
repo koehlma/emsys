@@ -92,7 +92,6 @@ static void enter_new_sensor_data(Map* map, Sensors* sens, double x, double y,
 }
 
 static void enter_new_data(ProxMapState* prox_map, Sensors* sens) {
-    /* FIXME: Use filtered proximity data! */
     /* This will do all of the following:
      * - if a proximity sensor is on, add a wall (FIELD_WALL)
      * - if a proximity sensor is off, remove all walls for the next 7 cm (FIELD_FREE)
