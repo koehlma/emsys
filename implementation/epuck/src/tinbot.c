@@ -143,8 +143,8 @@ static void setup_pathfin(TinBot* tinbot) {
      * controller_reset. */
     /* Blind Cop needs a special destination, so set it to, uhhh,
      * let's roll with (80, 80). */
-    tinbot->controller.origin.x = 80.0;
-    tinbot->controller.origin.y = 80.0;
+    tinbot->controller.origin.x = 20.0;
+    tinbot->controller.origin.y = 30.0;
     /* Next, Blind Cop has lots of internal state. */
     tinbot->controller.blind.locals.state_big = 1;
     tinbot->controller.blind.locals.state_leaf = 5;
