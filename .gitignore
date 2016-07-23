@@ -35,3 +35,6 @@ slprj/
 
 # Evil intermediate files
 __pycache__/
+
+# Even more evil MPLAB stuff.
+MPLABXLog.xml*
