@@ -14,6 +14,6 @@
 
 /* "Expensive" as in "you're going to need a lot of space for this,
  * and building for the PIC might fail." */
-#define LOG_EXPENSIVE_PATH_FINDER
+/* #define LOG_EXPENSIVE_PATH_FINDER */
 
 #endif
