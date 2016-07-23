@@ -70,5 +70,8 @@ int main() {
     v.x = 15; v.y =  3;
     assert(0 == bf_adjacent_p(u, v));
 
+    map_heap_free(mc.accu);
+    map_heap_container = NULL;
+
     return 0;
 }
