@@ -114,11 +114,8 @@ static void tx_package(MatlabBot* sender, char command, MatlabBot* receiver) {
             break;
         default:
             /* Ignore ... -ish. */
-            {
-                char buf[1000];
-                sprintf(buf, "hal_matlab.c: tx_package: stray command 0x%02x?!", command);
-                hal_print(buf);
-            }
+            sprintf(hal_get_printbuf(), "hal_matlab.c: tx_package: stray command 0x%02x?!", command);
+            hal_print(hal_get_printbuf());
             break;
     }
 }
@@ -163,10 +160,8 @@ void hal_debug_out(DebugCategory key, double value) {
 }
 
 void __assert_hal(const char *msg, const char *file, int line) {
-    char buffer[255];
-    memset(buffer, 0, 255);
-    sprintf(buffer, "Failure: %s (%s:%d)", msg, file, line);
-    hal_print(buffer);
+    sprintf(hal_get_printbuf(), "Failure: %s (%s:%d)", msg, file, line);
+    hal_print(hal_get_printbuf());
     abort();
 }
 

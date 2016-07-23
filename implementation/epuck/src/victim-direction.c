@@ -86,14 +86,12 @@ static void compute_result(VDState* vd, Sensors* sens) {
 
     #ifdef LOG_TRANSITIONS_VICDIR
     {
-        char buf[7 /* "VD:phi=" */ + 2 /* sign & magnitude */
-                 + 1 /* '.' */ + 3 /* decimals */ + 1 /* NUL */];
         if (-9 < vd->victim_phi && vd->victim_phi < 99) {
-            sprintf(buf, "VD:phi=%.3f", vd->victim_phi);
+            sprintf(hal_get_printbuf(), "VD:phi=%.3f", vd->victim_phi);
         } else {
-            sprintf(buf, "VD:phi=inf");
+            sprintf(hal_get_printbuf(), "VD:phi=inf");
         }
-        hal_print(buf);
+        hal_print(hal_get_printbuf());
     }
     #endif
     send_found_phi(sens->current.x, sens->current.y, vd->victim_phi);

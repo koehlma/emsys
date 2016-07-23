@@ -60,7 +60,7 @@ void blind_reset(BlindState* blind) {
 
 static void switch_failed(BlindState* blind, const char* msg) {
     /* Uhh */
-    hal_print(msg);
+    hal_print(msg); /* is okay! */
     assert(0);
     blind_reset(blind);
 }

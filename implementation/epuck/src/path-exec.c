@@ -142,20 +142,17 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
                 }
             } else {
                 double actually_rotated_per_sec, actually_rotated;
-                #ifdef LOG_TRANSITIONS_PATH_EXEC
-                char buf[100];
-                #endif
                 actually_rotated = fabs(sens->current.phi - l->init_dir);
                 actually_rotated = fmod(actually_rotated, 2 * M_PI);
                 actually_rotated_per_sec = actually_rotated / l->need_rot;
                 #ifdef LOG_TRANSITIONS_PATH_EXEC
-                sprintf(buf, "PE:rerotate,time=%.2f,phi_diff=%.2f,rotted=%.2f",
+                sprintf(hal_get_printbuf(), "PE:rerotate,time=%.2f,phi_diff=%.2f,rotted=%.2f",
                     l->need_rot, fmod(fabs(l->dst_dir - sens->current.phi), 2 * M_PI),
                     actually_rotated);
-                hal_print(buf);
-                sprintf(buf, "PE:...,oldspeed=%.2f,newspeed=%.2f",
+                hal_print(hal_get_printbuf());
+                sprintf(hal_get_printbuf(), "PE:...,oldspeed=%.2f,newspeed=%.2f",
                     l->approx_rot_speed, actually_rotated_per_sec);
-                hal_print(buf);
+                hal_print(hal_get_printbuf());
                 #endif
                 l->approx_rot_speed = actually_rotated_per_sec;
                 l->state = PE_compute;

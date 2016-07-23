@@ -60,36 +60,35 @@ static unsigned int bellman_ford_cycle(BellmanFord* state) {
 
 #ifdef LOG_BELLMAN_FORD
 static void print_path(BellmanFord* state) {
-    char buf[50];
     int printed;
     int16_t i;
 
     hal_print("===BEGIN DUMP PATH===");
-    sprintf(buf, "start=(%.1f,%.1f)", state->init.x, state->init.y);
-    hal_print(buf);
+    sprintf(hal_get_printbuf(), "start=(%.1f,%.1f)", state->init.x, state->init.y);
+    hal_print(hal_get_printbuf());
     printed = 0;
     for (i = state->init_v; i >= 0; i = state->succ[i]) {
         ExactPosition pt;
         int printed_here;
         pt = bf_v2pos(state, i);
         if (printed > 50 - (1 + 6 + 1 + 6 + 2) - 1) {
-            hal_print(buf);
+            hal_print(hal_get_printbuf());
             printed = 0;
         }
-        printed_here = sprintf(buf + printed, "(%.1f,%.1f),",
+        printed_here = sprintf(hal_get_printbuf() + printed, "(%.1f,%.1f),",
             /* DO NOT CHANGE THE FORMAT SPECIFIER! (Unless you know
              * how to change the "printed > ..." expression below.) */
             pt.x, pt.y);
         if (printed_here < 0) {
-            printed_here = sprintf(buf + printed, "?");
+            printed_here = sprintf(hal_get_printbuf() + printed, "?");
         }
         printed += printed_here;
     }
     if (printed != 0) {
-        hal_print(buf);
+        hal_print(hal_get_printbuf());
     }
-    sprintf(buf, "goal=(%.1f,%.1f)", state->goal.x, state->goal.y);
-    hal_print(buf);
+    sprintf(hal_get_printbuf(), "goal=(%.1f,%.1f)", state->goal.x, state->goal.y);
+    hal_print(hal_get_printbuf());
     hal_print("===END DUMP PATH===");
 }
 #endif

@@ -110,8 +110,7 @@ void hal_debug_out(DebugCategory key, double value) {
 }
 
 void __assert_hal(const char *msg, const char *file, int line) {
-    char buffer[255];
-    memset(buffer, 0, 255);
-    sprintf(buffer, "Failure: %s (%s:%d)", msg, file, line);
-    hal_print(buffer);
+    hal_set_speed(0, 0);
+    sprintf(hal_get_printbuf(), "Failure: %s (%s:%d)", msg, file, line);
+    hal_print(hal_get_printbuf());
 }

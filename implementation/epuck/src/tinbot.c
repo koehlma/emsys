@@ -109,8 +109,6 @@ static void setup_mergeonly(TinBot* tinbot) {
     hal_print("Tin Bot Setup: mergeonly");
 }
 
-static char mergeonly_printbuf[100];
-
 static void loop_mergeonly(TinBot* tinbot) {
     static const long iterations = 10000;
     long i = 0;
@@ -120,10 +118,10 @@ static void loop_mergeonly(TinBot* tinbot) {
         map_merge(map_get_accumulated(), 4, 2, map_get_proximity());
     } while (++i < iterations);
     time = hal_get_time() - time;
-    sprintf(mergeonly_printbuf, "merge_only: avg over %ld iter: %.3f us/iter",
+    sprintf(hal_get_printbuf(), "merge_only: avg over %ld iter: %.3f us/iter",
         iterations,
         time * 1000.0 /* 1000 us/ms */ / iterations);
-    hal_print(mergeonly_printbuf);
+    hal_print(hal_get_printbuf());
 }
 
 
