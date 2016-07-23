@@ -136,8 +136,8 @@ unsigned int bf_adjacent_p(ExactPosition e_pos, ExactPosition e_goal) {
     goal = map_discretize(e_goal);
     delta_x = (goal.x > pos.x) - (goal.x < pos.x);
     delta_y = (goal.y > pos.y) - (goal.y < pos.y);
-    delta_x_orth = -delta_x;
-    delta_y_orth = delta_y;
+    delta_x_orth = -delta_y;
+    delta_y_orth = delta_x;
 
     assert(delta_x == 0 || delta_y == 0);
     assert(pos.x == goal.x || pos.y == goal.y);
