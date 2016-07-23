@@ -16,6 +16,7 @@ typedef struct PathExecLocals {
     double rotation_start_angle;
     double approx_rot_speed;
     double init_dir;
+    double dst_dir;
     ExactPosition start;
     double need_rot;
     double need_dist;

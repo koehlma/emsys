@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdio.h>
 
 #include "hal.h"
 #include "log_config.h"
@@ -74,18 +75,17 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
     case PE_compute:
         {
             double start_dir;
-            double target_dir;
             l->start.x = sens->current.x;
             l->start.y = sens->current.y;
             start_dir = sens->current.phi;
-            target_dir = atan2(inputs->next.y - l->start.y,
+            l->dst_dir = atan2(inputs->next.y - l->start.y,
                                inputs->next.x - l->start.x);
             if(inputs->backwards) {
-                target_dir += M_PI;
+                l->dst_dir += M_PI;
             }
             l->init_dir = start_dir;
             /* Rotation in radians: */
-            l->need_rot = fmod(target_dir - start_dir + M_PI, 2 * M_PI) - M_PI;
+            l->need_rot = fmod(l->dst_dir - start_dir + M_PI, 2 * M_PI) - M_PI;
             /* Rotation in seconds: */
             l->need_rot /= l->approx_rot_speed;
             l->normal.x = -(inputs->next.y - l->start.y);
@@ -98,6 +98,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
 
             /* Code from the transitions */
             l->state = PE_rotate;
+            l->time_entered = hal_get_time();
             if (l->need_rot < 0) {
                 l->need_rot *= -1;
                 smc_rot_right();
@@ -107,7 +108,9 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         }
         break;
     case PE_rotate:
-         if (smc_time_passed_p(l->time_entered, l->need_rot)) {
+         if (smc_time_passed_p(l->time_entered, l->need_rot)
+                || fmod(fabs(l->dst_dir - sens->current.phi), 2 * M_PI) <= TOLERANCE_ANGLE) {
+            l->need_rot = hal_get_time() - l->time_entered;
             smc_halt();
             l->time_entered = hal_get_time();
             l->state = PE_rot_wait_for_LPS;
@@ -115,21 +118,33 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         break;
     case PE_rot_wait_for_LPS:
         if(smc_time_passed_p(l->time_entered, 2.2)) {
-            double actually_rotated_per_sec, actually_rotated;
-            actually_rotated = fabs(sens->current.phi - l->init_dir);
-            actually_rotated = fmod(actually_rotated, 2 * M_PI);
-            if (fabs(actually_rotated - l->need_rot * l->approx_rot_speed) <= TOLERANCE_ANGLE) {
+            double phi_diff = fmod(fabs(l->dst_dir - sens->current.phi + M_PI),
+                                   2 * M_PI) - M_PI;
+            if (phi_diff <= TOLERANCE_ANGLE) {
                 l->state = PE_drive;
+                l->time_entered = hal_get_time();
                 if (inputs->backwards) {
                     smc_move_back();
                 } else {
                     smc_move();
                 }
             } else {
+                double actually_rotated_per_sec, actually_rotated;
                 #ifdef LOG_TRANSITIONS_PATH_EXEC
-                hal_print("PE:rerotate");
+                char buf[100];
                 #endif
+                actually_rotated = fabs(sens->current.phi - l->init_dir);
+                actually_rotated = fmod(actually_rotated, 2 * M_PI);
                 actually_rotated_per_sec = actually_rotated / l->need_rot;
+                #ifdef LOG_TRANSITIONS_PATH_EXEC
+                sprintf(buf, "PE:rerotate,time=%.2f,phi_diff=%.2f,rotted=%.2f",
+                    l->need_rot, fmod(fabs(l->dst_dir - sens->current.phi), 2 * M_PI),
+                    actually_rotated);
+                hal_print(buf);
+                sprintf(buf, "PE:...,oldspeed=%.2f,newspeed=%.2f",
+                    l->approx_rot_speed, actually_rotated_per_sec);
+                hal_print(buf);
+                #endif
                 l->approx_rot_speed = actually_rotated_per_sec;
                 l->state = PE_compute;
             }
@@ -205,9 +220,5 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         pe_reset(pe);
         smc_halt();
         break;
-    }
-
-    if (l->state != old_state) {
-        l->time_entered = hal_get_time();
     }
 }
