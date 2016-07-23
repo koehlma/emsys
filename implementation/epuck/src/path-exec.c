@@ -128,7 +128,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         break;
     case PE_rotate:
          if (smc_time_passed_p(l->time_entered, l->need_rot)
-                || fmod(fabs(l->dst_dir - sens->current.phi), 2 * M_PI) <= TOLERANCE_ANGLE) {
+                || fmod(fabs(l->dst_dir - sens->current.phi + M_PI), 2 * M_PI) - M_PI <= TOLERANCE_ANGLE) {
             #ifdef LOG_TRANSITIONS_PATH_EXEC
             hal_print("pe:done rotate");
             #endif
