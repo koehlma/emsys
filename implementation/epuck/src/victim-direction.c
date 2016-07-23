@@ -141,9 +141,17 @@ void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens){
         case VD_wait_judgement:
             if (input->have_incoming_fix) {
                 if (input->acceptable) {
+                    #ifdef LOG_TRANSITIONS_VICDIR
+                    hal_print("VD:accept->found");
+                    #endif
                     vd->victim_found = 1;
                 } else {
-                    vd->give_up = 1;
+                    #ifdef LOG_TRANSITIONS_VICDIR
+                    hal_print("VD:inacceptable->use LPS' phi");
+                    #endif
+                    /* vd->give_up = 1; Tough luck. */
+                    vd->victim_phi = input->phi_correct;
+                    vd->victim_found = 1;
                 }
             }
         case VD_done:
