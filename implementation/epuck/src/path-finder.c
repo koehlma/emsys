@@ -161,8 +161,7 @@ void pf_find_path(ExactPosition position, ExactPosition goal, BellmanFord* state
     state->goal = goal;
     state->init = position;
 
-    /*FIXME: #ifdef LOG_EXPENSIVE_PATH_FINDER */
-    #if 1
+    #ifdef LOG_EXPENSIVE_PATH_FINDER
     {
         int x, y;
         Map* m;
