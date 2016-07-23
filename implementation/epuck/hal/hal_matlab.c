@@ -196,7 +196,8 @@ long matlab_create_bot() {
     matlab_bot->com_buf_used = 0;
     matlab_select_bot((long)matlab_bot, 0);
     matlab_bot->raw_time = 0;
-    set_mode(matlab_bot->tinbot, 0 /* ALONE */);
+    /*set_mode(matlab_bot->tinbot, 0); /* FULL */
+    set_mode(matlab_bot->tinbot, 5); /* PATHFIN */
     setup(matlab_bot->tinbot);
     for (i = 0; i < DEBUG_CAT_NUM; ++i) {
         matlab_bot->debug_info[i] = 0.0 / 0.0;
