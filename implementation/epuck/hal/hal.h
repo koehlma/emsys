@@ -31,6 +31,8 @@ void hal_set_heartbeat(unsigned int enabled);
 
 void hal_send_done(char command, int is_broadcast);
 
+char* hal_get_printbuf(void);
+
 void hal_print(const char *message);
 
 typedef enum DebugCategory {

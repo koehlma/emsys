@@ -35,6 +35,16 @@ Map* map_deserialize(unsigned char* buffer) {
     return &map_heap_container->view_buffer;
 }
 
+/* ===== Implementation of hal_get_printbuf, using the heap ===== */
+
+char* hal_get_printbuf(void) {
+    static char* printbuf = NULL;
+    if (printbuf == NULL) {
+        printbuf = malloc(128);
+    }
+    return printbuf;
+}
+
 
 /* ===== Implementation of map_heap.h ===== */
 

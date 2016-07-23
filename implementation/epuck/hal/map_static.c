@@ -1,4 +1,7 @@
+#include "../../../libraries/tinpuck/include/tinpuck/com.h"
+
 #include "map.h"
+#include "hal.h"
 
 /* ===== Implementation of map.h, using the static section (.bss) ===== */
 
@@ -38,4 +41,13 @@ Map* map_deserialize(unsigned char* buffer) {
 
 unsigned char* map_serialize(Map* map) {
     return (unsigned char*)(void*)map;
+}
+
+
+/* ===== Implementation of hal_get_printbuf, using the static section (.bss) ===== */
+
+static char printbuf[TIN_PACKAGE_MAX_LENGTH];
+
+char* hal_get_printbuf(void) {
+    return printbuf;
 }
