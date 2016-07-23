@@ -75,6 +75,9 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
     case PE_compute:
         {
             double start_dir;
+            #ifdef LOG_TRANSITIONS_PATH_EXEC
+            hal_print("PE:compute");
+            #endif
             l->start.x = sens->current.x;
             l->start.y = sens->current.y;
             start_dir = sens->current.phi;
