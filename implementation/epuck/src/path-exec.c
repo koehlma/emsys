@@ -86,6 +86,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             l->init_dir = start_dir;
             /* Rotation in radians: */
             l->need_rot = fmod(l->dst_dir - start_dir + M_PI, 2 * M_PI) - M_PI;
+
             /* Rotation in seconds: */
             l->need_rot /= l->approx_rot_speed;
             l->normal.x = -(inputs->next.y - l->start.y);
@@ -99,11 +100,22 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             /* Code from the transitions */
             l->state = PE_rotate;
             l->time_entered = hal_get_time();
-            if (l->need_rot < 0) {
+            if (l->need_rot < -TOLERANCE_ANGLE) {
                 l->need_rot *= -1;
                 smc_rot_right();
-            } else {
+            } else if (l->need_rot > TOLERANCE_ANGLE) {
                 smc_rot_left();
+            } else {
+                #ifdef LOG_TRANSITIONS_PATH_EXEC
+                hal_print("pe:no rotate");
+                #endif
+                l->state = PE_drive;
+                l->time_entered = hal_get_time();
+                if (inputs->backwards) {
+                    smc_move_back();
+                } else {
+                    smc_move();
+                }
             }
         }
         break;
