@@ -57,7 +57,21 @@ int main() {
     /* Check it: */
     tests_assert_equal(expected, map_get_proximity());
 
-    /* Makes us stronger: */
+    /* Move it: */
+    sens.current.x = 99;
+    sens.current.y = 99;
+    proximity_step(&pm, &sens);
+    assert(pm.lower_left.x == MAP_MAX_WIDTH - MAP_PROXIMITY_SIZE);
+    assert(pm.lower_left.y == MAP_MAX_HEIGHT - MAP_PROXIMITY_SIZE);
+
+    /* Move it! */
+    sens.current.x = -12;
+    sens.current.y = -12;
+    proximity_step(&pm, &sens);
+    assert(pm.lower_left.x == 0);
+    assert(pm.lower_left.y == 0);
+
+    /* Bop it: */
     map_heap_free(map_heap_container->prox);
     map_heap_container->prox = NULL;
     free(map_heap_container);
