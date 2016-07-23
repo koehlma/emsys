@@ -1,11 +1,16 @@
+#include <stdio.h>
+
 #include "controller.h"
 #include "hal.h"
 #include "proximity-filter.h"
 
 void controller_reset(Controller* c, Sensors* sens) {
+    char buf[50];
     approx_reset(&c->approx, sens);
     c->origin.x = sens->current.x;
     c->origin.y = sens->current.y;
+    sprintf(buf, "CTRL:o=(%.1f,%.1f)", c->origin.x, c->origin.y);
+    hal_print(buf);
     assert(!map_invalid_pos(map_discretize(c->origin)));
     blind_reset(&c->blind);
     mod_reset(&c->moderator);
