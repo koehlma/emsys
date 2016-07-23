@@ -40,7 +40,11 @@ void controller_step(Controller* c, Sensors* sens) {
     if (c->moderator.found_victim_xy) {
         /* If the moderator didn't set 'found_victim_xy', but
          * allows us to continue, then victim_xy isn't known to anyone. */
-        filter_proximity(c->moderator.victim, sens);
+        if (sens->victim_attached) {
+            filter_prox_attached(sens);
+        } else {
+            filter_prox_detached(c->moderator.victim, sens);
+        }
     }
     approx_step(&c->approx, sens);
     inquire_new_vicdir_data(&c->vic_finder, sens);

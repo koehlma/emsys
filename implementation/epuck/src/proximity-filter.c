@@ -47,8 +47,13 @@ static void filter_proximity_single(Sensors* sens, unsigned int index, ExactPosi
     }
 }
 
+void filter_prox_attached(Sensors* sens) {
+    sens->proximity[PROXIMITY_P_150] = 100;
+    sens->proximity[PROXIMITY_M_150] = 100;
+}
+
 /* Do not pass 'victim' by reference. */
-void filter_proximity(ExactPosition victim, Sensors* sens) {
+void filter_prox_detached(ExactPosition victim, Sensors* sens) {
     double dist;
     victim.x -= sens->current.x;
     victim.y -= sens->current.y;
