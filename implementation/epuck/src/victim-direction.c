@@ -45,6 +45,9 @@ typedef char check_num_ir_even[(NUM_IR % 2 == 0) ? 1 : -1];
 
 static void entry_start(VDState* vd, Sensors* sens) {
     int i, have_id;
+    #ifdef LOG_TRANSITIONS_VICDIR
+    hal_print("VD:start");
+    #endif
     vd->locals.state = VD_running;
     have_id = 0;
     for(i = 0; i < NUM_IR; ++i) {
@@ -126,6 +129,9 @@ void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens){
                     }
                 }
                 if (rot_msecs >= IR_COMPLETION_TIME + 30 /* And a bit more: 0.65 degree */) {
+                    #ifdef LOG_TRANSITIONS_VICDIR
+                    hal_print("VD:done running");
+                    #endif
                     vd->locals.time_begin = hal_get_time();
                     vd->locals.state = VD_wait_revolved;
                     smc_halt();
@@ -134,12 +140,18 @@ void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens){
             break;
         case VD_wait_revolved:
             if (smc_time_passed_p(vd->locals.time_begin, VD_WAIT_ON_LPS_SECS)) {
+                #ifdef LOG_TRANSITIONS_VICDIR
+                hal_print("VD:done waiting on lps");
+                #endif
                 vd->locals.state = VD_wait_judgement;
                 compute_result(vd, sens);
             }
             break;
         case VD_wait_judgement:
             if (input->have_incoming_fix) {
+                #ifdef LOG_TRANSITIONS_VICDIR
+                hal_print("VD:got judgement");
+                #endif
                 if (input->acceptable) {
                     #ifdef LOG_TRANSITIONS_VICDIR
                     hal_print("VD:accept->found");
