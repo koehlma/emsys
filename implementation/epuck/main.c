@@ -224,17 +224,18 @@ int main() {
      * Timer, RX, I2C, ADC, TX
      */
 
+    // TX priority (allows us to send data in interrupts)
+    IPC2bits.U1TXIP = 7;
     // timer 2 used in scheduler
-    IPC1bits.T2IP = 7;
+    IPC1bits.T2IP = 6;
     // RX priority
-    IPC2bits.U1RXIP = 6;
+    IPC2bits.U1RXIP = 5;
     // I2C priority
-    IPC3bits.MI2CIP = 5;
-    IPC3bits.SI2CIP = 5;
+    IPC3bits.MI2CIP = 4;
+    IPC3bits.SI2CIP = 4;
     // ADC priority
-    IPC2bits.ADIP = 4;
-    // TX priority
-    IPC2bits.U1TXIP = 3;
+    IPC2bits.ADIP = 3;
+
 
     tin_init();
 
