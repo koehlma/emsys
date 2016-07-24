@@ -78,25 +78,29 @@ void t2t_send_completed(void) {
 /* ===== Receiving ===== */
 
 void t2t_parse_heartbeat(TinBot* bot) {
+    // WARNING: running in interrupt, do not send any data or use assert
     t2t_receive_heartbeat(bot);
 }
 
 void t2t_parse_found_phi(TinBot* bot, char* data, unsigned int length) {
-    assert(length == 4 * 3);
+    // WARNING: running in interrupt, do not send any data or use assert
+    // assert(length == 4 * 3);
     t2t_receive_found_phi(bot, ((float*) data)[0], ((float*) data)[1], ((float*) data)[2]);
 }
 
 void t2t_parse_phi_correction(TinBot* bot, char* data, unsigned int length) {
-    assert(length == 4 + 2);
-    /* FIXME: Is this the correct structure? */
+    // WARNING: running in interrupt, do not send any data or use assert
+    // assert(length == 4 + 2);
     t2t_receive_phi_correction(bot, ((float*) data)[0], ((uint16_t*) (data + 4))[0]);
 }
 
 void t2t_parse_found_xy(TinBot* bot, int is_ours, char* data, unsigned int length) {
+    // WARNING: running in interrupt, do not send any data or use assert
+
     float x, y;
     int iteration;
 
-    assert(length == 4 + 4 + 2);
+    //assert(length == 4 + 4 + 2);
     x = ((float*) data)[0];
     y = ((float*) data)[1];
     iteration = ((int16_t*) data)[4];
@@ -104,14 +108,17 @@ void t2t_parse_found_xy(TinBot* bot, int is_ours, char* data, unsigned int lengt
 }
 
 void t2t_parse_update_map(TinBot* bot, char* data, unsigned int length) {
-    assert(length == 4 + MAP_PROXIMITY_BUF_SIZE);
+    // WARNING: running in interrupt, do not send any data or use assert
+    // assert(length == 4 + MAP_PROXIMITY_BUF_SIZE);
     t2t_receive_update_map(bot, ((int16_t*)data)[0], ((int16_t*)data)[1], map_deserialize((unsigned char*)data + 4));
 }
 
 void t2t_parse_docked(TinBot* bot) {
+    // WARNING: running in interrupt, do not send any data or use assert
     t2t_receive_docked(bot);
 }
 
 void t2t_parse_completed(TinBot* bot) {
+    // WARNING: running in interrupt, do not send any data or use assert
     t2t_receive_completed(bot);
 }

@@ -22,6 +22,8 @@ void update_proximity(TinBot* tinbot, double proximity[8]) {
 }
 
 void update_ir(TinBot* tinbot, int ir[6]) {
+    // WARNING: executed synchronously, do not send any data or use assert
+
     unsigned int i;
     for (i = 0; i < 6; ++i) {
         tinbot->sens.ir[i] = ir[i];
@@ -35,10 +37,14 @@ void update_ir(TinBot* tinbot, int ir[6]) {
 }
 
 void update_victim_pickup(TinBot* tinbot, unsigned int grabbed) {
+    // WARNING: running in interrupt, do not send any data or use assert
+
     tinbot->sens.victim_attached = !!grabbed;
 }
 
 void update_lps(TinBot* tinbot, double x, double y, double phi) {
+    // WARNING: executed synchronously, do not send any data or use assert
+
     tinbot->sens.lps.x = x;
     tinbot->sens.lps.y = y;
     tinbot->sens.lps.phi = phi;

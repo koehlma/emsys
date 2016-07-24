@@ -7,10 +7,14 @@
  * copying these things into bot->* structures! */
 
 void t2t_receive_heartbeat(TinBot* bot) {
+    // WARNING: running in interrupt, do not send any data or use assert
+
     bot->rx_buffer.moderate.seen_beat = 1;
 }
 
 void t2t_receive_found_phi(TinBot* bot, double x, double y, double phi) {
+    // WARNING: running in interrupt, do not send any data or use assert
+
     T2TData_VicDirSingle* buf;
 
     /* If we receive more than two data points, only use the first and last. */
@@ -26,6 +30,8 @@ void t2t_receive_found_phi(TinBot* bot, double x, double y, double phi) {
 }
 
 void t2t_receive_phi_correction(struct TinBot* bot, double phi_correct, unsigned int acceptable) {
+    // WARNING: running in interrupt, do not send any data or use assert
+
     T2TData_VicFix* buf = &bot->rx_buffer.fixdir;
 
     buf->phi_correct = phi_correct;
@@ -34,6 +40,8 @@ void t2t_receive_phi_correction(struct TinBot* bot, double phi_correct, unsigned
 }
 
 void t2t_receive_found_xy(TinBot* bot, int is_ours, double x, double y, int iteration) {
+    // WARNING: running in interrupt, do not send any data or use assert
+
     struct T2TData_Moderate* buf = &bot->rx_buffer.moderate;
 
     if (buf->newest_own_INTERNAL == -1 && buf->newest_theirs == -1) {
@@ -67,22 +75,27 @@ void t2t_receive_found_xy(TinBot* bot, int is_ours, double x, double y, int iter
 }
 
 void t2t_receive_update_map(TinBot* bot, int x, int y, Map* map) {
+    // WARNING: running in interrupt, do not send any data or use assert
     /* The only one allowed to bypass the "t2t_pump" stuff. */
     (void)bot;
     map_merge(map_get_accumulated(), x, y, map);
 }
 
 void t2t_receive_docked(TinBot* bot) {
+    // WARNING: running in interrupt, do not send any data or use assert
     /* Essentially switch off. */
     bot->rx_buffer.moderate.need_to_die = 1;
 }
 
 void t2t_receive_completed(TinBot* bot) {
+    // WARNING: running in interrupt, do not send any data or use assert
     /* Uhh, ignore that. */
     (void)bot;
 }
 
 void t2t_data_pump(TinBot* bot) {
+    // WARNING: executed synchronously, do not send any data or use assert
+
     memcpy(&bot->sens.t2t, &bot->rx_buffer, sizeof(T2TData));
     /* Reset rx_buffer, now that we're done copying it: */
     bot->rx_buffer.moderate.seen_beat = 0;

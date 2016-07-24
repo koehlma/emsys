@@ -65,6 +65,8 @@ static uint16_t merge_u16(uint16_t previously, uint16_t input) {
  *      -> guaranteed by tests/mock.c
  * - BIT_PER_FIELD==2 (previous typedef-checks in the file) */
 void map_merge(Map* dst, int low_left_x, int low_left_y, Map* patch) {
+    // WARNING: running in interrupt, do not send any data or use assert
+
     uint16_t* dst_data;
     uint16_t* patch_data;
 
