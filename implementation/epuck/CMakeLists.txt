@@ -65,6 +65,7 @@ set(SOURCE_FILES
         hal/map_static.c
         src/bellman-ford/bellman-ford.c
         src/proximity-filter.c
+        src/pi.c
         )
 
 add_executable(${CMAKE_PROJECT_NAME}.elf ${SOURCE_FILES})
