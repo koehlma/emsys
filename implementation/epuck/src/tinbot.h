@@ -3,12 +3,14 @@
 
 #include "controller.h"
 #include "sensors.h"
+#include "moderator.h"
 #include "t2t-data.h"
 
 typedef struct TinBot {
     Sensors sens;
     Controller controller;
     T2TData rx_buffer;
+    ModState moderator;
     unsigned int mode;
 } TinBot;
 

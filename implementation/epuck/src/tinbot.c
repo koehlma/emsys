@@ -52,7 +52,39 @@ static void setup_full(TinBot* tinbot) {
 }
 
 static void loop_full(TinBot* tinbot) {
-    controller_step(&tinbot->controller, &tinbot->sens);
+    /* Zeroth, check whether we *want* to execute at all. */
+    {
+        ModInputs inputs;
+        inputs.t2t_data = &tinbot->sens.t2t.moderate;
+        inputs.own_victim = tinbot->controller.vic_finder.victim;
+        inputs.found_victim_xy = tinbot->controller.vic_finder.found_victim_xy;
+        inputs.give_up = tinbot->controller.pickup_artist.is_dead;
+
+        mod_step(&inputs, &tinbot->moderator, &tinbot->sens);
+        return ;
+    }
+    if (tinbot->moderator.may_run_p) {
+        ControllerInputs inputs;
+        inputs.victim = tinbot->moderator.victim;
+        inputs.found_victim_xy = tinbot->moderator.found_victim_xy;
+
+        controller_step(&inputs, &tinbot->controller, &tinbot->sens);
+    }
+}
+
+
+/* Mode - Alone */
+static void setup_alone(TinBot* tinbot) {
+    hal_print("Tin Bot Setup: ALONE");
+    controller_reset(&tinbot->controller, &tinbot->sens);
+}
+
+static void loop_alone(TinBot* tinbot) {
+    ControllerInputs inputs;
+    inputs.found_victim_xy = tinbot->.vic_finder.found_victim_xy;
+    inputs.victim = tinbot->controller.vic_finder.victim;
+
+    controller_step(&inputs, &tinbot->controller, &tinbot->sens);
 }
 
 
@@ -173,7 +205,7 @@ static void loop_bluetooth_test(TinBot* tinbot) {
 }
 
 
-static TinMode modes[7] = {
+static TinMode modes[8] = {
         {setup_full,      loop_full},
         {setup_rhr,       loop_rhr},
         {setup_mergeonly, loop_mergeonly},
@@ -181,6 +213,7 @@ static TinMode modes[7] = {
         {setup_maponly,   loop_maponly},
         {setup_pathfin,   loop_pathfin},
         {setup_bluetooth_test, loop_bluetooth_test}
+        {setup_alone,     loop_alone},
 };
 
 void setup(TinBot* tinbot) {

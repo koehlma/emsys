@@ -4,11 +4,10 @@
 #include "hal.h"
 #include "proximity-filter.h"
 
-static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens);
 static void set_origin(Controller* c, double x, double y);
 static void inquire_new_vicdir_data(VFState* vf, Sensors* sens);
-static void inquire_blind_decision(Controller* c, Sensors* sens);
-static void inquire_eyes_decision(Controller* c, Sensors* sens);
+static void inquire_blind_decision(ControllerInputs* inputs, Controller* c, Sensors* sens);
+static void inquire_eyes_decision(ControllerInputs* inputs, Controller* c, Sensors* sens);
 static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c);
 static void run_victim_finder(Controller* c, Sensors* sens);
 static void run_path_finder_executer(Controller* c, Sensors* sens);
@@ -16,7 +15,6 @@ static void run_path_finder_executer(Controller* c, Sensors* sens);
 void controller_reset(Controller* c, Sensors* sens) {
     approx_reset(&c->approx, sens);
     blind_reset(&c->blind);
-    mod_reset(&c->moderator);
     pa_reset(&c->pickup_artist);
     pe_reset(&c->path_exec);
     pf_reset(&c->path_finder);
@@ -28,7 +26,7 @@ void controller_reset(Controller* c, Sensors* sens) {
     vf_reset(&c->vic_finder);
 }
 
-void controller_step(Controller* c, Sensors* sens) {
+void controller_step(ControllerInputs* inputs, Controller* c, Sensors* sens) {
     enum BlindRunChoice old_choice;
 
     static int first_iter = 1;
@@ -37,19 +35,13 @@ void controller_step(Controller* c, Sensors* sens) {
         first_iter = 0;
     }
 
-    /* Zeroth, check whether we *want* to execute at all. */
-    if (!inquire_moderator_permission(c, sens)) {
-        /* Play dead. */
-        return;
-    }
-
-    if (c->moderator.found_victim_xy) {
+    if (inputs->found_victim_xy) {
         /* If the moderator didn't set 'found_victim_xy', but
          * allows us to continue, then victim_xy isn't known to anyone. */
         if (sens->victim_attached) {
             filter_prox_attached(sens);
         } else {
-            filter_prox_detached(c->moderator.victim, sens);
+            filter_prox_detached(inputs->victim, sens);
         }
     }
     approx_step(&c->approx, sens);
@@ -57,11 +49,11 @@ void controller_step(Controller* c, Sensors* sens) {
 
     /* First, the eyes decide whether we need an interruption
      * (in order to execute Victim Direction). */
-    inquire_eyes_decision(c, sens);
+    inquire_eyes_decision(inputs, c, sens);
 
     /* Now the traffic cop decides "who is allowed to drive". */
     old_choice = c->blind.run_choice;
-    inquire_blind_decision(c, sens);
+    inquire_blind_decision(inputs, c, sens);
 
     /* Do we need to reset any of the state machines? */
     if (old_choice != c->blind.run_choice) {
@@ -100,17 +92,6 @@ void controller_step(Controller* c, Sensors* sens) {
     proximity_step(&c->prox_map, sens);
 }
 
-static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens) {
-    ModInputs inputs;
-    inputs.t2t_data = &sens->t2t.moderate;
-    inputs.own_victim = c->vic_finder.victim;
-    inputs.found_victim_xy = c->vic_finder.found_victim_xy;
-    inputs.give_up = c->pickup_artist.is_dead;
-
-    mod_step(&inputs, &c->moderator, sens);
-    return c->moderator.may_run_p;
-}
-
 void inquire_new_vicdir_data(VFState* vf, Sensors* sens) {
     VFInputs inputs;
     T2TData_VicDirSingle* vd_buf = &sens->t2t.vicdir_buf1;
@@ -131,25 +112,25 @@ void inquire_new_vicdir_data(VFState* vf, Sensors* sens) {
     }
 }
 
-static void inquire_blind_decision(Controller* c, Sensors* sens) {
+static void inquire_blind_decision(ControllerInputs* ci, Controller* c, Sensors* sens) {
     BlindInputs inputs;
-    inputs.found_victim_xy = c->moderator.found_victim_xy;
+    inputs.found_victim_xy = ci->found_victim_xy;
     inputs.need_angle = c->cop_eyes.need_angle;
     inputs.no_path = c->path_finder.no_path;
     inputs.path_completed = c->path_finder.path_completed;
     inputs.victim_attached = sens->victim_attached;
     inputs.origin = c->origin;
-    inputs.victim = c->moderator.victim;
+    inputs.victim = ci->victim;
     blind_step(&inputs, &c->blind);
 }
 
-static void inquire_eyes_decision(Controller* c, Sensors* sens) {
+static void inquire_eyes_decision(ControllerInputs* ci, Controller* c, Sensors* sens) {
     TCEInputs inputs;
 
     irs_step(&c->ir_stab, sens);
 
     inputs.found_victim_phi = c->vic_dir.victim_found;
-    inputs.found_victim_xy = c->moderator.found_victim_xy;
+    inputs.found_victim_xy = ci->found_victim_xy;
     inputs.ray_phi = c->vic_dir.victim_phi;
     inputs.ir_stable = c->ir_stab.ir_stable;
     inputs.phi_give_up = c->vic_dir.give_up;

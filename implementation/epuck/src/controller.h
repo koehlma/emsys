@@ -4,7 +4,6 @@
 #include "approximator.h"
 #include "blind-cop.h"
 #include "ir-stabilizer.h"
-#include "moderator.h"
 #include "path-exec.h"
 #include "path-finder.h"
 #include "pickup-artist.h"
@@ -15,10 +14,14 @@
 #include "victim-direction.h"
 #include "victim-finder.h"
 
+typedef struct ControllerInputs {
+    ExactPosition victim;
+    unsigned int found_victim_xy;
+} ControllerInputs;
+
 typedef struct Controller {
     ApproxState approx;
     BlindState blind;
-    ModState moderator;
     PathExecState path_exec;
     PathFinderState path_finder;
     PickupState pickup_artist;
@@ -32,6 +35,6 @@ typedef struct Controller {
 } Controller;
 
 void controller_reset(Controller* c, Sensors* sens);
-void controller_step(Controller* c, Sensors* sens);
+void controller_step(ControllerInputs* ci, Controller* c, Sensors* sens);
 
 #endif
