@@ -189,7 +189,7 @@ static void com_on_t2t_victim_xy(TinPackage *package) {
 }
 
 static void com_on_t2t_update_map(TinPackage *package) {
-    //t2t_parse_update_map(&bot, package->data, package->length);
+    t2t_parse_update_map(&bot, package->data, package->length);
 }
 
 static void com_on_t2t_docked(TinPackage *package) {
@@ -360,12 +360,8 @@ ISR(_MI2CInterrupt) {
                 ir_data[index] = (data >> index) & 1;
             }
 
-            tmp_pickup_data = (data >> 6) & 1;
-            if (tmp_pickup_data != pickup_data) {
-                update_victim_pickup(&bot, pickup_data);
-                pickup_data = tmp_pickup_data;
-                // hal_set_powersave(pickup_data);
-            }
+            pickup_data = (data >> 6) & 1;
+            update_victim_pickup(&bot, pickup_data);
 
             update_ir(&bot, (int*) ir_data);
 
