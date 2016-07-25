@@ -1,5 +1,7 @@
+#include <stdio.h>
 #include <string.h>
 
+#include "log_config.h"
 #include "t2t.h"
 #include "tinbot.h"
 
