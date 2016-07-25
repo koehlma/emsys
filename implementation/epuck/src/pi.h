@@ -9,6 +9,6 @@
 #endif
 
 /* NB: The result might be negative. Use fabs if not needed. */
-double angle_dist(double angle1, double angle2);
+double angle_dist(double dst, double start);
 
 #endif
