@@ -4,13 +4,18 @@
 #include "hal.h"
 #include "proximity-filter.h"
 
+static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens);
+static void set_origin(Controller* c, Sensors* sens);
+static void inquire_new_vicdir_data(VFState* vf, Sensors* sens);
+static void inquire_blind_decision(Controller* c, Sensors* sens);
+static void inquire_eyes_decision(Controller* c, Sensors* sens);
+static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c);
+static void run_victim_finder(Controller* c, Sensors* sens);
+static void run_path_finder_executer(Controller* c, Sensors* sens);
+
 void controller_reset(Controller* c, Sensors* sens) {
+    set_origin(c, sens);
     approx_reset(&c->approx, sens);
-    c->origin.x = sens->current.x;
-    c->origin.y = sens->current.y;
-    sprintf(hal_get_printbuf(), "CTRL:o=(%.1f,%.1f)", c->origin.x, c->origin.y);
-    hal_print(hal_get_printbuf());
-    assert(!map_invalid_pos(map_discretize(c->origin)));
     blind_reset(&c->blind);
     mod_reset(&c->moderator);
     pa_reset(&c->pickup_artist);
@@ -24,16 +29,14 @@ void controller_reset(Controller* c, Sensors* sens) {
     vf_reset(&c->vic_finder);
 }
 
-static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens);
-static void inquire_new_vicdir_data(VFState* vf, Sensors* sens);
-static void inquire_blind_decision(Controller* c, Sensors* sens);
-static void inquire_eyes_decision(Controller* c, Sensors* sens);
-static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c);
-static void run_victim_finder(Controller* c, Sensors* sens);
-static void run_path_finder_executer(Controller* c, Sensors* sens);
-
 void controller_step(Controller* c, Sensors* sens) {
     enum BlindRunChoice old_choice;
+
+    static int first_iter = 1;
+    if (first_iter) {
+        set_origin(c, sens);
+        first_iter = 0;
+    }
 
     /* Zeroth, check whether we *want* to execute at all. */
     if (!inquire_moderator_permission(c, sens)) {
@@ -105,7 +108,7 @@ static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens) {
     inputs.found_victim_xy = c->vic_finder.found_victim_xy;
     inputs.give_up = c->pickup_artist.is_dead;
 
-    mod_step(&inputs, &c->moderator);
+    mod_step(&inputs, &c->moderator, sens);
     return c->moderator.may_run_p;
 }
 
@@ -209,4 +212,12 @@ static void run_victim_finder(Controller* c, Sensors* sens) {
         inputs.phi = c->vic_dir.victim_phi;
         vf_apply(&inputs, &c->vic_finder);
     }
+}
+
+static void set_origin(Controller* c, Sensors* sens) {
+    c->origin.x = sens->current.x;
+    c->origin.y = sens->current.y;
+    sprintf(hal_get_printbuf(), "CTRL:o=(%.1f,%.1f)", c->origin.x, c->origin.y);
+    hal_print(hal_get_printbuf());
+    assert(!map_invalid_pos(map_discretize(c->origin)));
 }

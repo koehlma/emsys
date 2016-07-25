@@ -316,7 +316,7 @@ int main() {
 
         if (lps_updated) {
             SYNCHRONIZED({
-                x= lps_data[0];
+                x = lps_data[0];
                 y = lps_data[1];
                 phi = lps_data[2];
                 lps_updated = 0;

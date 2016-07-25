@@ -86,17 +86,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             }
             l->init_dir = start_dir;
             /* Rotation in radians: */
-            l->need_rot = fmod(l->dst_dir - start_dir + M_PI, 2 * M_PI) - M_PI;
-
-            /* Rotation in seconds: */
-            l->need_rot /= l->approx_rot_speed;
-            l->normal.x = -(inputs->next.y - l->start.y);
-            l->normal.y =   inputs->next.x - l->start.x;
-            l->need_dist = l->normal.x * l->normal.x + l->normal.y * l->normal.y;
-            l->need_dist = sqrt(l->need_dist);
-            l->normal.x /= l->need_dist;
-            l->normal.y /= l->need_dist;
-            l->need_dist /= SMC_MV_PER_SEC;
+            l->need_rot = angle_dist(l->dst_dir, start_dir);
 
             /* Code from the transitions */
             l->state = PE_rotate;
@@ -117,18 +107,27 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
                 hal_print("pe:no rotate");
                 #endif
                 l->state = PE_drive;
-                l->time_entered = hal_get_time();
                 if (inputs->backwards) {
                     smc_move_back();
                 } else {
                     smc_move();
                 }
             }
+
+            /* Rotation in seconds: */
+            l->need_rot /= l->approx_rot_speed;
+            l->normal.x = -(inputs->next.y - l->start.y);
+            l->normal.y =   inputs->next.x - l->start.x;
+            l->need_dist = l->normal.x * l->normal.x + l->normal.y * l->normal.y;
+            l->need_dist = sqrt(l->need_dist);
+            l->normal.x /= l->need_dist;
+            l->normal.y /= l->need_dist;
+            l->need_dist /= SMC_MV_PER_SEC;
         }
         break;
     case PE_rotate:
          if (smc_time_passed_p(l->time_entered, l->need_rot)
-                || fmod(fabs(l->dst_dir - sens->current.phi + M_PI), 2 * M_PI) - M_PI <= TOLERANCE_ANGLE) {
+                || fabs(angle_dist(l->dst_dir, sens->current.phi)) <= TOLERANCE_ANGLE) {
             #ifdef LOG_TRANSITIONS_PATH_EXEC
             hal_print("pe:done rotate");
             #endif
@@ -140,8 +139,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
         break;
     case PE_rot_wait_for_LPS:
         if(smc_time_passed_p(l->time_entered, 2.2)) {
-            double phi_diff = fmod(fabs(l->dst_dir - sens->current.phi + M_PI),
-                                   2 * M_PI) - M_PI;
+            double phi_diff = fabs(angle_dist(l->dst_dir, sens->current.phi));
             if (phi_diff <= TOLERANCE_ANGLE) {
                 l->state = PE_drive;
                 l->time_entered = hal_get_time();
@@ -152,12 +150,11 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
                 }
             } else {
                 double actually_rotated_per_sec, actually_rotated;
-                actually_rotated = fabs(sens->current.phi - l->init_dir);
-                actually_rotated = fmod(actually_rotated, 2 * M_PI);
+                actually_rotated = fabs(angle_dist(sens->current.phi, l->init_dir));
                 actually_rotated_per_sec = actually_rotated / l->need_rot;
                 #ifdef LOG_TRANSITIONS_PATH_EXEC
                 sprintf(hal_get_printbuf(), "PE:rerotate,time=%.2f,phi_diff=%.2f,rotted=%.2f",
-                    l->need_rot, fmod(fabs(l->dst_dir - sens->current.phi), 2 * M_PI),
+                    l->need_rot, fabs(angle_dist(l->dst_dir, sens->current.phi)),
                     actually_rotated);
                 hal_print(hal_get_printbuf());
                 sprintf(hal_get_printbuf(), "PE:...,oldspeed=%.2f,newspeed=%.2f",

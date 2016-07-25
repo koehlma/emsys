@@ -40,7 +40,6 @@ static void try_go_to(ExactPosition from, double from_phi, ExactPosition to, uns
     sens.lps.y = from.y;
     sens.lps.phi = from_phi;
     /* Set up helpers and everything they read: */
-    sens.lps.x = -1;
     approx_reset(&approx, &sens);
     hal_set_speed(0, 0);
 
