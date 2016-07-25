@@ -112,6 +112,7 @@ void hal_print(const char* message) {
     speed_left = hal_get_speed_left();
     speed_right = hal_get_speed_right();
     hal_set_speed(0, 0);
+
     while (!package.completed);
     SEND_WAIT();
     hal_set_speed(speed_left, speed_right);

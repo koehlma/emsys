@@ -1,3 +1,4 @@
+#include <tinpuck.h>
 #include "log_config.h"
 #include "moderator.h"
 #include "state-machine-common.h"
