@@ -29,3 +29,4 @@ class Modes(enum.IntEnum):
     VICDIR = 3
     MAPONLY = 4
     PATHFIN = 5
+    BLUETEST = 6

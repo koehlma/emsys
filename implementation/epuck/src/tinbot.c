@@ -155,13 +155,27 @@ static void loop_pathfin(TinBot* tinbot) {
 }
 
 
-static TinMode modes[6] = {
-        {setup_full, loop_full},
-        {setup_rhr, loop_rhr},
+static void setup_bluetooth_test(TinBot* tinbot) {
+
+}
+
+static void loop_bluetooth_test(TinBot* tinbot) {
+    unsigned int i;
+    hal_print("Bluetooth Test");
+    for (i = 0; i < 20; i++) {
+        hal_print("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
+    }
+}
+
+
+static TinMode modes[7] = {
+        {setup_full,      loop_full},
+        {setup_rhr,       loop_rhr},
         {setup_mergeonly, loop_mergeonly},
-        {setup_vicdir, loop_vicdir},
-        {setup_maponly, loop_maponly},
-        {setup_pathfin, loop_pathfin}
+        {setup_vicdir,    loop_vicdir},
+        {setup_maponly,   loop_maponly},
+        {setup_pathfin,   loop_pathfin},
+        {setup_bluetooth_test, loop_bluetooth_test}
 };
 
 void setup(TinBot* tinbot) {
