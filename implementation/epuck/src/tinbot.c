@@ -15,7 +15,7 @@
 void update_proximity(TinBot* tinbot, double proximity[8]) {
     unsigned int number;
     for (number = 0; number < 8; number++) {
-        /* Q: Why doesn't do this any conversion?
+        /* Q: Why doesn't this do any conversion?
          * A: Because the incoming values already are in cm. */
         tinbot->sens.proximity[number] = proximity[number];
     }
@@ -169,6 +169,8 @@ void setup(TinBot* tinbot) {
     t2t_data_init(&tinbot->rx_buffer);
     t2t_data_init(&tinbot->sens.t2t);
     modes[tinbot->mode].setup(tinbot);
+    map_clear(map_get_accumulated());
+    map_clear(map_get_proximity());
 }
 
 void loop(TinBot* tinbot) {
