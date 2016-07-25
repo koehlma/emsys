@@ -84,7 +84,7 @@ void hal_send_put(char* buf, unsigned int length) {
 
 void hal_send_done(char command, int is_broadcast) {
     send_buf_wait();
-    send_buf.source = NULL; /* FIXME */
+    send_buf.source = NULL; /* NULL so that com resets it. */
     /* All T2T packages are broadcast. */
     send_buf.target = is_broadcast ? 0xFF : 0x00;
     send_buf.command = command;

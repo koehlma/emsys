@@ -194,7 +194,6 @@ void __assert_hal(const char *msg, const char *file, int line) {
 }
 
 void hal_set_heartbeat(unsigned int enabled) {
-    /* FIXME: Ignore or test it? */
     (void)enabled;
 }
 
