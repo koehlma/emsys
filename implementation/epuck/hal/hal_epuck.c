@@ -12,6 +12,8 @@
 
 #include "commands.h"
 
+#define SEND_WAIT() tin_wait(5)
+
 typedef char check_map_proximity_size[(MAP_PROXIMITY_BUF_SIZE < TIN_PACKAGE_MAX_LENGTH) ? 1 : -1];
 
 static hal_epuck_motor_wrapper motor_wrapper;
@@ -59,12 +61,18 @@ static TinPackage send_buf = {0, 0, 0, 0, NULL, NULL, 0, NULL};
 static int send_buf_sending = 0;
 
 static void send_buf_wait(void) {
+    double speed_left, speed_right;
     if (send_buf_sending) {
+        speed_left = hal_get_speed_left();
+        speed_right = hal_get_speed_right();
+        hal_set_speed(0, 0);
         while (!send_buf.completed)
             /* Not good, so do "active-waiting".
              * - hal_print() is a bad idea, as it worsens the problem.
              * - hal_set_speed(0, 0) might interfere badly with some algorithms. */
             ;
+        SEND_WAIT();
+        hal_set_speed(speed_left, speed_right);
         send_buf_sending = 0;
         send_buf.length = 0;
     }
@@ -96,11 +104,17 @@ void hal_send_done(char command, int is_broadcast) {
 }
 
 void hal_print(const char* message) {
+    double speed_left, speed_right;
     static TinPackage package = {0, 0, CMD_PRINT, 0, NULL, NULL, 0, NULL};
     package.data = (char*) message;
     package.length = strlen(message);
     tin_com_send(&package);
+    speed_left = hal_get_speed_left();
+    speed_right = hal_get_speed_right();
+    hal_set_speed(0, 0);
     while (!package.completed);
+    SEND_WAIT();
+    hal_set_speed(speed_left, speed_right);
 }
 
 void hal_debug_out(DebugCategory key, double value) {
