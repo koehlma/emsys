@@ -33,8 +33,19 @@ void t2t_receive_phi_correction(struct TinBot* bot, double phi_correct, unsigned
     buf->have_incoming_fix = 1;
 }
 
+static char mybuf[100];
+
 void t2t_receive_found_xy(TinBot* bot, int is_ours, double x, double y, int iteration) {
     struct T2TData_Moderate* buf = &bot->rx_buffer.moderate;
+
+    #ifdef LOG_TRANSITIONS_MOD
+    sprintf(mybuf, "T2T_XY:our=%d,x=%.1f,y=%.1f,it=%d",
+        is_ours, x, y, iteration);
+    hal_print(mybuf);
+    sprintf(mybuf, "T2T_XY:old_our=%d,old_their=%d,own=%d",
+        buf->newest_own_INTERNAL, buf->newest_theirs, buf->owning_xy_p);
+    hal_print(mybuf);
+    #endif
 
     if (buf->newest_own_INTERNAL == -1 && buf->newest_theirs == -1) {
         /* This will be executed exactly once with precisely the same
@@ -42,6 +53,9 @@ void t2t_receive_found_xy(TinBot* bot, int is_ours, double x, double y, int iter
          * point in time.) */
         buf->seen_x = x;
         buf->seen_y = y;
+        #ifdef LOG_TRANSITIONS_MOD
+        hal_print("T2T_XY:copy xy");
+        #endif
     }
 
     if (is_ours) {
@@ -63,6 +77,11 @@ void t2t_receive_found_xy(TinBot* bot, int is_ours, double x, double y, int iter
     } else if (buf->newest_own_INTERNAL > buf->newest_theirs) {
         buf->owning_xy_p = 1;
     }
+    #ifdef LOG_TRANSITIONS_MOD
+    sprintf(mybuf, "T2T_XY:new_our=%d,new_their=%d,own=%d",
+        buf->newest_own_INTERNAL, buf->newest_theirs, buf->owning_xy_p);
+    hal_print(mybuf);
+    #endif
     /* Otherwise, don't update 'owning_xy_p' at all. */
 }
 
