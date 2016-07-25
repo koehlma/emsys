@@ -70,16 +70,26 @@ static void entry_start(VDState* vd, Sensors* sens) {
 static void compute_result(VDState* vd, Sensors* sens) {
     double eff_opening;
 
-    if (vd->locals.counter_total < 100 * NUM_IR) {
+    if (vd->locals.counter_total < 500) {
         /* Wat. */
+        #ifdef LOG_TRANSITIONS_VICDIR
+        sprintf(hal_get_printbuf(), "VD:too few total samples (%lu)", vd->locals.counter_total);
+        hal_print(hal_get_printbuf());
+        #endif
         vd->give_up = 1;
+        vd->locals.state = VD_wait_judgement;
         return;
     }
 
     eff_opening = vd->locals.counter_on * 1.0 / (NUM_IR * vd->locals.counter_total);
     if (eff_opening < VD_MIN_ON) {
         /* There is no spoon.  And no VICTOR. */
+        #ifdef LOG_TRANSITIONS_VICDIR
+        sprintf(hal_get_printbuf(), "VD:too small effective opening (%.1f°)", eff_opening);
+        hal_print(hal_get_printbuf());
+        #endif
         vd->give_up = 1;
+        vd->locals.state = VD_done;
         return;
     }
 

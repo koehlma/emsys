@@ -61,6 +61,7 @@ void tce_step(TCEInputs* inputs, TCEState* tce, Sensors* sens){
             }
             break;
         case TCE_waitdetect:
+            assert(!inputs->phi_give_up);
             if (inputs->found_victim_phi || inputs->phi_give_up) {
                 tce->locals.state = TCE_waitoff;
                 #ifdef LOG_TRANSITIONS_COP_EYES
