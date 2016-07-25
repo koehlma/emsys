@@ -166,6 +166,7 @@ void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens){
                     #ifdef LOG_TRANSITIONS_VICDIR
                     hal_print("VD:accept->found");
                     #endif
+                    vd->victim_phi = input->phi_correct;
                     vd->victim_found = 1;
                 } else {
                     #ifdef LOG_TRANSITIONS_VICDIR
