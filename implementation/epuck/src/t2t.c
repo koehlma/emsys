@@ -39,12 +39,11 @@ void t2t_receive_found_xy(TinBot* bot, int is_ours, double x, double y, int iter
     struct T2TData_Moderate* buf = &bot->rx_buffer.moderate;
 
     #ifdef LOG_TRANSITIONS_MOD
-    sprintf(mybuf, "T2T_XY:our=%d,x=%.1f,y=%.1f,it=%d",
+    int written = 0;
+    written += sprintf(mybuf + written, "T_XY:o%d,x%.1f,y%.1f,it%d;",
         is_ours, x, y, iteration);
-    hal_print(mybuf);
-    sprintf(mybuf, "T2T_XY:old_our=%d,old_their=%d,own=%d",
+    written += sprintf(mybuf + written, "oo%d,ot%d,oo%d;",
         buf->newest_own_INTERNAL, buf->newest_theirs, buf->owning_xy_p);
-    hal_print(mybuf);
     #endif
 
     if (buf->newest_own_INTERNAL == -1 && buf->newest_theirs == -1) {
@@ -54,18 +53,26 @@ void t2t_receive_found_xy(TinBot* bot, int is_ours, double x, double y, int iter
         buf->seen_x = x;
         buf->seen_y = y;
         #ifdef LOG_TRANSITIONS_MOD
-        hal_print("T2T_XY:copy xy");
+        written += sprintf(mybuf + written, "c;");
         #endif
     }
 
     if (is_ours) {
         if (iteration <= buf->newest_own_INTERNAL) {
+            #ifdef LOG_TRANSITIONS_MOD
+            written += sprintf(mybuf + written, "oo!");
+            t2t_tmp_print(&bot->rx_buffer, mybuf);
+            #endif
             /* Whoops, outdated. */
             return;
         }
         buf->newest_own_INTERNAL = iteration;
     } else {
         if (iteration <= buf->newest_theirs) {
+            #ifdef LOG_TRANSITIONS_MOD
+            written += sprintf(mybuf + written, "ot!");
+            t2t_tmp_print(&bot->rx_buffer, mybuf);
+            #endif
             /* Effectively outdated. */
             return;
         }
@@ -78,9 +85,9 @@ void t2t_receive_found_xy(TinBot* bot, int is_ours, double x, double y, int iter
         buf->owning_xy_p = 1;
     }
     #ifdef LOG_TRANSITIONS_MOD
-    sprintf(mybuf, "T2T_XY:new_our=%d,new_their=%d,own=%d",
+    written += sprintf(mybuf + written, "o%d,t%d,o%d;d!",
         buf->newest_own_INTERNAL, buf->newest_theirs, buf->owning_xy_p);
-    hal_print(mybuf);
+    t2t_tmp_print(&bot->rx_buffer, mybuf);
     #endif
     /* Otherwise, don't update 'owning_xy_p' at all. */
 }
@@ -108,10 +115,21 @@ void t2t_data_pump(TinBot* bot) {
     bot->rx_buffer.vicdir_buf1.new_p = 0;
     bot->rx_buffer.vicdir_buf2.new_p = 0;
     bot->rx_buffer.fixdir.have_incoming_fix = 0;
+    bot->rx_buffer.send_buf = NULL;
+    bot->rx_buffer.send_lost = 0;
 }
 
 void t2t_data_init(T2TData* data) {
     memset(data, 0, sizeof(*data));
     data->moderate.newest_own_INTERNAL = -1;
     data->moderate.newest_theirs = -1;
+}
+
+void t2t_tmp_print(T2TData* data, char* msg) {
+    /* Uhh. Not really correct (due to concurrency), but good enough. */
+    if (data->send_buf) {
+        data->send_lost = 1;
+    } else {
+        data->send_buf = msg;
+    }
 }

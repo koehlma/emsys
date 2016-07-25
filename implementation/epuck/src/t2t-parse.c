@@ -77,6 +77,17 @@ void t2t_send_completed(void) {
 
 /* ===== Receiving ===== */
 
+#ifndef NDEBUG
+#   ifdef assert
+#       undef assert
+#   endif
+#   define assert(EX) do { \
+        if (!(EX)) { \
+            t2t_tmp_print(&bot->rx_buffer, "!_" #EX); \
+        } \
+    } while (0)
+#endif
+
 void t2t_parse_heartbeat(TinBot* bot) {
     t2t_receive_heartbeat(bot);
 }

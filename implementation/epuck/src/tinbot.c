@@ -193,6 +193,13 @@ void setup(TinBot* tinbot) {
 }
 
 void loop(TinBot* tinbot) {
+    if (tinbot->sens.t2t.send_buf) {
+        hal_print("INTERRUPT SENT:");
+        hal_print(tinbot->sens.t2t.send_buf);
+    }
+    if (tinbot->sens.t2t.send_lost) {
+        hal_print("(+ lost message(s))");
+    }
     modes[tinbot->mode].loop(tinbot);
 }
 
