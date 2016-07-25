@@ -14,7 +14,6 @@ static void run_victim_finder(Controller* c, Sensors* sens);
 static void run_path_finder_executer(Controller* c, Sensors* sens);
 
 void controller_reset(Controller* c, Sensors* sens) {
-    set_origin(c, sens->current.x, sens->current.y);
     approx_reset(&c->approx, sens);
     blind_reset(&c->blind);
     mod_reset(&c->moderator);

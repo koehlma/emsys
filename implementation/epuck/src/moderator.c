@@ -35,7 +35,8 @@ void mod_step(ModInputs* inputs, ModState* mod, Sensors* sens) {
         mod->locals.sent_iteration = inputs->t2t_data->newest_theirs - 1;
     }
     /* Obey Pickup Artist: */
-    if (inputs->give_up || inputs->t2t_data->need_to_die) {
+    if ((inputs->give_up || inputs->t2t_data->need_to_die)
+            && mod->locals.state != MOD_STATE_DEAD) {
         #ifdef LOG_TRANSITIONS_MOD
         hal_print("mod:*->dead");
         #endif

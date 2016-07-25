@@ -126,9 +126,12 @@ static void loop_mergeonly(TinBot* tinbot) {
 
 
 /* Mode - pathfin */
+static unsigned int pathfin_origin_resetted = 0;
+
 static void setup_pathfin(TinBot* tinbot) {
-    hal_print("Tin Bot Setup: Path Finder (80,80), somewhat");
+    hal_print("Tin Bot Setup: Path Finder (20,30), somewhat");
     controller_reset(&tinbot->controller, &tinbot->sens);
+    pathfin_origin_resetted = 0;
 
     /* First, persuade the Moderator that we're already rescuing the victim
      * all along, and that this is fine. */
@@ -139,10 +142,7 @@ static void setup_pathfin(TinBot* tinbot) {
     tinbot->controller.moderator.found_victim_xy = 1;
     /* approx_step can run freely, as approx_reset was called by
      * controller_reset. */
-    /* Blind Cop needs a special destination, so set it to, uhhh,
-     * let's roll with (80, 80). */
-    tinbot->controller.origin.x = 20.0;
-    tinbot->controller.origin.y = 30.0;
+
     /* Next, Blind Cop has lots of internal state. */
     tinbot->controller.blind.locals.state_big = 1;
     tinbot->controller.blind.locals.state_leaf = 5;
@@ -151,6 +151,11 @@ static void setup_pathfin(TinBot* tinbot) {
 
 static void loop_pathfin(TinBot* tinbot) {
     tinbot->sens.victim_attached = 1;
+    if (!pathfin_origin_resetted) {
+        tinbot->sens.lps.x = 20.0;
+        tinbot->sens.lps.y = 30.0;
+        pathfin_origin_resetted = 1;
+    }
     controller_step(&tinbot->controller, &tinbot->sens);
 }
 
@@ -188,6 +193,13 @@ void setup(TinBot* tinbot) {
 }
 
 void loop(TinBot* tinbot) {
+    if (tinbot->sens.t2t.send_buf) {
+        hal_print("INTERRUPT SENT:");
+        hal_print(tinbot->sens.t2t.send_buf);
+    }
+    if (tinbot->sens.t2t.send_lost) {
+        hal_print("(+ lost message(s))");
+    }
     modes[tinbot->mode].loop(tinbot);
 }
 

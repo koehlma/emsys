@@ -38,8 +38,12 @@ typedef struct T2TData {
     } fixdir;
     T2TData_VicDirSingle vicdir_buf1;
     T2TData_VicDirSingle vicdir_buf2;
+    char* send_buf;
+    unsigned int send_lost;
 } T2TData;
 
 void t2t_data_init(T2TData* data);
+
+void t2t_tmp_print(T2TData* data, char* msg);
 
 #endif
