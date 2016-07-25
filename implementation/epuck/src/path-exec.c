@@ -52,10 +52,8 @@ static unsigned int near_crash_p(PathExecInputs* inputs, Sensors* sens) {
 
 void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
     PathExecLocals* l;
-    int old_state;
 
     l = &pe->locals;
-    old_state = l->state;
 
     if (!inputs->drive) {
         /* We just got notified that we shouldn't be running anymore. */
@@ -106,8 +104,14 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             if (l->need_rot < -TOLERANCE_ANGLE) {
                 l->need_rot *= -1;
                 smc_rot_right();
+                #ifdef LOG_TRANSITIONS_PATH_EXEC
+                hal_print("pe:rot right");
+                #endif
             } else if (l->need_rot > TOLERANCE_ANGLE) {
                 smc_rot_left();
+                #ifdef LOG_TRANSITIONS_PATH_EXEC
+                hal_print("pe:rot left");
+                #endif
             } else {
                 #ifdef LOG_TRANSITIONS_PATH_EXEC
                 hal_print("pe:no rotate");
@@ -125,6 +129,9 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
     case PE_rotate:
          if (smc_time_passed_p(l->time_entered, l->need_rot)
                 || fmod(fabs(l->dst_dir - sens->current.phi), 2 * M_PI) <= TOLERANCE_ANGLE) {
+            #ifdef LOG_TRANSITIONS_PATH_EXEC
+            hal_print("pe:done rotate");
+            #endif
             l->need_rot = hal_get_time() - l->time_entered;
             smc_halt();
             l->time_entered = hal_get_time();
