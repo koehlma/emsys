@@ -141,7 +141,7 @@ void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens){
         case VD_wait_revolved:
             if (smc_time_passed_p(vd->locals.time_begin, VD_WAIT_ON_LPS_SECS)) {
                 #ifdef LOG_TRANSITIONS_VICDIR
-                hal_print("VD:done waiting on lps");
+                hal_print("VD:done waiting for lps");
                 #endif
                 vd->locals.state = VD_wait_judgement;
                 compute_result(vd, sens);
