@@ -5,7 +5,7 @@
 #include "proximity-filter.h"
 
 static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens);
-static void set_origin(Controller* c, Sensors* sens);
+static void set_origin(Controller* c, double x, double y);
 static void inquire_new_vicdir_data(VFState* vf, Sensors* sens);
 static void inquire_blind_decision(Controller* c, Sensors* sens);
 static void inquire_eyes_decision(Controller* c, Sensors* sens);
@@ -14,7 +14,7 @@ static void run_victim_finder(Controller* c, Sensors* sens);
 static void run_path_finder_executer(Controller* c, Sensors* sens);
 
 void controller_reset(Controller* c, Sensors* sens) {
-    set_origin(c, sens);
+    set_origin(c, sens->current.x, sens->current.y);
     approx_reset(&c->approx, sens);
     blind_reset(&c->blind);
     mod_reset(&c->moderator);
@@ -34,7 +34,7 @@ void controller_step(Controller* c, Sensors* sens) {
 
     static int first_iter = 1;
     if (first_iter) {
-        set_origin(c, sens);
+        set_origin(c, sens->lps.x, sens->lps.y);
         first_iter = 0;
     }
 
@@ -214,9 +214,9 @@ static void run_victim_finder(Controller* c, Sensors* sens) {
     }
 }
 
-static void set_origin(Controller* c, Sensors* sens) {
-    c->origin.x = sens->current.x;
-    c->origin.y = sens->current.y;
+static void set_origin(Controller* c, double x, double y) {
+    c->origin.x = x;
+    c->origin.y = y;
     sprintf(hal_get_printbuf(), "CTRL:o=(%.1f,%.1f)", c->origin.x, c->origin.y);
     hal_print(hal_get_printbuf());
     assert(!map_invalid_pos(map_discretize(c->origin)));
