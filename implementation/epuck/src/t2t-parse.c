@@ -58,7 +58,7 @@ void t2t_send_found_xy(double x, double y, int iteration) {
 }
 
 void t2t_send_update_map(int x, int y, Map* map) {
-    char buffer[2 * 2];
+    char buffer[2 * 2] BUFFER_ALIGN;
     ((int16_t*) buffer)[0] = (int16_t)x;
     ((int16_t*) buffer)[1] = (int16_t)y;
     hal_send_put(buffer, sizeof(buffer));
