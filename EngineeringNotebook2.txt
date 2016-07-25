@@ -464,3 +464,13 @@ Setup:
         http://192.168.178.2:8080
 
 ==============================
+
+
+============================== (25.07.2016 - 15:34)
+As it turns out the flow control pins of the bluetooth module are not
+connected with the E-Puck, therefore we cannot to garantee the correct
+transmission of packages. If the buffer inside the bluetooth module runs
+out of space it drops incoming bytes. The resulting gaps in the byte
+stream confuse the LPS.
+============================== 
+
