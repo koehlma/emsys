@@ -1,0 +1,17 @@
+* IR-Sensors -> cellular rubber
+* IR-Sensors -> sensitivity, directionality
+* E-Puck lib total crap -> rewritten
+* Bluetooth: No info when sent -> empiric results
+* LPS: image processing too slow -> faster implementation
+* prox values -> re-measure
+* IR-Sensors increase width
+* VICTOR too heavy -> lose weight
+* Interrupt priorities -> cannot use asserts in ISR -> changed priorities (changes real time guarantee, still in limit)
+* No ground sensors
+* Batteries drained empty in no time.
+* Pickup process cumbersome -> cannot steal victim from broken down TB
+* Construction of {custom extension board, victim board}
+* HAL for working with MatLab _and_ real E-Puck -> re-use MatLab tests
+* w.r.t risk analysis: myriads of point of failure
+* Debugging by setting different modes
+* Imprecision of the IR-Sensors: Minor deviations result in huge search spaces for the victim
