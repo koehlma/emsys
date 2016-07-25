@@ -34,7 +34,7 @@ void controller_step(Controller* c, Sensors* sens) {
 
     static int first_iter = 1;
     if (first_iter) {
-        controller_set_origin(c, sens);
+        set_origin(c, sens);
         first_iter = 0;
     }
 
