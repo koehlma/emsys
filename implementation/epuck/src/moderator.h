@@ -3,6 +3,7 @@
 
 #include "hal.h"
 #include "map.h"
+#include "sensors.h"
 #include "t2t-data.h"
 
 typedef struct ModInputs {
@@ -34,6 +35,6 @@ typedef struct ModState {
 } ModState;
 
 void mod_reset(ModState* mod);
-void mod_step(ModInputs* inputs, ModState* mod);
+void mod_step(ModInputs* inputs, ModState* mod, Sensors* sens);
 
 #endif

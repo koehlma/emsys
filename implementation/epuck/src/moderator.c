@@ -8,13 +8,14 @@ enum {
     MOD_STATE_SEARCHING,
     MOD_STATE_WAITING_BIDDING,
     MOD_STATE_WAITING_WATCHING,
-    MOD_STATE_RESCUEING,
+    MOD_STATE_RESCUEING_LOUD,
+    MOD_STATE_RESCUEING_SILENT,
     MOD_STATE_DEAD
 };
 
 #define T2T_HEARTBEAT_TIMEOUT_SECS 9
 typedef char check_heartbeat_timeout[(T2T_HEARTBEAT_TIMEOUT_SECS > 1 + T2T_HEARTBEAT_PERIOD_SECS) ? 1 : -1];
-typedef char check_moderator_constant[(MOD_STATE_RESCUEING == 3) ? 1 : -1];
+typedef char check_moderator_constant[(MOD_STATE_RESCUEING_SILENT == 4) ? 1 : -1];
 
 void mod_reset(ModState* mod) {
     mod->may_run_p = 1;
@@ -26,7 +27,7 @@ void mod_reset(ModState* mod) {
     mod->locals.sent_iteration = -1;
 }
 
-void mod_step(ModInputs* inputs, ModState* mod) {
+void mod_step(ModInputs* inputs, ModState* mod, Sensors* sens) {
     int old_state;
 
     /* Make sure we never lag too far behind: */
@@ -35,6 +36,9 @@ void mod_step(ModInputs* inputs, ModState* mod) {
     }
     /* Obey Pickup Artist: */
     if (inputs->give_up || inputs->t2t_data->need_to_die) {
+        #ifdef LOG_TRANSITIONS_MOD
+        hal_print("mod:*->dead");
+        #endif
         mod->locals.state = MOD_STATE_DEAD;
     }
 
@@ -64,7 +68,7 @@ void mod_step(ModInputs* inputs, ModState* mod) {
     case MOD_STATE_WAITING_BIDDING:
         if (inputs->t2t_data->owning_xy_p) {
             /* "Whee!  My turn!" */
-            mod->locals.state = MOD_STATE_RESCUEING;
+            mod->locals.state = MOD_STATE_RESCUEING_LOUD;
             mod->may_run_p = 1;
             mod->victim.x = inputs->t2t_data->seen_x;
             mod->victim.y = inputs->t2t_data->seen_y;
@@ -110,7 +114,7 @@ void mod_step(ModInputs* inputs, ModState* mod) {
             #endif
         }
         break;
-    case MOD_STATE_RESCUEING:
+    case MOD_STATE_RESCUEING_LOUD:
         if (!inputs->t2t_data->owning_xy_p) {
             /* Some other Tin Bot went wrong.  Stop. */
             smc_halt();
@@ -119,6 +123,12 @@ void mod_step(ModInputs* inputs, ModState* mod) {
             #ifdef LOG_TRANSITIONS_MOD
             hal_print("mod:rescue->dead");
             #endif
+        } else if (sens->victim_attached) {
+            #ifdef LOG_TRANSITIONS_MOD
+            hal_print("mod:rescue->docked");
+            #endif
+            mod->locals.state = MOD_STATE_RESCUEING_SILENT;
+            t2t_send_docked();
         } else if (smc_time_passed_p(mod->locals.time_entered, T2T_HEARTBEAT_PERIOD_SECS)) {
             mod->locals.time_entered = hal_get_time();
             t2t_send_heartbeat();
@@ -126,6 +136,9 @@ void mod_step(ModInputs* inputs, ModState* mod) {
             hal_print("mod:rescue->rescue (HB)");
             #endif
         }
+        break;
+    case MOD_STATE_RESCUEING_SILENT:
+        /* Nothing to do here. */
         break;
     case MOD_STATE_DEAD:
         /* Nothing to do here. */

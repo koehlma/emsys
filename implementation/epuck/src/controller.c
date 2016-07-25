@@ -108,7 +108,7 @@ static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens) {
     inputs.found_victim_xy = c->vic_finder.found_victim_xy;
     inputs.give_up = c->pickup_artist.is_dead;
 
-    mod_step(&inputs, &c->moderator);
+    mod_step(&inputs, &c->moderator, sens);
     return c->moderator.may_run_p;
 }
 

@@ -132,7 +132,7 @@ static void setup_pathfin(TinBot* tinbot) {
 
     /* First, persuade the Moderator that we're already rescuing the victim
      * all along, and that this is fine. */
-    tinbot->controller.moderator.locals.state = 3;
+    tinbot->controller.moderator.locals.state = 4;
     tinbot->rx_buffer.moderate.owning_xy_p = 1;
     /* Call ProxFilter, for fun.
      * Also, disable TCE's interrupt. */
