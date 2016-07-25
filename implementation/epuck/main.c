@@ -63,25 +63,9 @@ void proximity_filter(void) {
 static TinTask reset_loop_counter_task;
 
 void reset_loop_counter(void) {
+    //tin_print("HB\n");
     loop_freq = loop_counter;
     loop_counter = 0;
-}
-
-
-/* send heartbeat */
-static TinTask send_heartbeat_task;
-
-void send_heartbeat(void) {
-    static TinPackage package = {NULL, (char) 0xFF, CMD_T2T_HEARTBEAT, 0, NULL, NULL};
-    tin_com_send(&package);
-}
-
-void hal_set_heartbeat(unsigned int enabled) {
-    if (enabled) {
-        tin_task_activate(&send_heartbeat_task);
-    } else {
-        tin_task_deactivate(&send_heartbeat_task);
-    }
 }
 
 
@@ -125,6 +109,7 @@ static void com_on_proximity_calibrate(TinPackage* package) {
 
 /* debug commands */
 static void debug_on_info(TinPackage* package) {
+    //hal_print("Debug Information:");
     static TinPackage response = {NULL, NULL, CMD_DEBUG_INFO, 0, NULL, NULL};
     static char data[4 * 11 + 2 + 6 + 1] __attribute__ ((aligned (4)));
     unsigned int number;
@@ -226,21 +211,23 @@ int main() {
 
     // TX priority (allows us to send data in interrupts)
     IPC2bits.U1TXIP = 7;
-    // RX priority
-    IPC2bits.U1RXIP = 6;
     // timer 2 used in scheduler
-    IPC1bits.T2IP = 4;
+    IPC1bits.T2IP = 6;
+    // RX priority
+    IPC2bits.U1RXIP = 5;
     // I2C priority
-    IPC3bits.MI2CIP = 3;
-    IPC3bits.SI2CIP = 3;
+    IPC3bits.MI2CIP = 4;
+    IPC3bits.SI2CIP = 4;
     // ADC priority
-    IPC2bits.ADIP = 2;
+    IPC2bits.ADIP = 3;
 
 
     tin_init();
 
     tin_init_com();
-    tin_init_rs232(9600UL);
+    tin_init_rs232(115200UL);
+
+    tin_print("Tin Bot - v0.1.0\n");
 
     my_com_addr = (char)tin_get_selector(); /* FIXME: Should be char */
     tin_com_set_address(my_com_addr);
@@ -254,8 +241,6 @@ int main() {
     // call proximity filter every 10ms
     tin_task_register(&proximity_filter_task, proximity_filter, 100);
     tin_task_activate(&proximity_filter_task);
-
-    tin_task_register(&send_heartbeat_task, send_heartbeat, T2T_HEARTBEAT_PERIOD_SECS * 10000L);
 
     tin_com_register(CMD_HELLO, com_on_hello);
     tin_com_register(CMD_START, com_on_start);

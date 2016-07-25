@@ -1,7 +1,10 @@
 #include <string.h>
+#include <stdio.h>
 
 #include "t2t.h"
 #include "tinbot.h"
+
+#include "log_config.h"
 
 /* Again, these are supposed to run within ISRs, so be quick about
  * copying these things into bot->* structures! */

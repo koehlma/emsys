@@ -18,7 +18,7 @@ try:
 except ImportError:
     print('Warning: Unable to import PiCamera.')
 
-from lps.constants import HUES
+from lps.constants import HUES, CORRECTION_MAP
 from lps.event import Event
 from lps.utils import log, ERROR
 
@@ -154,7 +154,7 @@ class Detector(threading.Thread):
                             positions[target] = {
                                 'x': x / 5.8,
                                 'y': (480 - y) / 5.8,
-                                'phi': -angle % (2 * math.pi)
+                                'phi': (-angle + CORRECTION_MAP[target]) % (2 * math.pi)
                             }
                             render(output, target, x, y, angle, r)
                     self.data_event.fire(output, positions)

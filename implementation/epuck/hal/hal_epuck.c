@@ -66,12 +66,14 @@ static void send_buf_wait(void) {
         speed_left = hal_get_speed_left();
         speed_right = hal_get_speed_right();
         hal_set_speed(0, 0);
+        //tin_print("H:S:W\n");
         while (!send_buf.completed)
             /* Not good, so do "active-waiting".
              * - hal_print() is a bad idea, as it worsens the problem.
              * - hal_set_speed(0, 0) might interfere badly with some algorithms. */
             ;
-        SEND_WAIT();
+        //SEND_WAIT();
+        //tin_print("H:P:D\n");
         hal_set_speed(speed_left, speed_right);
         send_buf_sending = 0;
         send_buf.length = 0;
@@ -106,14 +108,30 @@ void hal_send_done(char command, int is_broadcast) {
 void hal_print(const char* message) {
     double speed_left, speed_right;
     static TinPackage package = {0, 0, CMD_PRINT, 0, NULL, NULL, 0, NULL};
-    package.data = (char*) message;
-    package.length = strlen(message);
-    tin_com_send(&package);
+    static volatile unsigned int sending = 0;
+    /*if (sending) {
+        tin_print("H:P:ST\n");
+    } else {
+        tin_print("H:P:SW\n");
+    }*/
+    while (sending && !package.completed);
+    //tin_print("H:P:SD\n");
+    unsigned int prev_sending;
+    SYNCHRONIZED({
+        prev_sending = sending;
+        sending = 1;
+        package.data = (char*) message;
+        package.length = strlen(message);
+        tin_com_send(&package);
+    })
     speed_left = hal_get_speed_left();
     speed_right = hal_get_speed_right();
     hal_set_speed(0, 0);
+    //tin_print("H:P:W\n");
     while (!package.completed);
-    SEND_WAIT();
+    sending = prev_sending;
+    //tin_print("H:P:D\n");
+    //SEND_WAIT();
     hal_set_speed(speed_left, speed_right);
 }
 
