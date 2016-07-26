@@ -61,18 +61,15 @@ void tce_step(TCEInputs* inputs, TCEState* tce, Sensors* sens){
             }
             break;
         case TCE_waitdetect:
-            assert(!inputs->phi_give_up);
             if (inputs->found_victim_phi || inputs->phi_give_up) {
                 tce->locals.state = TCE_waitoff;
                 #ifdef LOG_TRANSITIONS_COP_EYES
                 hal_print("TCE:wd->wo");
                 #endif
                 tce->need_angle = 0;
-                if (inputs->found_victim_phi) {
-                    tce->locals.last_x = sens->current.x;
-                    tce->locals.last_y = sens->current.y;
-                    tce->locals.last_phi = inputs->ray_phi;
-                }
+                tce->locals.last_x = sens->current.x;
+                tce->locals.last_y = sens->current.y;
+                tce->locals.last_phi = inputs->ray_phi;
             }
             break;
         case TCE_waitoff:
