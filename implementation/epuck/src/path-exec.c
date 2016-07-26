@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "bellman-ford/bellman-ford.h"
 #include "hal.h"
 #include "log_config.h"
 #include "pi.h" /* M_PI */
@@ -8,11 +9,16 @@
 #include "state-machine-common.h"
 #include "sensors.h"
 
-#define TOLERANCE_ANGLE (5 * M_PI / 180)
+#define TOLERANCE_ANGLE (15 * M_PI / 180)
+
 /* If we moved *back* by this much, restart. */
 #define PE_PROGRESS_MIN (-1.2)
-/* If we aren't at least this close to the victim, restart. */
+
+/* If we aren't at least this close to the waypoint, restart. */
 #define PE_DIST_TOLERANCE (4)
+
+/* Should be roughly PE_DIST_TOLERANCE + STEPPING_DIST  */
+#define PE_DIST_RECOMPUTE (0.3 + PE_DIST_TOLERANCE + STEPPING_DIST)
 
 enum PE_STATES {
     PE_inactive,
@@ -177,7 +183,18 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             break;
         }
         {
-            double stray;
+            double stray, progress, dist;
+
+            progress = inputs->next.x - sens->current.x;
+            dist = inputs->next.y - sens->current.y;
+            dist = sqrt(dist * dist + progress * progress);
+            if (dist >= PE_DIST_RECOMPUTE) {
+                /* Trigger re-pathing. */
+                smc_halt();
+                l->state = PE_profit;
+                pe->see_obstacle = 1;
+            }
+
             stray = 0;
             stray += (inputs->next.x - sens->current.x) * l->normal.x;
             stray += (inputs->next.y - sens->current.y) * l->normal.y;
@@ -191,12 +208,6 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
                 smc_halt();
                 break;
             }
-        }
-        {
-            double progress, dist;
-            progress = inputs->next.x - sens->current.x;
-            dist = inputs->next.y - sens->current.y;
-            dist = sqrt(dist * dist + progress * progress);
 
             progress = 0;
             progress += -(inputs->next.x - sens->current.x) * l->normal.y;
