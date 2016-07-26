@@ -8,8 +8,6 @@
 #include "path-finder.h"
 #include "pi.h"
 
-#define LOG_TRANSITIONS_PATH_FINDER
-
 enum {
     PF_inactive,
     PF_running,

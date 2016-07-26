@@ -10,6 +10,7 @@
 #define LOG_TRANSITIONS_COP_EYES
 #define LOG_TRANSITIONS_MOD
 #define LOG_TRANSITIONS_PATH_EXEC
+#define LOG_TRANSITIONS_PATH_FINDER
 #define LOG_TRANSITIONS_VICDIR
 
 /* "Expensive" as in "you're going to need a lot of space for this,
