@@ -29,7 +29,7 @@ static unsigned int bellman_ford_cycle(BellmanFord* state) {
     /* In each step, propagate our own "short" distance to our neighbors. */
     for (curr_v = 0; curr_v < NUM_VERTICES; ++curr_v) {
         if (state->distances[curr_v] < 0) {
-            /* "Infinitely far away; from holyday."
+            /* "Infinitely far away; from holiday."
              * -- artist Somaaa, in track 'Soma Holiday' */
             continue;
         }
