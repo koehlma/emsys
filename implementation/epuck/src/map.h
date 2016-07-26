@@ -5,7 +5,9 @@
  * so keep it as small as possible!
  * There are multiple restrictions on this value (due to optimizations),
  * so keep it a multiple of 4. */
+#ifndef MAP_PROXIMITY_SIZE
 #define MAP_PROXIMITY_SIZE 20
+#endif
 
 /* Size of the internal map.  Keep it reasonably small, as it eats up memory. */
 #ifdef MAP_MAX_WIDTH
@@ -60,7 +62,9 @@ unsigned int map_invalid_pos(Position pos);
 
 /* Use this when calling map_[de]serialize.
  * There already exists a check in map_common.c whether this is up-to-date. */
+#ifndef MAP_PROXIMITY_BUF_SIZE
 #define MAP_PROXIMITY_BUF_SIZE 100
+#endif
 
 /* CAVEAT: these only return VIEWS of the respective data, so do not
  * modify the source until done, and copy your data soon!
