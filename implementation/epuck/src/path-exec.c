@@ -52,7 +52,9 @@ static unsigned int near_crash_p(PathExecInputs* inputs, Sensors* sens) {
             || sens->proximity[PROXIMITY_P_150] < PE_CRASH_TOLERANCE;
     } else {
         return sens->proximity[PROXIMITY_M_20] < PE_CRASH_TOLERANCE
-            || sens->proximity[PROXIMITY_P_20] < PE_CRASH_TOLERANCE;
+            || sens->proximity[PROXIMITY_P_20] < PE_CRASH_TOLERANCE
+            || sens->proximity[PROXIMITY_M_45] < PE_CRASH_TOLERANCE
+            || sens->proximity[PROXIMITY_P_45] < PE_CRASH_TOLERANCE;
     }
 }
 
