@@ -30,3 +30,4 @@ class Modes(enum.IntEnum):
     MAPONLY = 4
     PATHFIN = 5
     BLUETEST = 6
+    BENCH_BF = 7

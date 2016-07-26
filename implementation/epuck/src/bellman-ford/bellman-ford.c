@@ -15,10 +15,9 @@ typedef char check_max_vertices_num[(NUM_VERTICES < 32767) ? 1 : -1];
 
 static int16_t pos2v(ExactPosition pos);
 static ExactPosition v2pos(int16_t v);
-static unsigned int init_bellman_ford(BellmanFord* state);
 static int generate_potential_neighbours(int16_t* buffer, int16_t v);
 
-static unsigned int bellman_ford_cycle(BellmanFord* state) {
+unsigned int bellman_ford_cycle(BellmanFord* state) {
     int neigh_idx, neigh_num;
     int16_t neigh_buf[4];
 
@@ -161,7 +160,7 @@ static int16_t pos2v(ExactPosition pos) {
     return (int16_t)res;
 }
 
-static unsigned int init_bellman_ford(BellmanFord* state) {
+unsigned int init_bellman_ford(BellmanFord* state) {
     int i;
     state->init_v = pos2v(state->init);
     state->goal_v = pos2v(state->goal);

@@ -34,4 +34,8 @@ void find_path(BellmanFord* state);
 
 ExactPosition bf_v2pos(BellmanFord* state, int16_t v);
 
+/* Only for testing and benchmarking */
+unsigned int bellman_ford_cycle(BellmanFord* state);
+unsigned int init_bellman_ford(BellmanFord* state);
+
 #endif /* EPUCK_BELLMAN_FORD_H */

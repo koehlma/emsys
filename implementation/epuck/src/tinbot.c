@@ -166,26 +166,55 @@ static void loop_pathfin(TinBot* tinbot) {
 
 
 static void setup_bluetooth_test(TinBot* tinbot) {
-
+    (void)tinbot;
 }
 
 static void loop_bluetooth_test(TinBot* tinbot) {
     unsigned int i;
+    (void)tinbot;
     hal_print("Bluetooth Test");
     for (i = 0; i < 20; i++) {
         hal_print("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
     }
 }
 
+static void setup_bench_bf(TinBot* tinbot) {
+    (void)tinbot;
+}
 
-static TinMode modes[7] = {
+static void loop_bench_bf(TinBot* tinbot) {
+    hal_time time;
+    unsigned int i;
+    BellmanFord state;
+
+    (void)tinbot;
+    state.init.x = 5;
+    state.init.y = 6;
+    state.goal.x = 50;
+    state.goal.y = 60;
+    init_bellman_ford(&state);
+
+    sprintf(hal_get_printbuf(), "Running Bellman-F(j)ord for %d iterations ...", NUM_VERTICES);
+    hal_print(hal_get_printbuf());
+    time = hal_get_time();
+    for (i = 0; i < NUM_VERTICES; i++) {
+        bellman_ford_cycle(&state);
+    }
+    time = hal_get_time() - time;
+    sprintf(hal_get_printbuf(), "Benchmark took %.1f seconds.", time / 1000.0);
+    hal_print(hal_get_printbuf());
+}
+
+
+static TinMode modes[8] = {
         {setup_full,      loop_full},
         {setup_rhr,       loop_rhr},
         {setup_mergeonly, loop_mergeonly},
         {setup_vicdir,    loop_vicdir},
         {setup_maponly,   loop_maponly},
         {setup_pathfin,   loop_pathfin},
-        {setup_bluetooth_test, loop_bluetooth_test}
+        {setup_bluetooth_test, loop_bluetooth_test},
+        {setup_bench_bf,  loop_bench_bf}
 };
 
 void setup(TinBot* tinbot) {
