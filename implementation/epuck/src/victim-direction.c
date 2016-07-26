@@ -70,7 +70,7 @@ static void entry_start(VDState* vd, Sensors* sens) {
 static void compute_result(VDState* vd, Sensors* sens) {
     double eff_opening;
 
-    if (vd->locals.counter_total < 500) {
+    if (vd->locals.counter_total < 200) {
         /* Wat. */
         #ifdef LOG_TRANSITIONS_VICDIR
         sprintf(hal_get_printbuf(), "VD:too few total samples (%lu)", vd->locals.counter_total);
