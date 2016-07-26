@@ -76,7 +76,7 @@ static void enter_new_sensor_data(Map* map, Sensors* sens, double x, double y,
     double delta_y = sin(sens->current.phi + sensor_phi) * 0.7;
     x += delta_x;
     y += delta_y;
-    while (r < distance && r < 8) {
+    while (r < distance && r < 7) {
         temp_x = x + delta_x;
         map_set_field_guarded(map, (int) temp_x, (int) y, FIELD_FREE);
         temp_y = y + delta_y;
@@ -86,6 +86,9 @@ static void enter_new_sensor_data(Map* map, Sensors* sens, double x, double y,
         map_set_field_guarded(map, (int) x, (int) y, FIELD_FREE);
         r += 0.7;
     }
+    x += 2 * delta_x;
+    y += 2 * delta_y;
+    r += 1.4;
     if (r >= distance && distance < MAX_MAP_PROXIMITY_DISTANCE) {
         map_set_field_guarded(map, (int) x, (int) y, FIELD_WALL);
     }
