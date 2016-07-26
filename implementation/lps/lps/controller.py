@@ -53,6 +53,10 @@ class Controller:
         if command == Commands.T2T_UPDATE_MAP:
             self.map_updated_event.fire()
 
+    def reset_map(self):
+        self.map = Map()
+        self.map_updated_event.fire()
+
     def discover(self):
         with self.discover_lock:
             devices = bluetooth.discover_devices()

@@ -113,12 +113,12 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens, ProxMapSt
             l->time_entered = hal_get_time();
             if (l->need_rot < -TOLERANCE_ANGLE) {
                 l->need_rot *= -1;
-                smc_rot_right();
+                hal_set_speed(4, -4);
                 #ifdef LOG_TRANSITIONS_PATH_EXEC
                 hal_print("pe:rot right");
                 #endif
             } else if (l->need_rot > TOLERANCE_ANGLE) {
-                smc_rot_left();
+                hal_set_speed(-4, 4);
                 #ifdef LOG_TRANSITIONS_PATH_EXEC
                 hal_print("pe:rot left");
                 #endif

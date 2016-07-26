@@ -159,7 +159,7 @@ class Detector(threading.Thread):
                             render(output, target, x, y, angle, r)
                     self.data_event.fire(output, positions)
 
-            time.sleep(2)
+            time.sleep(1)
 
     def run(self):
         try:
