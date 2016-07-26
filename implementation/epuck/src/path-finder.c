@@ -17,10 +17,10 @@ enum {
 /* As soon as we're this far away from the victim, start driving backwards.
  * 2.65 victim radius (5.3/2)
  * 0.2  vctim docking mechanism
- * 0.8  Tin Bot docking mechanism
+ * 2.0  Tin Bot docking mechanism
  * 2.65 Tin Bot radius (5.3/2)
  * 0.5  magnet trigger distance */
-#define PF_BACKWARDS_DIST (5.3+1.5)
+#define PF_BACKWARDS_DIST (5.3+2.7)
 
 void pf_reset(PathFinderState* pf) {
     pf->locals.state = PF_inactive;
