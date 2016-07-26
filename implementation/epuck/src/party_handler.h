@@ -10,6 +10,7 @@ typedef struct {
 typedef struct {
     int soft_state;
     int hard_state;
+    hal_time entry;
 } PHandlerState;
 
 void phandler_reset(PHandlerState* state);

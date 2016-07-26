@@ -3,16 +3,20 @@
 
 #define SOFT_LED_DIST (3)
 #define HARD_LED_DIST (2)
+#define CHANGE_TIME_INTERVAL (1000)
 
 void set_leds(int state, int dist);
 
 void phandler_reset(PHandlerState* state) {
     state->soft_state = state->hard_state = 0;
+    state->entry = 0;
 }
 
 void phandler_step(PHandlerInput* input, PHandlerState* state) {
-    unsigned int led_index;
-    int on;
+    if(hal_get_time() - state->entry < CHANGE_TIME_INTERVAL) {
+        return;
+    }
+    state->entry = hal_get_time();
     if(input->party_hard) { /* priority on party hard */
         state->soft_state = 0;
         state->hard_state = (state->hard_state + 1) % HARD_LED_DIST;
