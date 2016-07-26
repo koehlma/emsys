@@ -28,6 +28,7 @@ typedef struct Controller {
     TCEState cop_eyes;
     VDState vic_dir;
     VFState vic_finder;
+    unsigned int first_iter;
     ExactPosition origin;
 } Controller;
 

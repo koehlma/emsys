@@ -126,12 +126,10 @@ static void loop_mergeonly(TinBot* tinbot) {
 
 
 /* Mode - pathfin */
-static unsigned int pathfin_origin_resetted = 0;
 
 static void setup_pathfin(TinBot* tinbot) {
     hal_print("Tin Bot Setup: Path Finder (20,30), somewhat");
     controller_reset(&tinbot->controller, &tinbot->sens);
-    pathfin_origin_resetted = 0;
 
     /* First, persuade the Moderator that we're already rescuing the victim
      * all along, and that this is fine. */
@@ -146,16 +144,16 @@ static void setup_pathfin(TinBot* tinbot) {
     /* Next, Blind Cop has lots of internal state. */
     tinbot->controller.blind.locals.state_big = 1;
     tinbot->controller.blind.locals.state_leaf = 5;
+
+    /* Finally, tell the controller where to go. */
+    tinbot->controller.first_iter = 0;
+    tinbot->controller.origin.x = 20.0;
+    tinbot->controller.origin.y = 30.0;
+
     /* The rest should be propagated automatically. */
 }
 
 static void loop_pathfin(TinBot* tinbot) {
-    tinbot->sens.victim_attached = 1;
-    if (!pathfin_origin_resetted) {
-        tinbot->sens.lps.x = 20.0;
-        tinbot->sens.lps.y = 30.0;
-        pathfin_origin_resetted = 1;
-    }
     controller_step(&tinbot->controller, &tinbot->sens);
 }
 

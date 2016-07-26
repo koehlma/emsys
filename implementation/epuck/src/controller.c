@@ -26,15 +26,15 @@ void controller_reset(Controller* c, Sensors* sens) {
     tce_reset(&c->cop_eyes);
     vd_reset(&c->vic_dir);
     vf_reset(&c->vic_finder);
+    c->first_iter = 1;
 }
 
 void controller_step(Controller* c, Sensors* sens) {
     enum BlindRunChoice old_choice;
 
-    static int first_iter = 1;
-    if (first_iter) {
+    if (c->first_iter) {
         set_origin(c, sens->lps.x, sens->lps.y);
-        first_iter = 0;
+        c->first_iter = 0;
     }
 
     /* Zeroth, check whether we *want* to execute at all. */
