@@ -133,7 +133,7 @@ static ExactPosition v2pos(int16_t v) {
 
     assert(0 <= v && v < NUM_VERTICES);
     log_y = v / VERTICES_PER_ROW;
-    log_x = v % VERTICES_PER_COL;
+    log_x = v % VERTICES_PER_ROW;
     res.x = log_x * DIST_BETWEEN_COLS + DIST_BETWEEN_COLS / 2;
     res.y = log_y * DIST_BETWEEN_ROWS + DIST_BETWEEN_ROWS / 2;
 
