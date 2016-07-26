@@ -23,6 +23,12 @@ void update_proximity(TinBot* tinbot, double proximity[8]) {
 
 void update_ir(TinBot* tinbot, int ir[6]) {
     unsigned int i;
+    if(tinbot->sens.victim_attached){
+        /* Q: Why would you do that?
+         * A: victim_attached => party soft.
+         * Hence, party handler takes control over the LEDs now. */
+        return;
+    }
     for (i = 0; i < 6; ++i) {
         tinbot->sens.ir[i] = ir[i];
     }
