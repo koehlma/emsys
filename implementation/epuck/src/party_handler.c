@@ -14,7 +14,7 @@ void phandler_reset(PHandlerState* state) {
 }
 
 void phandler_step(PHandlerInput* input, PHandlerState* state) {
-    if(smc_time_passed_p(state->entry, CHANGE_TIME_INTERVAL)) {
+    if(!smc_time_passed_p(state->entry, CHANGE_TIME_INTERVAL)) {
         return;
     }
     state->entry = hal_get_time();

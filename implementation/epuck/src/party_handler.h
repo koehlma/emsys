@@ -3,8 +3,8 @@
 #define EPUCK_PHANDLER_H
 
 typedef struct {
-    int party_soft;
-    int party_hard;
+    unsigned int party_soft;
+    unsigned int party_hard;
 } PHandlerInput;
 
 typedef struct {
