@@ -5,7 +5,9 @@
  * so keep it as small as possible!
  * There are multiple restrictions on this value (due to optimizations),
  * so keep it a multiple of 4. */
-#define MAP_PROXIMITY_SIZE 16
+#define MAP_PROXIMITY_SIZE 20
+
+/* Size of the internal map.  Keep it reasonably small, as it eats up memory. */
 #ifdef MAP_MAX_WIDTH
 #  ifndef MAP_MAX_HEIGHT
 #    error "Only MAP_MAX_WIDTH defined.  Use -DMAP_MAX_HEIGHT=123456 for the other."
@@ -14,8 +16,8 @@
 #  ifdef MAP_MAX_HEIGHT
 #    error "Only MAP_MAX_HEIGHT defined.  Use -DMAP_MAX_WIDTH=123456 for the other."
 #  else
-#    define MAP_MAX_WIDTH 100
-#    define MAP_MAX_HEIGHT 100
+#    define MAP_MAX_WIDTH 120
+#    define MAP_MAX_HEIGHT 90
 #  endif
 #endif
 
@@ -58,7 +60,7 @@ unsigned int map_invalid_pos(Position pos);
 
 /* Use this when calling map_[de]serialize.
  * There already exists a check in map_common.c whether this is up-to-date. */
-#define MAP_PROXIMITY_BUF_SIZE 64
+#define MAP_PROXIMITY_BUF_SIZE 100
 
 /* CAVEAT: these only return VIEWS of the respective data, so do not
  * modify the source until done, and copy your data soon!

@@ -16,9 +16,9 @@ from lps.utils import log, WARNING
 # Keep the following definitions in sync with map.h.
 # The names are identical in order to make the correlation
 # unmistakeably clear.
-MAP_PROX_SIZE = 16
-MAP_MAX_WIDTH = 100
-MAP_MAX_HEIGHT = 100
+MAP_PROX_SIZE = 20
+MAP_MAX_WIDTH = 120
+MAP_MAX_HEIGHT = 90
 BITS_PER_FIELD = 2
 FIELD_MASK = (1 << BITS_PER_FIELD) - 1
 PROX_CELLS_X = int(MAP_PROX_SIZE / 4)
@@ -50,11 +50,11 @@ def get_field(x, y, data, width=MAP_PROX_SIZE, height=MAP_PROX_SIZE):
 
 class Map:
     def __init__(self):
-        self.array = numpy.zeros((100, 100), dtype=numpy.uint8)
+        self.array = numpy.zeros((MAP_MAX_HEIGHT, MAP_MAX_WIDTH), dtype=numpy.uint8)
         # access with: self.array[y][x]
 
     def update(self, x, y, field):
-        if 0 <= x < 100 and 0 <= y < 100 and field != Field.UNKNOWN:
+        if 0 <= x < MAP_MAX_WIDTH and 0 <= y < MAP_MAX_HEIGHT and field != Field.UNKNOWN:
             self.array[y][x] = field
 
     def patch(self, ll_x, ll_y, data):
