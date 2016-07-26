@@ -55,13 +55,14 @@ perl -pnl -e 's%~~(.*)$%,[1],"\1");%g'
 */
 
     /* ------8<------8<------8<------8<------ */
-    USE_SPACE(./hal/hal_epuck.c:17,hal_epuck_motor_wrapper,motor_wrapper,[1],";");
-    USE_SPACE(./hal/hal_epuck.c:58,TinPackage,send_buf,[1]," = {0, 0, 0, 0, NULL, NULL, 0, NULL};");
-    USE_SPACE(./hal/hal_epuck.c:59,int,send_buf_sending,[1]," = 0;");
-    USE_SPACE(./hal/hal_epuck.c:74,char,send_buf_buf,[TIN_PACKAGE_MAX_LENGTH],"[TIN_PACKAGE_MAX_LENGTH];");
-    USE_SPACE(./hal/hal_epuck.c:99,TinPackage,package,[1]," = {0, 0, CMD_PRINT, 0, NULL, NULL, 0, NULL};");
-    USE_SPACE(./hal/map_static.c:7,char,map_accu,[MAP_INTERNAL_DATA_SIZE(MAP_MAX_WIDTH,MAP_MAX_HEIGHT)],"[MAP_INTERNAL_DATA_SIZE(MAP_MAX_WIDTH,MAP_MAX_HEIGHT)]");
-    USE_SPACE(./hal/map_static.c:9,char,map_prox,[MAP_INTERNAL_DATA_SIZE(MAP_PROXIMITY_SIZE,MAP_PROXIMITY_SIZE)],"[MAP_INTERNAL_DATA_SIZE(MAP_PROXIMITY_SIZE,MAP_PROXIMITY_SIZE)]");
+    USE_SPACE(./hal/hal_epuck.c:19,hal_epuck_motor_wrapper,motor_wrapper,[1],";");
+    USE_SPACE(./hal/hal_epuck.c:60,TinPackage,send_buf,[1]," = {0, 0, 0, 0, NULL, NULL, 0, NULL};");
+    USE_SPACE(./hal/hal_epuck.c:61,int,send_buf_sending,[1]," = 0;");
+    USE_SPACE(./hal/hal_epuck.c:82,char,send_buf_buf,[TIN_PACKAGE_MAX_LENGTH],"[TIN_PACKAGE_MAX_LENGTH];");
+    USE_SPACE(./hal/hal_epuck.c:108,TinPackage,package,[1]," = {0, 0, CMD_PRINT, 0, NULL, NULL, 0, NULL};");
+    USE_SPACE(./hal/map_static.c:10,char,map_accu,[MAP_INTERNAL_DATA_SIZE(MAP_MAX_WIDTH,MAP_MAX_HEIGHT)],"[MAP_INTERNAL_DATA_SIZE(MAP_MAX_WIDTH,MAP_MAX_HEIGHT)]");
+    USE_SPACE(./hal/map_static.c:12,char,map_prox,[MAP_INTERNAL_DATA_SIZE(MAP_PROXIMITY_SIZE,MAP_PROXIMITY_SIZE)],"[MAP_INTERNAL_DATA_SIZE(MAP_PROXIMITY_SIZE,MAP_PROXIMITY_SIZE)]");
+    USE_SPACE(./hal/map_static.c:49,char,printbuf,[TIN_PACKAGE_MAX_LENGTH],"[TIN_PACKAGE_MAX_LENGTH];");
     USE_SPACE(./main.c:15,int,ir_data,[8],"[8] = {0};");
     USE_SPACE(./main.c:17,double,lps_data,[3],"[3] = {0};");
     USE_SPACE(./main.c:18,int,lps_updated,[1]," = 0;");
@@ -87,24 +88,26 @@ perl -pnl -e 's%~~(.*)$%,[1],"\1");%g'
     USE_SPACE(./main.c:129,char,data,[4 * 11 + 2 + 6 + 1],"[4 * 11 + 2 + 6 + 1] __attribute__ ((aligned (4)));");
     USE_SPACE(./main.c:163,TinPackage,response,[1]," = {NULL, NULL, CMD_T2T_UPDATE_MAP, 0, NULL, NULL};");
     USE_SPACE(./main.c:164,char,data,[68],"[68] __attribute__ ((aligned (4)));");
-    USE_SPACE(./main.c:342,int,tmp_pickup_data,[1]," = 0;");
-    USE_SPACE(./main.c:343,int,state,[1]," = 0;");
+    USE_SPACE(./main.c:345,int,tmp_pickup_data,[1]," = 0;");
+    USE_SPACE(./main.c:346,int,state,[1]," = 0;");
     USE_SPACE(./src/approximator.c:14,double,tinbot_diameter,[1]," = 5.3;");
     USE_SPACE(./src/approximator.c:19,int,status,[1]," = 0;");
-    USE_SPACE(./src/blind-cop.c:11,double,NO_PATH_TIMEOUT_SECS,[1]," = 40;");
-    USE_SPACE(./src/path-exec.c:30,double,PE_MAX_STRAY,[1]," = 10;");
-    USE_SPACE(./src/path-finder.c:127,int,APPROX_RADIUS,[1]," = 2;");
+    USE_SPACE(./src/blind-cop.c:10,double,NO_PATH_TIMEOUT_SECS,[1]," = 40;");
+    USE_SPACE(./src/controller.c:34,int,first_iter,[1]," = 1;");
+    USE_SPACE(./src/path-exec.c:36,double,PE_MAX_STRAY,[1]," = 10;");
+    USE_SPACE(./src/path-finder.c:148,int,APPROX_RADIUS,[1]," = 2;");
     USE_SPACE(./src/rhr.c:27,double,RHR_CONF_CORNER_D,[1]," = 9.5;");
     USE_SPACE(./src/rhr.c:28,double,RHR_CONF_CORNER_X,[1]," = 11;");
     USE_SPACE(./src/rhr.c:29,double,RHR_CONF_WALL_THRESH,[1]," = 2;");
     USE_SPACE(./src/rhr.c:30,double,RHR_CONF_WALL_D,[1]," = 1;");
     USE_SPACE(./src/rhr.c:31,double,RHR_CONF_STROKE_THRESH,[1]," = 1.8;");
     USE_SPACE(./src/rhr.c:41,int,order,[NUM_PROXIMITY],"[NUM_PROXIMITY] =");
-    USE_SPACE(./src/tinbot.c:112,char,mergeonly_printbuf,[100],"[100];");
-    USE_SPACE(./src/tinbot.c:115,long,iterations,[1]," = 10000;");
-    USE_SPACE(./src/tinbot.c:130,TinMode,modes,[5],"[5] = {");
-    USE_SPACE(./src/traffic-cop-eyes.c:15,double,MIN_DIST,[1]," = 12;");
-    USE_SPACE(./src/victim-direction.c:27,double,VD_MIN_ON,[1]," = 9.0 / 360.0;");
+    USE_SPACE(./src/t2t.c:38,char,mybuf,[100],"[100];");
+    USE_SPACE(./src/tinbot.c:113,long,iterations,[1]," = 10000;");
+    USE_SPACE(./src/tinbot.c:129,int,pathfin_origin_resetted,[1]," = 0;");
+    USE_SPACE(./src/tinbot.c:176,TinMode,modes,[7],"[7] = {");
+    USE_SPACE(./src/traffic-cop-eyes.c:14,double,MIN_DIST,[1]," = 12;");
+    USE_SPACE(./src/victim-direction.c:26,double,VD_MIN_ON,[1]," = 9.0 / 360.0;");
     /* ------>8------>8------>8------>8------ */
 }
 
@@ -209,8 +212,7 @@ perl -pnl -e 's%~~(.*)$%,[1],"\1");%g'
     USE_SPACE(tinpuck/src/com.c:29,int,tx_state,[1]," = STATE_SOURCE;");
     USE_SPACE(tinpuck/src/com.c:30,int,tx_position,[1]," = 0;");
     USE_SPACE(tinpuck/src/com.c:32,TinPackage,rx_package,[1],";");
-    USE_SPACE(tinpuck/src/com.c:42,char,rx_data,[TIN_PACKAGE_MAX_LENGTH],"[TIN_PACKAGE_MAX_LENGTH];");
-    USE_SPACE(tinpuck/src/com.c:47,char,rx_data,[TIN_PACKAGE_MAX_LENGTH],"[TIN_PACKAGE_MAX_LENGTH] __attribute__ ((aligned (TINPUCK_COM_RX_ALIGN)));");
+    USE_SPACE(tinpuck/src/com.c:47,char,rx_data,[TIN_PACKAGE_MAX_LENGTH],"[TIN_PACKAGE_MAX_LENGTH]");
     USE_SPACE(tinpuck/src/com.c:50,char,rx_state,[1]," = STATE_SOURCE;");
     USE_SPACE(tinpuck/src/com.c:51,int,rx_position,[1]," = 0;");
     USE_SPACE(tinpuck/src/com.c:52,long,rx_start,[1]," = 0;");
@@ -225,7 +227,6 @@ perl -pnl -e 's%~~(.*)$%,[1],"\1");%g'
     USE_SPACE(tinpuck/src/motors.c:48,TinTask,tin_motor_right_task,[1],";");
     USE_SPACE(tinpuck/src/motors.c:208,int,on,[1]," = 0;");
     USE_SPACE(tinpuck/src/motors.c:233,int,on,[1]," = 0;");
-    USE_SPACE(tinpuck/src/rs232.c:48,int,state,[1]," = 0;");
     USE_SPACE(tinpuck/src/scheduler.c:19,TinTask,tin_task_list_head,[1]," = NULL;");
     USE_SPACE(tinpuck/src/time.c:19,TinTask,tin_time_task,[1],";");
     /* ------>8------>8------>8------>8------ */
