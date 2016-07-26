@@ -14,6 +14,14 @@ enum {
     PF_complete
 };
 
+/* As soon as we're this far away from the victim, start driving backwards.
+ * 2.65 victim radius (5.3/2)
+ * 0.2  vctim docking mechanism
+ * 0.8  Tin Bot docking mechanism
+ * 2.65 Tin Bot radius (5.3/2)
+ * 0.5  magnet trigger distance */
+#define PF_BACKWARDS_DIST (5.3+1.5)
+
 void pf_reset(PathFinderState* pf) {
     pf->locals.state = PF_inactive;
     pf->next.x = -1;
@@ -94,19 +102,21 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
                     pf->locals.state = PF_complete;
                     pf->path_completed = 1;
                 } else {
-                    int next, after_next;
+                    double dist;
                     pf->next = bf_v2pos(&pf->locals.bf_state, pf->locals.next_v);
                     #ifdef LOG_TRANSITIONS_PATH_FINDER
                     sprintf(hal_get_printbuf(), "pf: namely (%.1f,%.1f)",
                         pf->next.x, pf->next.y);
                     hal_print(hal_get_printbuf());
                     #endif
-                    next = pf->locals.bf_state.succ[pf->locals.next_v];
-                    after_next = -1;
-                    if (next != -1) {
-                        after_next = pf->locals.bf_state.succ[after_next];
+                    {
+                        double tmp;
+                        tmp = inputs->dest.x - pf->next.x;
+                        dist = inputs->dest.y - pf->next.y;
+                        dist = dist * dist + tmp * tmp;
+                        dist = sqrt(dist);
                     }
-                    if (after_next == -1) {
+                    if (dist < PF_BACKWARDS_DIST) {
                         pf->backwards = inputs->is_victim;
                     }
                 }
