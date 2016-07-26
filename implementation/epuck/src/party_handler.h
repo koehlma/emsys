@@ -8,8 +8,8 @@ typedef struct {
 } PHandlerInput;
 
 typedef struct {
-    int soft_state;
-    int hard_state;
+    unsigned int soft_state;
+    unsigned int hard_state;
     hal_time entry;
 } PHandlerState;
 

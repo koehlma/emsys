@@ -5,7 +5,7 @@
 #define HARD_LED_DIST (2)
 #define CHANGE_TIME_INTERVAL (1000)
 
-void set_leds(int state, int dist);
+void set_leds(unsigned int state, unsigned int dist);
 
 void phandler_reset(PHandlerState* state) {
     state->soft_state = state->hard_state = 0;
@@ -28,7 +28,7 @@ void phandler_step(PHandlerInput* input, PHandlerState* state) {
     }
 }
 
-void set_leds(int state, int dist) {
+void set_leds(unsigned int state, unsigned int dist) {
     unsigned int led_index;
     int on;
     for(led_index = 0; led_index < 8; ++led_index) {
