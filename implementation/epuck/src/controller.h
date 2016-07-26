@@ -14,6 +14,7 @@
 #include "traffic-cop-eyes.h"
 #include "victim-direction.h"
 #include "victim-finder.h"
+#include "party_handler.h"
 
 typedef struct Controller {
     ApproxState approx;
@@ -28,6 +29,7 @@ typedef struct Controller {
     TCEState cop_eyes;
     VDState vic_dir;
     VFState vic_finder;
+    PHandlerState party_handler;
     unsigned int first_iter;
     ExactPosition origin;
 } Controller;

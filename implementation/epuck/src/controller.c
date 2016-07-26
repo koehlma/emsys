@@ -3,6 +3,7 @@
 #include "controller.h"
 #include "hal.h"
 #include "proximity-filter.h"
+#include "party_handler.h"
 
 static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens);
 static void set_origin(Controller* c, double x, double y);
@@ -12,6 +13,7 @@ static void inquire_eyes_decision(Controller* c, Sensors* sens);
 static void reset_appropriately(enum BlindRunChoice old_choice, Controller* c);
 static void run_victim_finder(Controller* c, Sensors* sens);
 static void run_path_finder_executer(Controller* c, Sensors* sens);
+static void organize_party(Controller* c, Sensors* sens);
 
 void controller_reset(Controller* c, Sensors* sens) {
     approx_reset(&c->approx, sens);
@@ -26,6 +28,7 @@ void controller_reset(Controller* c, Sensors* sens) {
     tce_reset(&c->cop_eyes);
     vd_reset(&c->vic_dir);
     vf_reset(&c->vic_finder);
+    phandler_reset(&c->party_handler);
     c->first_iter = 1;
 }
 
@@ -98,6 +101,8 @@ void controller_step(Controller* c, Sensors* sens) {
     /* Internal map is updated "automatically" by the "echoed" UpdateMap
      * packets.  So we only send the proxmap here. */
     proximity_step(&c->prox_map, sens);
+
+    organize_party(c, sens);
 }
 
 static unsigned int inquire_moderator_permission(Controller* c, Sensors* sens) {
@@ -219,4 +224,11 @@ static void set_origin(Controller* c, double x, double y) {
     sprintf(hal_get_printbuf(), "CTRL:o=(%.1f,%.1f)", c->origin.x, c->origin.y);
     hal_print(hal_get_printbuf());
     assert(!map_invalid_pos(map_discretize(c->origin)));
+}
+
+static void organize_party(Controller* c, Sensors* sens) {
+    PHandlerInput input;
+    input.party_soft = sens->victim_attached;
+    input.party_hard = c->path_finder.path_completed && input.party_soft;
+    phandler_step(&input, &c->party_handler);
 }
