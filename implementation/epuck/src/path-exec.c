@@ -44,7 +44,7 @@ void pe_reset(PathExecState* pe) {
        read from locals.time_entered or locals.start_* or locals.need_* */
 }
 
-#define PE_CRASH_TOLERANCE 1.0
+#define PE_CRASH_TOLERANCE 1.5
 
 static unsigned int near_crash_p(PathExecInputs* inputs, Sensors* sens) {
     if (inputs->backwards) {
