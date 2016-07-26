@@ -47,6 +47,8 @@ void update_victim_pickup(TinBot* tinbot, unsigned int grabbed) {
 void update_lps(TinBot* tinbot, double x, double y, double phi) {
     tinbot->sens.lps.x = x;
     tinbot->sens.lps.y = y;
+    sprintf(hal_get_printbuf(), "LPS: phi diff = %.1f", angle_dist(phi, tinbot->sens.current.phi));
+    hal_print(hal_get_printbuf());
     tinbot->sens.lps.phi = phi;
 }
 
