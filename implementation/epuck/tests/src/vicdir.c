@@ -32,8 +32,10 @@ int main() {
     int i;
     hal_time core_time[NUM_IR];
     T2TData_VicFix vdf;
+    ProxMapState prox_map;
 
     /* Initialization */
+    proximity_reset(&prox_map, &sens);
     vd_reset(&vds);
     sens.current.x = 0;
     sens.current.y = 0;
@@ -57,7 +59,7 @@ int main() {
         if (fabs(hal_get_speed_left()) > 0.5) {
             sens.current.phi = hal_get_time() * 2 * M_PI / IR_COMPLETION_TIME;
         }
-        vd_step(&vdf, &vds, &sens);
+        vd_step(&vdf, &vds, &sens, &prox_map);
         if (hal_get_time() % 4000 == 0) {
             printf("Debug data: @%5.3f %d%d%d%d%d%d state%1d %5.3f@%1d/%1d %5.1f%% g%5.3f\n",
                 sens.current.phi,

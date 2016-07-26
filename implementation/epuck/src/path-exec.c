@@ -58,7 +58,7 @@ static unsigned int near_crash_p(PathExecInputs* inputs, Sensors* sens) {
     }
 }
 
-void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
+void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens, ProxMapState* prox_map) {
     PathExecLocals* l;
 
     l = &pe->locals;
@@ -143,6 +143,8 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             smc_halt();
             l->time_entered = hal_get_time();
             l->state = PE_rot_wait_for_LPS;
+        } else {
+            proximity_clear_around_us(sens, prox_map);
         }
         break;
     case PE_rot_wait_for_LPS:

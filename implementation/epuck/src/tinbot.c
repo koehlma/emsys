@@ -94,12 +94,13 @@ static void setup_vicdir(TinBot* tinbot) {
     hal_print("Tin Bot Setup: VicDir");
     vd_reset(&tinbot->controller.vic_dir);
     approx_reset(&tinbot->controller.approx, &tinbot->sens);
+    proximity_reset(&tinbot->controller.prox_map, &tinbot->sens);
 }
 
 static void loop_vicdir(TinBot* tinbot) {
     approx_step(&tinbot->controller.approx, &tinbot->sens);
 
-    vd_step(&tinbot->sens.t2t.fixdir, &tinbot->controller.vic_dir, &tinbot->sens);
+    vd_step(&tinbot->sens.t2t.fixdir, &tinbot->controller.vic_dir, &tinbot->sens, &tinbot->controller.prox_map);
     hal_debug_out(DEBUG_CAT_VD_STATE, tinbot->controller.vic_dir.locals.state);
     hal_debug_out(DEBUG_CAT_VD_VICTIM_FOUND, tinbot->controller.vic_dir.victim_found);
     hal_debug_out(DEBUG_CAT_VD_VICTIM_PHI, tinbot->controller.vic_dir.victim_phi);

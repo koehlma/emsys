@@ -15,4 +15,6 @@ void proximity_reset(ProxMapState* prox_map, Sensors* sens);
 
 void proximity_step(ProxMapState* prox_map, Sensors* sens);
 
+void proximity_clear_around_us(Sensors* sens, ProxMapState* prox_map);
+
 #endif
