@@ -154,6 +154,7 @@ static void setup_pathfin(TinBot* tinbot) {
 }
 
 static void loop_pathfin(TinBot* tinbot) {
+    tinbot->sens.victim_attached = 1;
     controller_step(&tinbot->controller, &tinbot->sens);
 }
 
