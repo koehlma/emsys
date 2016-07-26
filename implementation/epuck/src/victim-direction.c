@@ -85,7 +85,7 @@ static void compute_result(VDState* vd, Sensors* sens) {
     if (eff_opening < VD_MIN_ON) {
         /* There is no spoon.  And no VICTOR. */
         #ifdef LOG_TRANSITIONS_VICDIR
-        sprintf(hal_get_printbuf(), "VD:too small effective opening (%.1f°)", eff_opening);
+        sprintf(hal_get_printbuf(), "VD:too small effective opening (%.1f deg)", eff_opening);
         hal_print(hal_get_printbuf());
         #endif
         vd->give_up = 1;

@@ -156,7 +156,7 @@ static void debug_on_led(TinPackage *package) {
 static void debug_on_motors(TinPackage *package) {
     double speed_left = ((float*) package->data)[0];
     double speed_right = ((float*) package->data)[1];
-    tin_set_speed(speed_left, speed_right);
+    hal_set_speed(speed_left, speed_right);
 }
 
 static void debug_on_map(TinPackage* package) {

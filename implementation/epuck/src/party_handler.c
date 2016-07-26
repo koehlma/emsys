@@ -4,7 +4,7 @@
 
 #define SOFT_LED_DIST (3)
 #define HARD_LED_DIST (2)
-#define CHANGE_TIME_INTERVAL (1000)
+#define CHANGE_TIME_INTERVAL (1)
 
 void set_leds(unsigned int state, unsigned int dist);
 
