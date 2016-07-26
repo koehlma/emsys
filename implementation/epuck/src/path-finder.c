@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "bellman-ford/bellman-ford.h"
 #include "log_config.h"
@@ -90,13 +91,18 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
                 assert(pf->locals.next_v >= -1);
                 if (-1 == pf->locals.next_v) {
                     #ifdef LOG_TRANSITIONS_PATH_FINDER
-                    hal_print("pf:->end!");
+                    hal_print("pf:... not. -> End!");
                     #endif
                     pf->locals.state = PF_complete;
                     pf->path_completed = 1;
                 } else {
                     int next, after_next;
                     pf->next = bf_v2pos(&pf->locals.bf_state, pf->locals.next_v);
+                    #ifdef LOG_TRANSITIONS_PATH_FINDER
+                    sprintf(hal_get_printbuf(), "pf: namely (%.1f,%.1f)",
+                        pf->next.x, pf->next.y);
+                    hal_print(hal_get_printbuf());
+                    #endif
                     next = pf->locals.bf_state.succ[pf->locals.next_v];
                     after_next = -1;
                     if (next != -1) {
