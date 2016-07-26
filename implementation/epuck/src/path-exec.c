@@ -59,6 +59,7 @@ static unsigned int near_crash_p(PathExecInputs* inputs, Sensors* sens) {
 }
 
 void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens, ProxMapState* prox_map) {
+    double progress, dist;
     PathExecLocals* l;
 
     l = &pe->locals;
@@ -69,6 +70,17 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens, ProxMapSt
         /* It's okay to 'halt()' many times per second. */
         smc_halt();
         /* Don't set 'time_entered'; not needed. */
+        return;
+    }
+
+    progress = inputs->next.x - sens->current.x;
+    dist = inputs->next.y - sens->current.y;
+    dist = sqrt(dist * dist + progress * progress);
+    if (dist >= PE_DIST_RECOMPUTE) {
+        /* Trigger re-pathing. */
+        smc_halt();
+        l->state = PE_profit;
+        pe->see_obstacle = 1;
         return;
     }
 
@@ -187,19 +199,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens, ProxMapSt
             break;
         }
         {
-            double stray, progress, dist;
-
-            progress = inputs->next.x - sens->current.x;
-            dist = inputs->next.y - sens->current.y;
-            dist = sqrt(dist * dist + progress * progress);
-            if (dist >= PE_DIST_RECOMPUTE) {
-                /* Trigger re-pathing. */
-                smc_halt();
-                l->state = PE_profit;
-                pe->see_obstacle = 1;
-            }
-
-            stray = 0;
+            double stray = 0;
             stray += (inputs->next.x - sens->current.x) * l->normal.x;
             stray += (inputs->next.y - sens->current.y) * l->normal.y;
             stray = fabs(stray);
