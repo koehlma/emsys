@@ -95,8 +95,14 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
                     pf->locals.state = PF_complete;
                     pf->path_completed = 1;
                 } else {
+                    int next, after_next;
                     pf->next = bf_v2pos(&pf->locals.bf_state, pf->locals.next_v);
-                    if (-1 == pf->locals.bf_state.succ[pf->locals.next_v]) {
+                    next = pf->locals.bf_state.succ[pf->locals.next_v];
+                    after_next = -1;
+                    if (next != -1) {
+                        after_next = pf->locals.bf_state.succ[after_next];
+                    }
+                    if (after_next == -1) {
                         pf->backwards = inputs->is_victim;
                     }
                 }
