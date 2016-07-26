@@ -66,6 +66,7 @@ set(SOURCE_FILES
         src/bellman-ford/bellman-ford.c
         src/proximity-filter.c
         src/pi.c
+        src/party_handler.c
         )
 
 add_executable(${CMAKE_PROJECT_NAME}.elf ${SOURCE_FILES})
