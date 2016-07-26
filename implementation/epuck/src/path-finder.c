@@ -16,7 +16,7 @@ enum {
 
 /* As soon as we're this far away from the victim, start driving backwards.
  * 2.65 victim radius (5.3/2)
- * 0.2  vctim docking mechanism
+ * 0.2  victim docking mechanism
  * 2.0  Tin Bot docking mechanism
  * 2.65 Tin Bot radius (5.3/2)
  * 0.5  magnet trigger distance */
