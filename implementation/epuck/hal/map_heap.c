@@ -37,8 +37,9 @@ Map* map_deserialize(unsigned char* buffer) {
 
 /* ===== Implementation of hal_get_printbuf, using the heap ===== */
 
+static char* printbuf = NULL;
+
 char* hal_get_printbuf(void) {
-    static char* printbuf = NULL;
     if (printbuf == NULL) {
         printbuf = malloc(128);
     }
@@ -74,4 +75,11 @@ void map_heap_free(Map* map) {
     free(map->data);
     map->data = NULL;
     free(map);
+}
+
+void free_printbuf(void) {
+    if (printbuf != NULL) {
+        free(printbuf);
+        printbuf = NULL;
+    }
 }

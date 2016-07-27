@@ -81,6 +81,7 @@ int main() {
         return 1;
     }
     printf("\t=> and that's GOOD!\n");
+    free_printbuf();
 
     return 0;
 }

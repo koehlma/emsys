@@ -45,6 +45,7 @@ int main(void){
     free(bf_state);
     map_heap_container = NULL;
     map_heap_free(map);
+    free_printbuf();
 
 	return 0;
 }

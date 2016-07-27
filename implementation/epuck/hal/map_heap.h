@@ -23,4 +23,6 @@ extern MapContainer* map_heap_container;
 Map* map_heap_alloc(int w, int h);
 void map_heap_free(Map* map);
 
+void free_printbuf(void);
+
 #endif
