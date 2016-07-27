@@ -146,12 +146,18 @@ static int occupied(Position *pos, Map *map) {
     return map_get_field(map, pos->x, pos->y) == FIELD_WALL;
 }
 
-static const int APPROX_RADIUS = 4;
+#define ADJ_RADIUS 4
+static const double adj_weights[ADJ_RADIUS] = {
+    1.0, 0.8, 0.5, 0.3
+};
+#define ADJ_THRESHOLD 2.5
+
 unsigned int bf_adjacent_p(ExactPosition e_pos, ExactPosition e_goal) {
     int i;
     int delta_x, delta_y, delta_x_orth, delta_y_orth;
     Position test, pos, goal;
     Map* map;
+    double accu_walls = 0;
 
     pos = map_discretize(e_pos);
     goal = map_discretize(e_goal);
@@ -165,11 +171,14 @@ unsigned int bf_adjacent_p(ExactPosition e_pos, ExactPosition e_goal) {
     map = map_get_accumulated();
 
     while(pos.x != goal.x || pos.y != goal.y) {
-        for(i = -APPROX_RADIUS; i <= APPROX_RADIUS; ++i) {
+        for(i = -ADJ_RADIUS; i <= ADJ_RADIUS; ++i) {
             test.x = pos.x + delta_x_orth * i;
             test.y = pos.y + delta_y_orth * i;
             if (map_invalid_pos(test) || occupied(&test, map)) {
-                return 0;
+                accu_walls += adj_weights[abs(i)];
+                if (accu_walls > ADJ_THRESHOLD) {
+                    return 0;
+                }
             }
         }
         pos.x += delta_x;
