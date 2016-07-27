@@ -33,7 +33,7 @@ typedef struct PathFinderState {
     unsigned int path_completed;
     unsigned int drive;
     unsigned int backwards;
-    unsigned int drive_high_tol;
+    double drive_tol;
 } PathFinderState;
 
 void pf_reset(PathFinderState* pf);

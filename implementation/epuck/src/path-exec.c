@@ -14,12 +14,8 @@
 /* If we moved *back* by this much, restart. */
 #define PE_PROGRESS_MIN (-1.2)
 
-/* If we aren't at least this close to the waypoint, restart. */
-#define PE_DIST_TOLERANCE (4)
-#define PE_DIST_TOLERANCE_HIGH (8)
-
 /* Should be roughly PE_DIST_TOLERANCE + STEPPING_DIST  */
-#define PE_DIST_RECOMPUTE (0.3 + PE_DIST_TOLERANCE + STEPPING_DIST)
+#define PE_DIST_RECOMPUTE (0.3 + inputs->tol + STEPPING_DIST)
 
 enum PE_STATES {
     PE_inactive,
@@ -33,8 +29,6 @@ enum PE_STATES {
  *               "Bad things"); */
 typedef char check_pe_states_size[
     (sizeof(enum PE_STATES) == sizeof(int)) ? 1 : -1];
-
-static const double PE_MAX_STRAY = 10;
 
 void pe_reset(PathExecState* pe) {
     pe->done = 0;
@@ -202,7 +196,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             stray += (inputs->next.x - sens->current.x) * l->normal.x;
             stray += (inputs->next.y - sens->current.y) * l->normal.y;
             stray = fabs(stray);
-            if (stray >= PE_MAX_STRAY) {
+            if (stray >= inputs->tol / 2.0) {
                 #ifdef LOG_TRANSITIONS_PATH_EXEC
                 hal_print("PE:strayed->restart");
                 #endif
@@ -225,19 +219,19 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
                 smc_halt();
                 break;
             }
-            if (smc_time_passed_p(l->time_entered, l->need_dist)) {
-                if (dist < PE_DIST_TOLERANCE
-                        || (inputs->high_tol && dist < PE_DIST_TOLERANCE_HIGH)) {
-                    l->state = PE_profit;
-                    smc_halt();
-                    pe->done = 1;
-                } else {
-                    #ifdef LOG_TRANSITIONS_PATH_EXEC
-                    hal_print("PE:too far away->restart");
-                    #endif
-                    l->state = PE_compute;
-                    smc_halt();
-                }
+            if (dist < inputs->tol) {
+                l->state = PE_profit;
+                #ifdef LOG_TRANSITIONS_PATH_EXEC
+                hal_print("PE:done step");
+                #endif
+                smc_halt();
+                pe->done = 1;
+            } else if (smc_time_passed_p(l->time_entered, l->need_dist)) {
+                #ifdef LOG_TRANSITIONS_PATH_EXEC
+                hal_print("PE:too far away->restart PE");
+                #endif
+                l->state = PE_compute;
+                smc_halt();
             }
         }
         break;

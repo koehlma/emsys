@@ -22,6 +22,12 @@ enum {
  * 0.5  magnet trigger distance */
 #define PF_BACKWARDS_DIST (5.3+2.7)
 
+/* If we aren't at least this close to the waypoint, restart. */
+#define PE_TOL_HOME 8
+#define PE_TOL_NORMAL 4
+#define PE_TOL_VICTIM 2
+#define PE_TOL_FIRST 3
+
 void pf_reset(PathFinderState* pf) {
     pf->locals.state = PF_inactive;
     pf->next.x = -1;
@@ -80,6 +86,7 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
             assert(!inputs->step_complete || !inputs->step_see_obstacle);
             assert(pf->locals.next_v != -1);
             if (inputs->step_complete || pf->locals.next_v == -2) {
+                int16_t last_v = pf->locals.next_v;
                 #ifdef LOG_TRANSITIONS_PATH_FINDER
                 hal_print("pf:feed next");
                 #endif
@@ -117,8 +124,20 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
                         dist = sqrt(dist);
                     }
                     if (dist < PF_BACKWARDS_DIST) {
-                        pf->backwards = inputs->is_victim;
-                        pf->drive_high_tol = !inputs->is_victim;
+                        if (inputs->is_victim) {
+                            /* Docking to victim */
+                            pf->drive_tol = PE_TOL_VICTIM;
+                            pf->backwards = 1;
+                        } else {
+                            /* Home sweet home! */
+                            pf->drive_tol = PE_TOL_HOME;
+                        }
+                    } else if (-2 == last_v) {
+                        /* First waypoint */
+                        pf->drive_tol = PE_TOL_FIRST;
+                    } else {
+                        /* Normal waypoint */
+                        pf->drive_tol = PE_TOL_NORMAL;
                     }
                 }
             }

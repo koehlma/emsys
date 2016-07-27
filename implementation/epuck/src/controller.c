@@ -204,7 +204,7 @@ static void run_path_finder_executer(Controller* c, Sensors* sens) {
     pf_step(&pf_inputs, &c->path_finder, sens);
 
     pe_inputs.drive = c->path_finder.drive;
-    pe_inputs.high_tol = c->path_finder.drive_high_tol;
+    pe_inputs.tol = c->path_finder.drive_tol;
     pe_inputs.backwards = c->path_finder.backwards;
     pe_inputs.next = c->path_finder.next;
     pe_step(&pe_inputs, &c->path_exec, sens);

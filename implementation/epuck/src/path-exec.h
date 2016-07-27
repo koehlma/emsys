@@ -8,7 +8,7 @@
 typedef struct PathExecInputs {
     unsigned int drive;
     unsigned int backwards;
-    unsigned int high_tol;
+    double tol;
     ExactPosition next;
 } PathExecInputs;
 
