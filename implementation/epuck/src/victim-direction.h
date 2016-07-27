@@ -21,6 +21,7 @@ typedef struct VDState {
     double victim_phi;
     unsigned int victim_found;
     unsigned int give_up;
+    unsigned int need_clearing;
 } VDState;
 
 void vd_reset(VDState* vd);

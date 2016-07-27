@@ -100,7 +100,9 @@ void controller_step(Controller* c, Sensors* sens) {
 
     /* Internal map is updated "automatically" by the "echoed" UpdateMap
      * packets.  So we only send the proxmap here. */
-    proximity_step(&c->prox_map, sens);
+    if (!c->vic_dir.need_clearing) {
+        proximity_step(&c->prox_map, sens);
+    }
 
     organize_party(c, sens);
 }

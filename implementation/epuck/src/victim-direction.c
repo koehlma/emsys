@@ -39,6 +39,7 @@ void vd_reset(VDState* vd){
     vd->locals.time_begin = 0;
     vd->locals.weighted_sum = 0;
     vd->locals.gap_phi = -1;
+    vd->need_clearing = 0;
 }
 
 typedef char check_num_ir_even[(NUM_IR % 2 == 0) ? 1 : -1];
@@ -64,6 +65,7 @@ static void entry_start(VDState* vd, Sensors* sens) {
     } else {
         smc_rot_left();
         vd->locals.time_begin = hal_get_time();
+        vd->need_clearing = 1;
     }
 }
 
@@ -77,7 +79,7 @@ static void compute_result(VDState* vd, Sensors* sens) {
         hal_print(hal_get_printbuf());
         #endif
         vd->give_up = 1;
-        vd->locals.state = VD_wait_judgement;
+        vd->locals.state = VD_wait_judgement; /* FIXME: ? */
         return;
     }
 
@@ -153,6 +155,7 @@ void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens){
                 #ifdef LOG_TRANSITIONS_VICDIR
                 hal_print("VD:done waiting for lps");
                 #endif
+                vd->need_clearing = 0;
                 vd->locals.state = VD_wait_judgement;
                 compute_result(vd, sens);
             }
