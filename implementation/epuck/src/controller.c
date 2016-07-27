@@ -75,6 +75,7 @@ void controller_step(Controller* c, Sensors* sens) {
     switch (c->blind.run_choice) {
     case BLIND_RUN_CHOICE_none:
         /* Nothing to do here. */
+        hal_set_speed(0, 0);
         break;
     case BLIND_RUN_CHOICE_rhr:
         rhr_step(&c->rhr, sens);

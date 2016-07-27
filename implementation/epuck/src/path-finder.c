@@ -50,6 +50,7 @@ static void compute_path(PathFinderInputs* inputs, PathFinderState* pf, Sensors*
     Map* map;
     ExactPosition pos;
 
+    hal_set_speed(0, 0);
     /* clear destination area */
     map = map_get_accumulated();
     for (delta_x = -3; delta_x < 4; delta_x++) {
