@@ -28,7 +28,8 @@ const double ir_sensor_angle[6] = {
 };
 
 void hal_set_powersave(unsigned int enabled) {
-    tin_set_motors_powersave(enabled);
+    (void)enabled;
+    /* tin_set_motors_powersave(enabled); IGNORE */
 }
 
 void hal_set_speed(double left, double right) {

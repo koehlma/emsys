@@ -274,7 +274,7 @@ int main() {
 
     tin_wait(2000);
 
-    tin_set_motors_powersave(0);
+    tin_set_motors_powersave(1);
 
     tin_calibrate_proximity();
 
