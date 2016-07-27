@@ -118,6 +118,7 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
                     }
                     if (dist < PF_BACKWARDS_DIST) {
                         pf->backwards = inputs->is_victim;
+                        pf->drive_high_tol = !inputs->is_victim;
                     }
                 }
             }

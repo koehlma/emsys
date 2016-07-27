@@ -16,6 +16,7 @@
 
 /* If we aren't at least this close to the waypoint, restart. */
 #define PE_DIST_TOLERANCE (4)
+#define PE_DIST_TOLERANCE_HIGH (8)
 
 /* Should be roughly PE_DIST_TOLERANCE + STEPPING_DIST  */
 #define PE_DIST_RECOMPUTE (0.3 + PE_DIST_TOLERANCE + STEPPING_DIST)
@@ -225,7 +226,8 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
                 break;
             }
             if (smc_time_passed_p(l->time_entered, l->need_dist)) {
-                if (dist < PE_DIST_TOLERANCE) {
+                if (dist < PE_DIST_TOLERANCE
+                        || (inputs->high_tol && dist < PE_DIST_TOLERANCE_HIGH)) {
                     l->state = PE_profit;
                     smc_halt();
                     pe->done = 1;
