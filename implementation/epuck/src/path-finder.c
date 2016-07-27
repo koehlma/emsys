@@ -145,7 +145,7 @@ static int occupied(Position *pos, Map *map) {
     return map_get_field(map, pos->x, pos->y) == FIELD_WALL;
 }
 
-static const int APPROX_RADIUS = 2;
+static const int APPROX_RADIUS = 4;
 unsigned int bf_adjacent_p(ExactPosition e_pos, ExactPosition e_goal) {
     int i;
     int delta_x, delta_y, delta_x_orth, delta_y_orth;
