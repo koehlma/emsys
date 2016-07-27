@@ -50,7 +50,8 @@ void tce_step(TCEInputs* inputs, TCEState* tce, Sensors* sens){
                              sens->current.y - tce->locals.last_y,
                              tce->locals.last_phi);
                 if (inputs->ir_stable && dist >= MIN_DIST
-                        && smc_time_passed_p(tce->locals.time_start, TCE_MIN_WAIT)) {
+                        && smc_time_passed_p(tce->locals.time_start, TCE_MIN_WAIT)
+                        && sens->current.x < 65) {
                     tce->locals.time_start = hal_get_time();
                     tce->locals.state = TCE_waitdetect;
                     tce->need_angle = 1;
