@@ -15,3 +15,6 @@
 * w.r.t risk analysis: myriads of point of failure
 * Debugging by setting different modes
 * Imprecision of the IR-Sensors: Minor deviations result in huge search spaces for the victim
+* Memory limitations -> Compact Map
+* Compact Map -> Map merge in interrupt
+* Map merge in interrupt takes too much time -> optimizations on assembly level, i.e. counting instructions, minimizing them
