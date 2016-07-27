@@ -26,7 +26,7 @@ enum {
 #define PE_TOL_HOME 8
 #define PE_TOL_NORMAL 4
 #define PE_TOL_VICTIM 2
-#define PE_TOL_FIRST 3
+#define PE_TOL_FIRST 2
 
 void pf_reset(PathFinderState* pf) {
     pf->locals.state = PF_inactive;
