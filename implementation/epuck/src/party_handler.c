@@ -2,10 +2,10 @@
 #include "party_handler.h"
 #include "state-machine-common.h"
 
-#define SOFT_LED_DIST (3)
-#define HARD_LED_DIST (2)
+#define SOFT_LED_DIST (2)
+#define HARD_LED_DIST (3)
 #define CHANGE_SOFT_TIME_INTERVAL (1)
-#define CHANGE_HARD_TIME_INTERVAL (0.5)
+#define CHANGE_HARD_TIME_INTERVAL (0.25)
 
 void set_leds(unsigned int state, unsigned int dist);
 

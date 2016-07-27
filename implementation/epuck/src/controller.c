@@ -235,7 +235,7 @@ static void organize_party(Controller* c, Sensors* sens) {
     if(c->path_finder.path_completed && sens->victim_attached){
         at_home = 1;
     }
-    input.party_soft = sens->victim_attached;
     input.party_hard = at_home;
+    input.party_soft = sens->victim_attached || input.party_hard;
     phandler_step(&input, &c->party_handler);
 }
