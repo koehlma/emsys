@@ -22,7 +22,6 @@ static void try_go_to(ExactPosition from, double from_phi, ExactPosition to, uns
     hal_time time_start = hal_get_time();
     hal_time last_report = time_start;
     double dist;
-    ProxMapState prox_map;
 
     printf("PE test: (%.1f,%.1f)@%.2f -> (%.1f,%.1f) [back=%d]\n",
         from.x, from.y, from_phi,
@@ -30,7 +29,6 @@ static void try_go_to(ExactPosition from, double from_phi, ExactPosition to, uns
         backwards);
 
     /* Set up test environment */
-    proximity_reset(&prox_map, &sens);
     pe_reset(&pe_state);
     pe_in.drive = 1;
     pe_in.backwards = backwards;
@@ -55,7 +53,7 @@ static void try_go_to(ExactPosition from, double from_phi, ExactPosition to, uns
                 hal_get_speed_left(), hal_get_speed_right());
             last_report = hal_get_time();
         }
-        pe_step(&pe_in, &pe_state, &sens, &prox_map);
+        pe_step(&pe_in, &pe_state, &sens);
         tests_mock_tick(SIM_STEP/2);
         approx_step(&approx, &sens);
         assert(hal_get_time() - time_start < SIM_TIMEOUT);

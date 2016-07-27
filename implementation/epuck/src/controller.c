@@ -204,11 +204,11 @@ static void run_path_finder_executer(Controller* c, Sensors* sens) {
     pe_inputs.drive = c->path_finder.drive;
     pe_inputs.backwards = c->path_finder.backwards;
     pe_inputs.next = c->path_finder.next;
-    pe_step(&pe_inputs, &c->path_exec, sens, &c->prox_map);
+    pe_step(&pe_inputs, &c->path_exec, sens);
 }
 
 static void run_victim_finder(Controller* c, Sensors* sens) {
-    vd_step(&sens->t2t.fixdir, &c->vic_dir, sens, &c->prox_map);
+    vd_step(&sens->t2t.fixdir, &c->vic_dir, sens);
     if (sens->t2t.fixdir.have_incoming_fix && c->vic_dir.victim_found) {
         VFInputs inputs;
         inputs.x = sens->current.x;

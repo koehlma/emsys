@@ -110,7 +110,7 @@ static void compute_result(VDState* vd, Sensors* sens) {
     send_found_phi(sens->current.x, sens->current.y, vd->victim_phi);
 }
 
-void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens, ProxMapState* prox_map){
+void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens){
     switch(vd->locals.state) {
         case VD_off:
             entry_start(vd, sens);
@@ -138,7 +138,6 @@ void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens, ProxMapState* pr
                             fmod(rot_angle + ir_sensor_angle[i] - vd->locals.gap_phi + 2 * M_PI, 2 * M_PI);
                     }
                 }
-                proximity_clear_around_us(sens, prox_map);
                 if (rot_msecs >= IR_COMPLETION_TIME + 30 /* And a bit more: 0.65 degree */) {
                     #ifdef LOG_TRANSITIONS_VICDIR
                     hal_print("VD:done running");

@@ -127,21 +127,3 @@ void proximity_step(ProxMapState* prox_map, Sensors* sens) {
         proximity_send(prox_map);
     }
 }
-
-void proximity_clear_around_us(Sensors* sens, ProxMapState* prox_map) {
-    int dx, dy;
-    int rel_x, rel_y;
-    Map* map = map_get_proximity();
-
-    rel_x = (int)(floor(sens->current.x - prox_map->lower_left.x + 0.5));
-    rel_y = (int)(floor(sens->current.y - prox_map->lower_left.y + 0.5));
-
-    for (dy = -10; dy <= 10; ++dy) {
-        for (dx = -10; dx <= 10; ++dx) {
-            if (0 <= dx + rel_x && dx + rel_x < MAP_PROXIMITY_SIZE
-                    && 0 <= dy + rel_y && dy + rel_y < MAP_PROXIMITY_SIZE) {
-                map_set_field(map, dx + rel_x, dy + rel_y, FIELD_UNKNOWN);
-            }
-        }
-    }
-}

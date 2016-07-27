@@ -2,7 +2,6 @@
 #ifndef EPUCK_VICTIM_DIRECTION_H
 #define EPUCK_VICTIM_DIRECTION_H
 
-#include "prox-map.h"
 #include "sensors.h"
 #include "t2t-data.h"
 
@@ -25,6 +24,6 @@ typedef struct VDState {
 } VDState;
 
 void vd_reset(VDState* vd);
-void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens, ProxMapState* prox_map);
+void vd_step(T2TData_VicFix* input, VDState* vd, Sensors* sens);
 
 #endif /* EPUCK_VICTIM_DIRECTION_H */

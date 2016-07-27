@@ -3,7 +3,6 @@
 
 #include "hal.h"
 #include "map.h"
-#include "prox-map.h"
 #include "sensors.h"
 
 typedef struct PathExecInputs {
@@ -32,6 +31,6 @@ typedef struct PathExecState {
 } PathExecState;
 
 void pe_reset(PathExecState* pe);
-void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens, ProxMapState* prox_map);
+void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens);
 
 #endif
