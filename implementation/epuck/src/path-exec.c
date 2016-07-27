@@ -59,6 +59,7 @@ static unsigned int near_crash_p(PathExecInputs* inputs, Sensors* sens) {
 }
 
 void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
+    double progress, dist;
     PathExecLocals* l;
 
     l = &pe->locals;
