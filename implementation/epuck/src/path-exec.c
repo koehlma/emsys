@@ -6,8 +6,19 @@
 #include "log_config.h"
 #include "pi.h" /* M_PI */
 #include "path-exec.h"
-#include "state-machine-common.h"
 #include "sensors.h"
+#include "state-machine-common.h"
+
+/* ===== BEGIN CUSTOM SMC ===== */
+
+#define PE_MOTOR_MV (3)
+#define PE_MOTOR_ROT (4)
+
+#define PE_MV_PER_SEC PE_MOTOR_MV
+#define PE_ROT_PER_SEC (PE_MOTOR_ROT * 2 / 5.3)
+
+/* ===== END CUSTOM SMC ===== */
+
 
 #define TOLERANCE_ANGLE (15 * M_PI / 180)
 
@@ -34,7 +45,7 @@ void pe_reset(PathExecState* pe) {
     pe->done = 0;
     pe->see_obstacle = 0;
     pe->locals.state = PE_inactive;
-    pe->locals.approx_rot_speed = SMC_ROT_PER_SEC;
+    pe->locals.approx_rot_speed = PE_ROT_PER_SEC;
     /* No further initialization needed because PE_inactive doesn't
        read from locals.time_entered or locals.start_* or locals.need_* */
 }
@@ -108,12 +119,12 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             l->time_entered = hal_get_time();
             if (l->need_rot < -TOLERANCE_ANGLE) {
                 l->need_rot *= -1;
-                hal_set_speed(4, -4);
+                hal_set_speed(PE_MOTOR_ROT, -PE_MOTOR_ROT);
                 #ifdef LOG_TRANSITIONS_PATH_EXEC
                 hal_print("pe:rot right");
                 #endif
             } else if (l->need_rot > TOLERANCE_ANGLE) {
-                hal_set_speed(-4, 4);
+                hal_set_speed(-PE_MOTOR_ROT, PE_MOTOR_ROT);
                 #ifdef LOG_TRANSITIONS_PATH_EXEC
                 hal_print("pe:rot left");
                 #endif
@@ -123,9 +134,9 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
                 #endif
                 l->state = PE_drive;
                 if (inputs->backwards) {
-                    smc_move_back();
+                    hal_set_speed(-PE_MOTOR_MV, -PE_MOTOR_MV);
                 } else {
-                    smc_move();
+                    hal_set_speed(PE_MOTOR_MV, PE_MOTOR_MV);
                 }
             }
 
@@ -137,7 +148,7 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             l->need_dist = sqrt(l->need_dist);
             l->normal.x /= l->need_dist;
             l->normal.y /= l->need_dist;
-            l->need_dist /= SMC_MV_PER_SEC;
+            l->need_dist /= PE_MV_PER_SEC;
         }
         break;
     case PE_rotate:
@@ -159,9 +170,9 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
                 l->state = PE_drive;
                 l->time_entered = hal_get_time();
                 if (inputs->backwards) {
-                    smc_move_back();
+                    hal_set_speed(-PE_MOTOR_MV, -PE_MOTOR_MV);
                 } else {
-                    smc_move();
+                    hal_set_speed(PE_MOTOR_MV, PE_MOTOR_MV);
                 }
             } else {
                 double actually_rotated_per_sec, actually_rotated;
