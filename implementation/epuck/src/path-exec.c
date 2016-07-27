@@ -28,13 +28,16 @@
 /* Should be roughly PE_DIST_TOLERANCE + STEPPING_DIST  */
 #define PE_DIST_RECOMPUTE (0.3 + inputs->tol + STEPPING_DIST)
 
+#define PE_BACKOUT_DIST 3.0
+
 enum PE_STATES {
     PE_inactive,
     PE_compute,
     PE_rotate, /* turn to */
     PE_rot_wait_for_LPS,
     PE_drive, /* tune in */
-    PE_profit /* and drop out */
+    PE_profit, /* and drop out */
+    PE_wet_feet /* OH SHIT OH SHIT OH SHI- */
 };
 /* static_assert(sizeof(enum PE_STATES) == sizeof(PathExecLocals::state),
  *               "Bad things"); */
@@ -197,9 +200,9 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
             #ifdef LOG_TRANSITIONS_PATH_EXEC
             hal_print("PE:nearcrash");
             #endif
-            smc_halt();
-            l->state = PE_profit;
-            pe->see_obstacle = 1;
+            smc_move_back();
+            l->time_entered = hal_get_time();
+            l->state = PE_wet_feet;
             break;
         }
         {
@@ -244,6 +247,14 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
                 l->state = PE_compute;
                 smc_halt();
             }
+        }
+        break;
+    case PE_wet_feet:
+        if (smc_time_passed_p(l->time_entered, PE_BACKOUT_DIST / SMC_MV_PER_SEC)) {
+            #ifdef LOG_TRANSITIONS_PATH_EXEC
+            hal_print("PE:backed outta it");
+            #endif
+            pe->see_obstacle = 1;
         }
         break;
     case PE_profit:
