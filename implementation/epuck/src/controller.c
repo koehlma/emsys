@@ -230,8 +230,12 @@ static void set_origin(Controller* c, double x, double y) {
 }
 
 static void organize_party(Controller* c, Sensors* sens) {
+    static unsigned int at_home = 0;
     PHandlerInput input;
+    if(c->path_finder.path_completed && sens->victim_attached){
+        at_home = 1;
+    }
     input.party_soft = sens->victim_attached;
-    input.party_hard = c->path_finder.path_completed && input.party_soft;
+    input.party_hard = at_home;
     phandler_step(&input, &c->party_handler);
 }

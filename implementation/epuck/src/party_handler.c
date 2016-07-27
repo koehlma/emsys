@@ -4,7 +4,8 @@
 
 #define SOFT_LED_DIST (3)
 #define HARD_LED_DIST (2)
-#define CHANGE_TIME_INTERVAL (1)
+#define CHANGE_SOFT_TIME_INTERVAL (1)
+#define CHANGE_HARD_TIME_INTERVAL (0.5)
 
 void set_leds(unsigned int state, unsigned int dist);
 
@@ -14,7 +15,8 @@ void phandler_reset(PHandlerState* state) {
 }
 
 void phandler_step(PHandlerInput* input, PHandlerState* state) {
-    if(!smc_time_passed_p(state->entry, CHANGE_TIME_INTERVAL)) {
+    double interval = input->party_hard ? CHANGE_HARD_TIME_INTERVAL : CHANGE_SOFT_TIME_INTERVAL;
+    if(!smc_time_passed_p(state->entry, interval)) {
         return;
     }
     state->entry = hal_get_time();
