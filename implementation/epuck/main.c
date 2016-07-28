@@ -193,8 +193,9 @@ static void com_on_t2t_update_map(TinPackage *package) {
 }
 
 static void com_on_t2t_docked(TinPackage *package) {
-    (void)package;
-    t2t_parse_docked(&bot);
+    if (package->source != my_com_addr) {
+        t2t_parse_docked(&bot);
+    }
 }
 
 static void com_on_t2t_completed(TinPackage *package) {
