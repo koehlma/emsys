@@ -71,6 +71,9 @@ static void compute_path(PathFinderInputs* inputs, PathFinderState* pf, Sensors*
     pos.y = sens->current.y;
     pf_find_path(pos, inputs->dest, &pf->locals.bf_state);
     if (-1 == pf->locals.bf_state.init_v) {
+        #ifdef LOG_TRANSITIONS_PATH_EXEC
+        hal_print("PF: giving up! -> RHR!");
+        #endif
         pathing_failed(pf);
     }
 }

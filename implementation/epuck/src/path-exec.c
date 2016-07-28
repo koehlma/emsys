@@ -87,6 +87,9 @@ void pe_step(PathExecInputs* inputs, PathExecState* pe, Sensors* sens) {
     dist = sqrt(dist * dist + progress * progress);
     if (dist >= PE_DIST_RECOMPUTE) {
         /* Trigger re-pathing. */
+        #ifdef LOG_TRANSITIONS_PATH_EXEC
+        hal_print("PE: too far away!");
+        #endif
         smc_halt();
         l->state = PE_profit;
         pe->see_obstacle = 1;
