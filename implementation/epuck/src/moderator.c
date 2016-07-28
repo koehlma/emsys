@@ -13,8 +13,9 @@ enum {
     MOD_STATE_DEAD
 };
 
-#define T2T_HEARTBEAT_TIMEOUT_SECS 9
-typedef char check_heartbeat_timeout[(T2T_HEARTBEAT_TIMEOUT_SECS > 1 + T2T_HEARTBEAT_PERIOD_SECS) ? 1 : -1];
+#define T2T_HEARTBEAT_TIMEOUT_SECS 25
+/* Pathfinder needs at least 9.6 seconds, so the timeout definitely shouldn't be shorter than that. */
+typedef char check_heartbeat_timeout[(T2T_HEARTBEAT_TIMEOUT_SECS > 10 + T2T_HEARTBEAT_PERIOD_SECS) ? 1 : -1];
 typedef char check_moderator_constant[(MOD_STATE_RESCUEING_SILENT == 4) ? 1 : -1];
 
 void mod_reset(ModState* mod) {
