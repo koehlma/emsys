@@ -101,7 +101,12 @@ void pf_step(PathFinderInputs* inputs, PathFinderState* pf, Sensors* sens) {
                  *    Why would this happen anyway?
                  *      (PathExec already checks for stray!)
                  */
-                pf->locals.next_v = pf->locals.bf_state.succ[pf->locals.next_v];
+                if (pf->locals.next_v == -2) {
+                    pf->locals.next_v = pf->locals.bf_state.init_v;
+                } else {
+                    assert(pf->locals.next_v >= 0);
+                    pf->locals.next_v = pf->locals.bf_state.succ[pf->locals.next_v];
+                }
                 assert(pf->locals.next_v >= -1);
                 if (-1 == pf->locals.next_v) {
                     #ifdef LOG_TRANSITIONS_PATH_FINDER
