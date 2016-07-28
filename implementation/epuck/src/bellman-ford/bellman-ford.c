@@ -111,8 +111,6 @@ void find_path(BellmanFord* state) {
     if (state->init_v != state->goal_v && state->succ[state->init_v] == -1) {
         /* There is no path.  (And no spoon.) */
         state->init_v = -1;
-    } else {
-        state->init_v = state->succ[state->init_v];
     }
 }
 
