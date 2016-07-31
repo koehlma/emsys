@@ -1,0 +1,83 @@
+\newcommand{\XSTAR}{\ensuremath{x^*} }
+\newcommand{\RN}{\ensuremath{\mathds{R}^n}}
+\newcommand{\ST}{\mbox{s.t. }}
+\newcommand{\WLOG}{\mbox{w.l.o.g }}
+\newcommand{\mst}{\ \mbox{s.t. }\ }
+\newcommand{\ie}{\mbox{i.e. }}
+\newcommand{\eg}{\mbox{e.g. }}
+\newcommand{\dftPolyhedron}{\ensuremath{\{x|Ax\geq b\}}}
+\newcommand{\REPLACE}{\leadsto}
+\newcommand{\IMPLIESNOT}{\centernot\implies}
+\newcommand{\CONVEXLAMBDA}{\ensuremath{\lambda \in (0,1)}}
+\newcommand{\NORM}[1]{\ensuremath{\Vert #1 \Vert}}
+\newcommand{\ABS}[1]{\ensuremath{|#1|}}
+\newcommand{\CARDINALITY}[1]{\ensuremath{|#1|}}
+\newcommand{\BS}{\textbackslash}
+\newcommand{\OLD}[1]{(#1)\textsuperscript{old}}
+\newcommand{\NEW}[1]{(#1)\textsuperscript{new}}
+\renewcommand{\epsilon}{\varepsilon} % CAUTION!
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\SPAN}{span}
+\DeclareMathOperator{\ARGMIN}{argmin}
+\DeclareMathOperator{\RANK}{rank}
+\DeclareMathOperator{\BIGO}{\mathcal{O}}
+\DeclareMathOperator{\LEXG}{>_{lex}}
+\DeclareMathOperator{\LEXL}{<_{lex}}
+% \renewcommand{\phi}{\varphi} % CAUTION!
+
+\newcommand{\EXERCISE}[1]{\section*{Exercise #1}}
+\newcommand{\AUFGABE}[1]{\section*{Aufgabe #1}}
+
+\renewcommand{\quote}[1]{``#1''}
+
+\newcommand{\nl}{\newline}
+
+\newcommand{\NOTE}[1]{\quad \mbox{{\color{lightgray} #1}}}
+
+\newcommand{\LP}[1]{%
+	\begin{center}
+		\begin{minipage}{0.5\textwidth}
+			\begin{flushleft}
+				#1
+			\end{flushleft}
+		\end{minipage}
+	\end{center}
+}%
+
+% \newenvironment{caseDestinction}[1]{\textbf{#1} \begin{addmargin}[1cm]{0em}}{\end{addmargin}}
+
+\newcommand{\dftLPfst}{
+\LP{
+$\min c^Tx$ \\
+\quad $Ax \geq b$
+}
+}
+
+\newcommand{\stdLP}{
+\LP{
+$\min c^Tx$ \\
+\quad $Ax = b $\\
+\quad $x \geq 0$
+}
+}
+
+\newcommand{\twopartdef}[3]
+{
+	\left\{
+		\begin{array}{ll}
+			#1 & \mbox{if } #2 \\
+			#3 & \mbox{otherwise} 
+		\end{array}
+	\right.
+}
+
+\newcommand{\threepartdef}[5]
+{
+	\left\{
+		\begin{array}{lll}
+			#1 & \mbox{if } #2 \\
+			#3 & \mbox{if } #4 \\
+			#5 & \mbox{otherwise}
+		\end{array}
+	\right.
+}

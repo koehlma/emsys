@@ -1,0 +1,30 @@
+\input{main}
+\input{shortcuts}
+\input{styles}
+
+\newcounter{blockCounter}
+
+\begin{document}
+
+\tableofcontents
+
+\newpage
+
+\newcommand{\BLOCK}[1]{\BLOCKTEMPLATE{\theblockCounter}{#1}}
+
+\BLOCK{Cyberphysical Models}
+\input{block1}
+
+\BLOCK{Sensors, Actuators \& Control}
+
+\BLOCK{Circuit Design}
+
+\BLOCK{Distribution \& Communication}
+
+\BLOCK{Tasks \& Resources}
+
+\BLOCK{Verification \& Analysis}
+
+\BLOCK{Controller Synthesis}
+
+\end{document}

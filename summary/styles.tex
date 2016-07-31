@@ -1,0 +1,111 @@
+
+\newcommand{\BLOCKTEMPLATE}[2]{
+  \refstepcounter{blockCounter}
+  \thispagestyle{plain}
+  \newpage
+  \noindent
+  \begin{center}
+  \framebox{
+      \vbox{
+        \vspace{2mm}
+        \hbox to 5in { 
+          {
+            \bf Embedded Systems
+            \hfill Summer 2016
+          } 
+        }
+        \vspace{4mm}
+        \hbox to 5in { 
+          {
+            \Large \hfill Block #1: #2  \hfill
+          } 
+        }
+        \vspace{2mm}
+        \vspace{2mm}
+        \hbox to 5in { {\it Summary: Schwenger % add your name here if you intent to collaborate or use
+        \hfill } }
+      }
+  }
+  \end{center}
+  \markboth{Lecture #1: #2}{Lecture #1: #2}
+  \vspace*{4mm}
+}
+\setlength{\parskip}{1.5ex plus0.5ex minus0.3ex}
+\setlength{\parindent}{0ex}
+
+% \makeatletter
+% \newtheoremstyle{case} % name
+%     {\topsep}                    % Space above
+%     {\topsep}                    % Space below
+%     {\addtolength{\@totalleftmargin}{2.5em}
+%       \addtolength{\linewidth}{-2.5em}
+%       \parshape 1 2.5em \linewidth}% body font
+%     {-2.5em}    % INDENT (empty value is the same as 0pt)
+%     {\itshape}                  % Theorem head font
+%     {}                           % Punctuation after theorem head
+%     {.5em}                       % Space after theorem head
+%     {\thmnote{#3}\nl}  % Theorem head spec (can be left empty, meaning ‘normal’)
+
+% \newtheoremstyle{theorem}
+%   {\topsep}   % ABOVESPACE
+%   {\topsep}   % BELOWSPACE
+%   {\addtolength{\@totalleftmargin}{2.5em}
+%    \addtolength{\linewidth}{-2.5em}
+%    \parshape 1 2.5em \linewidth}% body font
+%   {-2.5em}    % INDENT (empty value is the same as 0pt)
+%   {\bfseries} % HEADFONT
+%   {.}         % HEADPUNCT
+%   {.5em} % HEADSPACE
+%   {}          % CUSTOM-HEAD-SPEC
+% \makeatother
+
+% \newtheoremstyle{definition}
+%   {\topsep}   % ABOVESPACE
+%   {\topsep}   % BELOWSPACE
+%   {\itshape}  % BODYFONT
+%   {0pt}       % INDENT (empty value is the same as 0pt)
+%   {\bfseries} % HEADFONT
+%   {.}         % HEADPUNCT
+%   {5pt plus 1pt minus 1pt} % HEADSPACE
+%   {}          % CUSTOM-HEAD-SPEC
+
+
+% \newtheoremstyle{claim}
+%   {\topsep}   % ABOVESPACE
+%   {\topsep}   % BELOWSPACE
+%   {}  % BODYFONT
+%   {}       % INDENT (empty value is the same as 0pt)
+%   {\itshape} % HEADFONT
+%   {.}         % HEADPUNCT
+%   {5pt} % HEADSPACE
+%   {\thmname{#1}}          % CUSTOM-HEAD-SPEC
+
+% \theoremstyle{case}
+% \newtheorem*{case}{Case}
+
+% \theoremstyle{definition}
+% \newtheorem{definition}{Definition}
+% \newtheorem*{definition*}{Definition}
+
+% \theoremstyle{theorem}
+% \newtheorem{theorem}{Theorem}
+% \newtheorem*{theorem*}{Theorem}
+% \newtheorem{corollary}{Corollary}
+% \newtheorem*{corollary*}{Corollary}
+% \newtheorem{lemma}{Lemma}
+% \newtheorem*{lemma*}{Lemma}
+% \newtheorem{example}{Example}
+% \newtheorem*{example*}{Example}
+
+% \theoremstyle{claim}
+% \newtheorem*{claim}{Claim} % claims do not get numbers
+% \newtheorem*{claim*}{Claim}
+
+\parindent 0pt
+\parskip 6pt
+
+\clubpenalty = 10000
+\widowpenalty = 10000
+\displaywidowpenalty = 10000
+
+\setkomafont{pagehead}{\normalfont\sffamily\footnotesize}
