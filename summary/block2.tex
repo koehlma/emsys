@@ -1,0 +1,38 @@
+\begin{description}
+	\item[CCD Image Sensors] Charge-coupled devices. Sequential charge transfer,
+	complex interface, low power consumption.
+	\item[CMOS] Complementary metal oxide semiconductor. Cheap, random access,
+	simple interface.
+	\item[Flash A/D] Compare against $\frac{k}{\alpha} \ \forall k \in [\alpha]$
+	in parallel. Speed $\in \BIGO(1)$, cost $\in \BIGO(\alpha)$.
+	\item[Successive Approximation] Binary search for closest value. Example:
+	Given input $V = 7$, reference value (max value) $V_{ref} = 10$, 3 bit
+	precision,
+	output $x[2:0]$:
+	\begin{itemize}
+		\item x[2] = 1 since $7 = V > \frac{1}{2} V_{ref} = 5$
+		\item x[1] = 0 since $7 = V \ngtr \frac{3}{4} V_{ref} = 7.5$
+		\item x[0] = 1 since $7 = V > \frac{5}{8} V_{ref} = 6.25$
+	\end{itemize}
+	Speed, cost $\in \BIGO(\log n)$.
+	\item[Aliasing] High frequency masquerades as low frequency. \MAX{include
+	image example}
+	\item[Anti-Aliasing] Use low-pass filter, \ie, forsake high frequency parts
+	\quote{smoothing} it into a low frequency wave.
+	\item[Nyquist Criterion] $p_N$ period of fastest wave, $f_N$ frequency of
+	fastest wave. Aliasing avoidable if sampling period $p_S$ < $\frac{1}{2} p_N$
+	and equivalently $f_S$ > 2 $f_N$.
+	\item[Fourier Approximation] assume period $p$
+	\[ 
+	e'_k(t) = \sum^{k}_{i < k \text{ odd}}\frac{4}{\pi i} \sin\left(\frac{2\pi t}
+	{p/k}\right)
+	\]
+	\item[Shannon-Whittaker Interpolation] Consider $y$ to be reconstructed, $S$
+	samples $p_s$ at sampling times $t_s$ for $s \in [S]$
+	\begin{align*}
+	z_y(t) 	&= \sum_{s \in S} y(t_s) * \SINC(t - t_s)\\
+	 		&= \sum_{s \in S} y(t_s) * \frac{\sin\left(\frac{\pi}{p_s}(t-t_s)\right)}
+	 		{\frac{\pi}{p_s}(t-t_s)}
+	\end{align*}
+
+\end{description}
