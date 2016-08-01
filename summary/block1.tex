@@ -1,11 +1,39 @@
 
-%TODO: Include illustrative example of state representation including input, output, state var rangers and their rates of change as diff eq.
+\MAX{Include illustrative example of state representation for a continuous time 
+automaton including input, output, state var ranges and their rates of change as
+diff eq}
+
+\MAX{Include illustrative example of a finite state automaton including
+transitions w/ i/o see slide set 3, slide 18}
+
+\MAX{Include illustrative example of an extended state machine including
+transitions w/ i/o see slide set 3, slide 18}
 
 \begin{description}
+	\item[State Description]
 	\item[Execution Existence] The defining functions are continuous.
-	\item[Execution Uniqueness] Lipschitz-continuous, i.e., $\NORM{f(u) - f(v)} <= K \NORM{u - v}$ for some constant $K$.
+	\item[Execution Uniqueness] Lipschitz-continuous, i.e., $\NORM{f(u) - f(v)} 
+	\leq K \NORM{u - v}$ for some constant $K$.
 	\item[Equilibrium] All derivatives are 0 for a given state $x$.
-	\item[Lyapunov Stability] For each initial deviation there is a constant bound for all state variables for any future point in time. (Assumption: No inputs)
-	\item[Lyapunov Asymptotic Stability] For each deviation within a certain bound the state will converge to the equilibrium again.
+	\item[Lyapunov Stability] For each initial deviation there is a constant 
+	bound for all state variables for any future point in time. (Assumption: No
+	inputs)
+	\item[Lyapunov Asymptotic Stability] For each deviation within a certain bound
+	the state will converge to the equilibrium again.
 	\item[Bounded-Input-Bounded-Output Stability] For every bounded input, the output is bounded
+	\item[Finite State Machine] TODO
+	\item[Mealy] Output depends on input and state.
+	\item[Moore] Output depends on state only.
+	\item[Extended State Machine] Finite state machine with variables. Note: A
+	state is the state coupled with its variables' evaluations. TODO
+	\item[AND Superstate] All states are active at once.
+	\item[OR Superstate] Only one state is active. History stores from where state
+	has been left.
+	\item[Hybrid Automaton] Discrete steps (\eg update state) and continuous steps
+	(\eg updating distance, time etc.).
+	\item[Super Step Semantics] Apply discrete steps until fixed point, then
+	continuous steps until discrete step applicable.
+	\item[Zeno] Execution is Zeno if sum over all steps' durations in bounded by a
+	constant. State is Zeno if all executions staring in this state are Zeno.
+
 \end{description}
