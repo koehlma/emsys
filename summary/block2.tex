@@ -1,3 +1,5 @@
+\MAX{include graphic illustrating the four properties for a controller curve}
+
 \begin{description}
 	\item[CCD Image Sensors] Charge-coupled devices. Sequential charge transfer,
 	complex interface, low power consumption.
@@ -34,5 +36,33 @@
 	 		&= \sum_{s \in S} y(t_s) * \frac{\sin\left(\frac{\pi}{p_s}(t-t_s)\right)}
 	 		{\frac{\pi}{p_s}(t-t_s)}
 	\end{align*}
-
+	\item[State Dynamics] $\dot{S} = AS + BI, O = CS + DI$
+	\item[Input-Output Linearity] For linear components: \\
+	\begin{align*}
+	I'(t) := \alpha I(t) &\Rightarrow O'(t) = \alpha O(t) \NOTE{(scalability)}\\
+	I'(t) := I_1(t) + I_2(t) &\Rightarrow O'(t) = O_1(t) + O_2(t) \NOTE{(additivity)}
+	\end{align*}
+	\item[Similarity Transformation] Compute $A$'s eigenvalues $\lambda_i$ and
+	eigenvectors $v_i$ (see Section \ref{sec:maths}).\nl
+	$P := (v_1,\ldots, v_m)$, compute $P^{-1}$. \nl
+	$S(t) = PD(e^{\lambda_1t}, \ldots, e^{\lambda_mt})P^{-1} s_0$
+	\item[Stability] Eigenvalues' real part positive $\rightarrow$ asymptotically
+	stable\\ 
+	non-negative $\rightarrow$ stable\\
+	$A$ invertible $\rightarrow$ only one equilibrium.\\
+	$s$ non-zero equilibrium: $S' = S - s \rightarrow$ properties hold for S'. 
+	\item[BIBO Stability] implied by asymptotic stability.
+	\item[Stabilizable] \[C(A,B) = ((B) (AB) \cdots (A^{n-1}B) \] has full rank,
+	\ie, columns linearly independent
+	\item[Stabilization] Reference vector $R$. $\dot{S} = (A - BF)S + BFR$. Find
+	$F$ such that eigenvalues of $(A - BF)$ are negative. See remark regarding
+	finding negative eigenvalues in Section \ref{sec:maths}.
+	\item[P-Controller] Proportional error, \ie, the current error. $K_P e(t)$
+	\item[I-Controller] Integral error, \ie, accumulated error so far. $K_I
+	\int_0^\tau e(\tau) d\tau$
+	\item[D-Controller] Derivative error, \ie, current error's rate of change.
+	$K_D \dot{e}(t)$
+	\item[Rise Time, Overshoot, Settling Time, Steady State error] See illustration
+	TODO
+	\MAX{Left off: PID Controller, lecture 6.}
 \end{description}
