@@ -55,10 +55,10 @@
 	\item[BIBO Stability] implied by asymptotic stability.
 	\item[Controllability] \[C(A,B) = ((B) (AB) \cdots (A^{n-1}B) \] has full rank,
 	\ie, columns linearly independent
-	\item[Stabilization] Reference vector $R$. $\dot{S} = (A - BF)S + BFR$. Find
+	\item[Stabilization (control)] Reference vector $R$. $\dot{S} = (A - BF)S + BFR$. Find
 	$F$ such that eigenvalues of $(A - BF)$ are negative. See remark regarding
 	finding negative eigenvalues in Section \ref{sec:maths}.
-	\item[Error] reference - current
+	\item[Error (control)] Difference between wanted and actual value (reference minus current)
 	\item[Rise Time, Overshoot, Settling Time, Steady State error] See illustration
 	TODO
 	\item[P-Controller] Proportional error, \ie, the current error. $K_P e(t)$
