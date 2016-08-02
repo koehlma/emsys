@@ -1,0 +1,70 @@
+\MAX{include graphic illustrating the four properties for a controller curve}
+
+\begin{description}
+	\item[CCD Image Sensors] Charge-coupled devices. Sequential charge transfer,
+	complex interface, low power consumption.
+	\item[CMOS] Complementary metal oxide semiconductor. Cheap, random access,
+	simple interface.
+	\item[Flash A/D] Compare against $\frac{k}{\alpha} \ \forall k \in [\alpha]$
+	in parallel. Speed $\in \BIGO(1)$, cost $\in \BIGO(\alpha)$.
+	\item[Successive Approximation] Binary search for closest value. Example:
+	Given input $V = 7$, reference value (max value) $V_{ref} = 10$, 3 bit
+	precision,
+	output $x[2:0]$:
+	\begin{itemize}
+		\item x[2] = 1 since $7 = V > \frac{1}{2} V_{ref} = 5$
+		\item x[1] = 0 since $7 = V \ngtr \frac{3}{4} V_{ref} = 7.5$
+		\item x[0] = 1 since $7 = V > \frac{5}{8} V_{ref} = 6.25$
+	\end{itemize}
+	Speed, cost $\in \BIGO(\log n)$.
+	\item[Aliasing] High frequency masquerades as low frequency. \MAX{include
+	image example}
+	\item[Anti-Aliasing] Use low-pass filter, \ie, forsake high frequency parts
+	\quote{smoothing} it into a low frequency wave.
+	\item[Nyquist Criterion] $p_N$ period of fastest wave, $f_N$ frequency of
+	fastest wave. Aliasing avoidable if sampling period $p_S$ < $\frac{1}{2} p_N$
+	and equivalently $f_S$ > 2 $f_N$.
+	\item[Fourier Approximation] assume period $p$
+	\[ 
+	e'_k(t) = \sum^{k}_{i < k \text{ odd}}\frac{4}{\pi i} \sin\left(\frac{2\pi t}
+	{p/k}\right)
+	\]
+	\item[Shannon-Whittaker Interpolation] Consider $y$ to be reconstructed, $S$
+	samples $p_s$ at sampling times $t_s$ for $s \in [S]$
+	\begin{align*}
+	z_y(t) 	&= \sum_{s \in S} y(t_s) * \SINC(t - t_s)\\
+	 		&= \sum_{s \in S} y(t_s) * \frac{\sin\left(\frac{\pi}{p_s}(t-t_s)\right)}
+	 		{\frac{\pi}{p_s}(t-t_s)}
+	\end{align*}
+	\item[State Dynamics] $\dot{S} = AS + BI, O = CS + DI$
+	\item[Input-Output Linearity] For linear components: \\
+	\begin{align*}
+	I'(t) := \alpha I(t) &\Rightarrow O'(t) = \alpha O(t) \NOTE{(scalability)}\\
+	I'(t) := I_1(t) + I_2(t) &\Rightarrow O'(t) = O_1(t) + O_2(t) \NOTE{(additivity)}
+	\end{align*}
+	\item[Similarity Transformation] Compute $A$'s eigenvalues $\lambda_i$ and
+	eigenvectors $v_i$ (see Section \ref{sec:maths}).\nl
+	$P := (v_1,\ldots, v_m)$, compute $P^{-1}$. \nl
+	$S(t) = PD(e^{\lambda_1t}, \ldots, e^{\lambda_mt})P^{-1} s_0$
+	\item[Stability] Eigenvalues' real part positive $\rightarrow$ asymptotically
+	stable\\ 
+	non-negative $\rightarrow$ stable\\
+	$A$ invertible $\rightarrow$ only one equilibrium.\\
+	$s$ non-zero equilibrium: $S' = S - s \rightarrow$ properties hold for S'. 
+	\item[BIBO Stability] implied by asymptotic stability.
+	\item[Stabilizable] \[C(A,B) = ((B) (AB) \cdots (A^{n-1}B) \] has full rank,
+	\ie, columns linearly independent
+	\item[Stabilization] Reference vector $R$. $\dot{S} = (A - BF)S + BFR$. Find
+	$F$ such that eigenvalues of $(A - BF)$ are negative. See remark regarding
+	finding negative eigenvalues in Section \ref{sec:maths}.
+	\item[Error] reference - current
+	\item[Rise Time, Overshoot, Settling Time, Steady State error] See illustration
+	TODO
+	\item[P-Controller] Proportional error, \ie, the current error. $K_P e(t)$
+	% \textbf{increases} overshoot, \textbf{decreases} rise time, steady state error,
+	% \textbf{no change} on settling time.
+	\item[I-Controller] Integral error, \ie, accumulated error so far. $K_I
+	\int_0^\tau e(\tau) d\tau$
+	\item[D-Controller] Derivative error, \ie, current error's rate of change.
+	$K_D \dot{e}(t)$
+\end{description}

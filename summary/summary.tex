@@ -1,0 +1,45 @@
+\input{main}
+\input{shortcuts}
+\input{styles}
+
+\newcounter{blockCounter}
+
+\begin{document}
+
+\newcommand{\BLOCK}[1]{\BLOCKTEMPLATE{\theblockCounter}{#1}}
+
+\BLOCK{Cyberphysical Models}
+\input{block1}
+\newpage 
+
+\BLOCK{Sensors, Actuators \& Control}
+\input{block2}
+\newpage
+
+\BLOCK{Circuit Design}
+\input{block3}
+\newpage
+
+\BLOCK{Distribution \& Communication}
+\input{block4}
+\newpage
+
+\BLOCK{Tasks \& Resources}
+\newpage
+
+\BLOCK{Verification \& Analysis}
+\newpage
+
+\BLOCK{Controller Synthesis}
+\newpage
+
+\section*{Maths Revision}
+\label{sec:maths}
+%\input{maths_revision} eigenvalues, eigenvectors, matrix inversion
+\newpage
+
+\section*{Keywords}
+\input{list_of_keywords}
+
+
+\end{document}

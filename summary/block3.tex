@@ -1,0 +1,165 @@
+\subsection*{VHDL - Syntax and Stuff}
+\begin{description}
+	\item[Entity] Comparable to an interface without actual concrete implementation
+	\begin{lstlisting}[language=vhdl]
+entity full_adder is
+port(a,b,carry_in: in Bit;
+sum, carry_out: out Bit);
+end full_adder;
+	\end{lstlisting}
+
+	\item[Architecture] Multiple architectures for one entity, last (\ie, most
+	recently analyzed) one is used.
+	\item[Behavior]\ 
+	\begin{lstlisting}[language=vhdl]
+architecture behavior of full_adder is
+begin
+sum <= (a xor b) xor carry_in after 10 Ns;
+carry_out <= (a and b) or (a and carry_in) 
+	or (b and carry_in) after 10 Ns;
+end behavior;
+	\end{lstlisting}
+
+	\item[Structure]\ 
+	\begin{lstlisting}[language=vhdl]
+architecture structure of full_adder is 
+component half_adder
+port (in1,in2:in Bit; carry:out Bit; sum:out Bit); 
+end component; 
+
+component or_gate
+port (in1, in2:in Bit; o:out Bit);
+end component;
+
+signal x, y, z: Bit; -- local signals
+begin
+i1: half_adder port map (a, b, x, y);
+i2: half_adder port map (y, carry_in, z, sum); 
+i3: or_gate port map (x, z, carry_out);
+end structure;
+	\end{lstlisting}
+\MAX{Add additional information like about clocks, bit vectors and the like.}
+	
+	\item[Process] cannot have subprocesses. Executed sequentially.
+	\begin{lstlisting}[language=vhdl]
+process[(sensitivity list)]
+	declarations (of local variables, NO signals)
+begin
+	statements
+end process
+	\end{lstlisting}
+
+	\item[Wait]\ 
+	\begin{description}
+		\item[on \textit{signals}] waits until at least one signal changes.
+		\item[until \textit{condition}] waits until condition is satisfied
+		\item[for \textit{duration}] waits for the specified amount of time.
+		\item[\textit{nothing}] waits forever...
+	\end{description}
+	\item[Signals] assigned with $<=$. Can have multiple assignments with
+	delays. 
+	\begin{lstlisting}[language=vhdl]
+sig <= reject 3ns inertial not a after 10 ns;
+sig <= transport not a after 10 ns;
+sig <= '0', '1' after 2ns, '0' after 3 ns;
+	\end{lstlisting}
+	\item[Variables] assigned with $:=$.
+	\item[Parameterized Hardware]\ 
+	\begin{lstlisting}[language=vhdl]
+architecture RTL2 of SHIFT1024 is
+component DFF
+	port ( RSTn, CLK, D: in std_logic;
+	Q : out std_logic ); 
+end component;
+signal T: std_logic_vector(n-2 downto 0);
+begin
+g0: for i in n-1 downto 0 generate
+	g1: if (i = n-1) generate
+		bit1023 : DFF port map (RSTn,CLK,SI,T(n-2)); 
+		end generate;
+	g2: if (i>0) and (i<n-1) generate
+		bitm : DFF port map (RSTn,CLK,T(i),T(i-1));
+		end generate;
+	g3: if (i=0) generate
+		bit0 : DFF port map (RSTn,CLK,T(0),SO); 
+		end generate;
+	end generate; 
+end RTL2;
+	\end{lstlisting}
+	Instantiate with 
+	\begin{lstlisting}[language=vhdl]
+component SHIFTn is
+generic ( n : positive);
+port ( RSTn, CLK, SI : in std_logic;
+SO : out std_logic ); 
+end component;
+...
+begin
+...
+Shift32comp : SHIFTn 
+generic map (n => 32) 
+port map(RSTn => ... );
+end
+	\end{lstlisting}
+\end{description}
+
+\subsection*{VHDL - Semantics and Stuff}
+
+\begin{description}
+	\item[Signals] Assigned concurrently, global scope, has time dimension.
+	\item[Delay Models] \ \\
+	\textbf{inertial delay:} default; Absorbs pulses of size
+	less than the delay time. Using reject x all pulses of length less than x are
+	absorbed. \\
+	\textbf{transport delay:} Every pulse is translated.
+	When inserted in transaction list, all changes for this signal at a later or
+	equal point in time are removed
+	\MAX{Introduce more detailed execution algorithm}
+	\item[Variables] Assigned sequentially, local scope, cannot be in sensitivity
+	lists, no time dimension.
+	\item[Process] Runs in a loop, only stops at waits or if there is a sensitivity
+	list.
+	\item[Simulation] \ 
+	\begin{enumerate}
+		\item Initialization (incl. assign variables)
+		\item \label{sim:item:update_time}Update time
+		\item Assign signals
+		\item Evaluate processes if resumed
+		\item Changes pending: goto \ref{sim:item:update_time}
+		\item No changes pending: end simulation.
+	\end{enumerate}
+	\item[Transaction list] Pending assignments. 
+	(clk, `1', 10ns). Time is absolute, not relative.
+	\item[Process activation list] Pending resumed processes ($p_1$, 10ns).
+	\item[Delta Steps] Two steps can be performed after each other at the same
+	time.
+	\item[Conflict Resolution] If two values are assigned to the same signal at the
+	same time, the stronger one wins, \ie, the one further at the beginning of the
+	signal's domain specification
+\end{description}
+
+\subsection*{Circuit Synthesis}
+\begin{description}
+	\item[Abstraction Layer Hierarchy] \ 
+	\begin{description}
+		\item[System] ISA description, block diagrams
+		\item[Algorithmic] Functional Implementation: Matlab, C, Cobol
+		\item[Behavioral] Circuit description: VHDL, Verilog
+		\item[Register-Transfer (RTL)] Registers, logical functions, Netlist (graph)
+		\item[Logical Gate] Netlist, 1-bit registers, basic logic gates
+		\item[Physical Gate] Netlist of target gates, \eg LUTs 
+		\item[Switch] Netlist of individual transistors.
+	\end{description}
+
+	\item[Non-synthesizable] delays, file operations, initial values, dynamic data
+	structures, unresolved generic values
+\end{description}
+
+\subsection*{FPGA}
+<advertisement> \\
+When compared with ASICs
+Faster prototyping; less expensive, even for a low volume of products, timing
+very well explored -> important for real time applications \\
+</advertisement>\\
+Consists of blocks with x-bit lookup tables with $2^x$ outputs and $y$ 1 bit
+registers
