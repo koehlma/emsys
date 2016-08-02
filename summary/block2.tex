@@ -57,12 +57,14 @@
 	\item[Stabilization] Reference vector $R$. $\dot{S} = (A - BF)S + BFR$. Find
 	$F$ such that eigenvalues of $(A - BF)$ are negative. See remark regarding
 	finding negative eigenvalues in Section \ref{sec:maths}.
+	\item[Error] reference - current
+	\item[Rise Time, Overshoot, Settling Time, Steady State error] See illustration
+	TODO
 	\item[P-Controller] Proportional error, \ie, the current error. $K_P e(t)$
+	% \textbf{increases} overshoot, \textbf{decreases} rise time, steady state error,
+	% \textbf{no change} on settling time.
 	\item[I-Controller] Integral error, \ie, accumulated error so far. $K_I
 	\int_0^\tau e(\tau) d\tau$
 	\item[D-Controller] Derivative error, \ie, current error's rate of change.
 	$K_D \dot{e}(t)$
-	\item[Rise Time, Overshoot, Settling Time, Steady State error] See illustration
-	TODO
-	\MAX{Left off: PID Controller, lecture 6.}
 \end{description}
