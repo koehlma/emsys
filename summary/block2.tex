@@ -53,8 +53,9 @@
 	$A$ invertible $\implies$ only one equilibrium\\
 	$s$ non-zero equilibrium: $S' = S - s \rightarrow$ properties hold for S'. 
 	\item[BIBO Stability] implied by asymptotic stability.
-	\item[Controllability] \[C(A,B) = ((B) (AB) \cdots (A^{n-1}B) \] has full rank,
-	\ie, columns linearly independent
+	\item[Controllability] \[C[A,B] = \left[ \begin{array}{ccccc}
+    B & AB & A^{2}B & \cdots & A^{n-1}B \end{array} \right] \in \mathbb{R}^{n \times nm}\]
+    $C[A,B]$ has full rank $\iff$ rows linearly independent $\iff$ system is controllable.
 	\item[Stabilization (control)] Reference vector $R$. $\dot{S} = (A - BF)S + BFR$. Find
 	$F$ such that eigenvalues of $(A - BF)$ are negative. See remark regarding
 	finding negative eigenvalues in Section \ref{sec:maths}.
