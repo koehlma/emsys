@@ -46,10 +46,11 @@
 	eigenvectors $v_i$ (see Section \ref{sec:maths}).\nl
 	$P := (v_1,\ldots, v_m)$, compute $P^{-1}$. \nl
 	$S(t) = PD(e^{\lambda_1t}, \ldots, e^{\lambda_mt})P^{-1} s_0$
-	\item[Stability] Eigenvalues' real part positive $\rightarrow$ asymptotically
-	stable\\ 
-	non-negative $\rightarrow$ stable\\
-	$A$ invertible $\rightarrow$ only one equilibrium.\\
+	\item[Stability] Eigenvalues' real part:\\
+    all negative $\implies$ asymptotically stable\\ 
+	all non-negative $\implies$ stable\\
+    any positive $\implies$ unstable\\
+	$A$ invertible $\implies$ only one equilibrium\\
 	$s$ non-zero equilibrium: $S' = S - s \rightarrow$ properties hold for S'. 
 	\item[BIBO Stability] implied by asymptotic stability.
 	\item[Stabilizable] \[C(A,B) = ((B) (AB) \cdots (A^{n-1}B) \] has full rank,
