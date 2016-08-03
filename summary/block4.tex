@@ -1,4 +1,145 @@
+\subsection*{Communication}
+
 \begin{description}
-	\item[Scalability] Limitlessly extensible, analysis independent of the concrete number of nodes.
-	\item[Composability] Modular design, satisfies specified properties, esp. real time constraints.
+    \item[Scalability] Limitlessly extensible, analysis independent of the
+    concrete number of nodes.
+    \item[Composability] Modular design, $P$ holds for all subsystems $\implies$ 
+    P holds for the whole system.
+    \item[Fault Tolerance] Achieved by ...
+        \begin{itemize}
+            \item defining error-containment regions, \ie, multiple outputs,
+            some might be wrong.
+            \item masking faults, \ie, a component might fail, but the output is
+            still correct.
+            \item replication of components, \ie, static redundancy to obtain
+            the correct result even though some components fail.
+            \item fault detection and recovery, \ie, re-run computation if
+            result is wrong.
+        \end{itemize}
+    \item[Safe] sufficiently low probability of causing serious harm. E.g.\ stop
+    service in case of an error.
+    \item[Reliable] sufficiently high probability of delivering intended
+    service. Cannot simply stop service.
+    \item[Fault] Primary cause of failure.\\
+    Example: landing gear does not report that gear is down.
+    \item[Error] Wrong internal state of a (sub-)system. \\
+    Example: thrust reverters blocked by control software.
+    \item[Failure] Deviation from intended service. \\
+    Example: Braking distance increased drastically, millions die.
+    \MAX{Include slide 9:25, 9:27, 9:29 here...}
+    \item[Static: $n$-Modular Redundancy (TMR)] $n$ identical modules, one
+    majority-voter.
+    High cost, size, weight, energy. Protects against systematic failure.
+    \item[Multi Stage TMR] Multiple modules, multiple voters, their output is
+    again input for multiple modules.
+    \item[Dynamic: Standby Spare Arrangement] Two modules, one fault detector
+    operating a switch.
+    \item[Hot/Cold Standby] \textbf{Hot:} Fast switching, increased power
+    consumption. \textbf{Cold:} Reduced power consumption and wear out. Slow
+    switching.
+    \item[Hybrid Redundancy] see slide 9:36 \MAX{TODO}
+    \item[Failure Models] see slide 9:39 \MAX{TODO}
+    \item[Byzantine Generals] see slides 9:40-48
+    \item[Jitter] Variation in latency
+    \item[Latency] Distribution/Communication overhead
+    \item[Explicit Flow Control] 
+    \begin{itemize}
+        \item Receiver controls pace via acknowledgments,
+        start/stop signals, maskable interrupts, or real-time observable receiver
+        state (e.g. bus snooping).
+        \item Receiver might have to retry communication.
+        \item Prone to thrashing.
+    \end{itemize}
+    \item[Implicit Flow Control] 
+    \begin{itemize}
+        \item Pace determined at design time or startup based on \eg pings.
+        \item No retrying, thrashing
+    \end{itemize}
+    \item[Bus: Master-Slave Arbitration]\ \\
+    \textbf{+}: Simple, bounded latency, easily adaptable.\\
+    \textbf{-}: Requires fault tolerance, polling consumes bandwidth, number of
+    nodes fixed or requires bandwidth to detect.
+    \item[Bus: Fault Detection] Faulty/slow slave: master issues timeout based
+    on worst time response time. Faulty master: Heartbeats allow detection.
+    Dynamic redundancies.
+    \item[Time Division Multiplexed Access (TDMA)] See slide 11:33 for 
+    (dis-)advantages \MAX{TODO}
+    \begin{itemize}
+        \item No collisions.
+        \item Global time frame; clock sync necessary.
+        \item Transmit in dedicated time slot.
+    \end{itemize}
+    \item[Carrier Sense Multiple Access (CSMA)]
+    \begin{itemize}
+        \item Transmit when bus is idle.
+        \item Collision detection $\rightarrow$ back off dedicated time. See
+        slide 11:36 for (dis-)advantages.
+        \item Collision Avoidance: Bus arbitration mechanism avoids collisions.
+    \end{itemize}
+    \item[Controller Area Network (CAN)] see slide 11:39 \MAX{todo}
+    \item[I2C] see slide 11:40-43 \MAX{todo}
+    \item[FlexRay] Each cycle: static and dynamic segment to combine advantages.
+    See slide 11:56
 \end{description}
+
+\subsection*{Measuring Reliability}
+
+Let $(*)$ be the assumption of having an exponential distribution, \ie, a
+constant failure rate.
+\begin{description}
+    \item[Limitations] The following always assumes independence of failures,
+    which is often not the case. State based model more realistic.
+    \item[Density Function for time until first failure] constant failure rate
+    $\lambda:$ $f(t) = \lambda e^{-\lambda t}$.
+    \item[Probability of being faulty] $F(t) = \Pr(T \leq t) = \int^t_0f(\tau)
+    d\tau = 1 - e^{-\lambda t}$
+    \item[Reliability] not yet faulty. $R(t) = \int_0^\infty f(\tau) d\tau = 1 -
+    F(t) \overset{(*)}{=} e^{-\lambda t}$
+    \item[Failure rate $\lambda$] $\frac{f(t)}{R(t)}$
+    \item[Mean Time To Failure (MTTF)] = $\int_0^\infty t f(t) dt \overset{(*)}
+    {=} \frac{1}{\lambda}$
+    \item[Mean Time To Repair (MTTR)] Time to repair a fault that has occurred.
+    \item[Mean Time Between Failures (MTBF)] = MTTF + MTTR
+    \item[Availability] $A = \frac{\text{MTTF}}{\text{MTBF}}$
+    \item[FIT] expected number of failures in $10^9$ device hours.
+    Failure in time, \textbf{NOT} failures in terra.
+    \item[Failure Mode and Effect Analysis (FMEA)] Start with base components,
+    analyze hierarchically upwards.
+    \item[Serial Composition] $R(t) = \Pi^N_{i=1}R_i(t)$
+    \item[Parallel Composition] $R(t) = 1 - \Pi^N_{i=1}(1-R_i(t))$
+    \item[Minimal Cuts] Let C be the set of minimal cuts.
+    \[ R(t) \geq 1 - \sum_{S \in C} \Pi_{i \in S}(1 - R_i(t)) \]
+    \item[Minimal Tie Sets] Let T be the set of minimal ties, \ie, the set of
+    sets of components, whose simultaneous correctness guarantees overall
+    correctness.
+    \[ R(t) \leq \sum_{S \in T} \Pi_{i \in S} R_i(t) \]
+    \item[Fault Tree Analysis (FTA)] Transform graph into tree: OR-node if single error results in
+        overall failure. AND-node if failure of all children required to get an
+        overall failure.
+    \item[Mocus Algorithm] Uses transformed tree to compute minimal cut sets.
+    \begin{enumerate}
+        \item Initialize $1 \times 1$ Matrix with root operator.
+        \item \label{alg:mocus:rec} Replace operator in matrix. \\
+        If AND $\rightarrow$ duplicate row. Replace operator by children.\\
+        If OR  $\rightarrow$ duplicate col. Replace operator by children.
+        \item If there is an operator left, goto \ref{alg:mocus:rec}\\
+        \item Each \emph{column} is a cut set. Remove duplicates.
+    \end{enumerate}
+    \item[Markov Chain] Automation with initial probabilities $i(q)$ and
+    transition probabilities $t(q, q')$ (0 if not connected). Chance to be in a
+    state $q$:
+    \[ s_n(q) = \twopartdef{i(q)}{n = 0}{\sum_{r \in Q}(s_{n-1}(r)t(r,q))} \]
+\end{description}
+
+\subsection*{Event vs. Time Triggered Communication}
+\begin{tabular}{l |c | c}
+                    & Event Triggered (ET)  & Time Triggered (TT) \\
+\hline
+Interrupt based     & yes                   & no \\
+Shares ...          & events                & data\\
+Order significant   & yes                   & no\\
+processed only once & yes                   & not nec.\\
+Collisions possible & yes                   & no (avoided at design level)\\
+Overloading possible& yes                   & no
+\end{tabular}
+
