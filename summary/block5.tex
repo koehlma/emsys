@@ -1,0 +1,74 @@
+\subsection*{Basic Terminology}
+\begin{description}
+	\item[Release Time $r_i$ (aperiodic tasks)]
+	\item[Computation Time $C_i$]
+	\item[Deadline $d_i$]
+	\item[Slack time $X_i$] = $d_i - r_i - C_i$ max time that can pass until
+	this task \textbf{must} be scheduled.
+	\item[Start Time $s_i$]
+	\item[Finishing Time $f_i$]
+	\item[Lateness $L_i$] = $f_i - d_i$
+	\item[Exceeding Time $E_i$] = $\max(0, L_i)$
+	\item[Phase $\Phi_i$] time before the periodic task arrives for the first
+	time.
+	\item[Period $T_i$] time between consecutive arrivals of a periodic task.
+	\item[Relative Deadline $D_i$] Time from release time to respective deadline.
+	\item[Release Time (periodic tasks)] In $k$th period: $\Phi_i + k T_i$
+	(starting with 0th period).
+	\item[Synchronous] $\forall i: \ r_i = 0$
+	\item[Independent] No predecessor relation; task can be scheduled in any
+	order.
+	\item[Shared Resource] Can be used by multiple processes (at once)
+	\item[Mutually Exclusive Resource]Can be used by multiple processes one
+	after each other.
+	\item[Critical Section] Mutex code.
+	\item[Semaphore] Operations \texttt{wait} and \texttt{signal}
+	\item[Preemptive] \textit{Can} be interrupted.
+	\item[Feasible Schedule] Can be executed without violating specified
+	properties (\eg not missing deadlines).
+\end{description}
+
+\subsection*{Cost Functions}
+\begin{description}
+	\item[Avg Response Time] \ 
+	\[ \bar{t_r} = \frac{1}{n}\sum_{i=1}^n(f_i-r_i) \]
+	\item[Total Completion Time] \ 
+	\[ t_c = \max_i(f_i) - \min_i(r_i) \]
+	\item[Weighted Sum of Response Times]\ 
+	\[ t_w = \frac{1}{n}\sum_{i=1}^nw_i(f_i-r_i) \]
+	\item[Maximum Lateness] \ 
+	\[ L_{\max} = \max_i(f_i - d_i) \]
+	\item[Number of Late Tasks] \ 
+	\[ N_{\text{late}} = \sum_{i=1}^n \INDICATOR{f_i > d_i} \]
+\end{description}
+
+\subsection*{Aperiodic Scheduling}
+\begin{description}
+	\item[EDD - Earliest Due Date] Synchronous, independent tasks. Preemption
+	does not matter. \\ Complete, minimizes maximum lateness.\\ $\in \BIGO(n
+	\log n)$
+	\item[EDD without preemption] Optimal iff non-idle
+	\item[EDF - Earliest Deadline First] Aperiodic, preemptive.\\ Complete,
+	minimizes maximum lateness.\\ $\in \BIGO(n \log n)$, when $k$ tasks arrive,
+	additionally $\BIGO(k*n)$
+	\item[EDF with Dependent Tasks] Choose earliest deadline among all sources,
+	schedule, remove, repeat. \textbf{Not} optimal
+	\item[EDF*] Optimal for preemptive, asynchronous scheduling.\\
+	Either modify the deadlines of all non-sinks:
+	\[ d_i^* = \min(d_i, \min\{d_j^* - C_j : J_i \text{ depends on } J_j\}) \]
+	Or modify the release time of all non-sources
+	\[ r_j^* = \max(r_j, \max\{r_i^* + C_i : J_i \text{ depends on } J_j\}) \]
+	\item[LDF with Dependent Tasks] Choose latest deadline among all sinks,
+	schedule, remove, repeat. Optimal. Off-line computable $\in \BIGO(n * \max
+	\{|E|, \log n\})$.
+	\item[Bratley's algorithm] For each schedulable task: Check whether when
+	scheduled another task will miss the deadline. Yes $\rightarrow$ search for
+	other schedule. No $\rightarrow$ recursion. \\ 
+	Exponential time $\rightarrow$ use off-line.
+\end{description}
+
+\subsection*{Periodic Scheduling}
+\begin{description}
+	\item[EDF - Earliest Deadline First] Works, but is too slow for practice.
+	\item[LEFT OFF AT SLIDE SET 13]
+\end{description}
