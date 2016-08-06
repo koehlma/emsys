@@ -1,0 +1,116 @@
+\subsection*{Black Box Testing}
+
+\begin{description}
+	\item[Equivalence Partitioning] Find equivalence classes $E_i$ in input.
+	Invalid inputs for (at least) an equivalence class as well. \\ Find test
+	cases:
+	\begin{itemize}
+		\item Pick exactly one input. Choose invalid value for that. For each
+		other input, pick valid value.
+		\item Pick as many equivalence classes that can be cover at once as
+		possible. No invalid values!
+	\end{itemize}
+	Repeat until each invalid class is covered in isolation, and each valid
+	class is covered without any invalid cases in the same test.
+
+	\item[Boundary-Value Analysis] Additionally, test all values that are a
+	boundary for an equivalence class.
+
+	\item[Cause-Effect Graphing] Undirected edges, connecting cause and effect,
+	annotated by logical \texttt{and}, \texttt{or}, or \texttt{not} (sine wave on
+	edge). \\
+	Additionally, with dashed lines:\\
+	\begin{description}
+		\item[Mutually Exclusivity] Connect mutex nodes with an \textbf{E}
+		\item[At Least One True] Connect those nodes with an \textbf{I}
+		\item[Exactly One True] Connect those nodes with an \textbf{O}
+		\item[Reliance] (directed) $a$ can only be true if $b$ is true $\rightarrow$ edge
+		from $a$ to $b$ annotated with an \textbf{R}
+	\end{description}
+	\item[Decision Table] \ 
+	\begin{enumerate}
+		\item Initialize one row for each cause or effect.
+		\item For each effect: 
+		\begin{enumerate}
+			\item One column for each combination of causes such that effect is 1.
+			\item Annotate causes with fixed values or undefined.
+			\item Annotate the other effects with the respective desired outcome.
+		\end{enumerate}
+		\item Each column is a test case, where the input is given by the causes, the
+		effect values are the desired results.
+		\item Disjunction: Purge cases where both inputs are 1. Consider all others.
+		\item Conjunction: Purge cases where both inputs are 0. Consider all others.
+	\end{enumerate}
+	\item[Error Guessing] Speaks for itself.
+\end{description}
+
+\subsection*{White Box Testing}
+\begin{description}
+	\item[Control Flow Graph] Statement nodes: Square, Decision Nodes: Diamond.
+	\item[Condition Coverage] For con-/disjunction in decision nodes: Each
+	part has to be true and false at least once.
+	\item[Condition/Decision Coverage] Condition + Decision coverage.
+	\item[Multiple-Condition Coverage] Each combination of condition outcomes must
+	be covered.
+	\item[Path Coverage] \textbf{every} path needs to be covered.
+	\item[Simple Path] No repeated nodes.
+	\item[Prime Path] Simple path of maximum length.
+	\item[Observability Problem] Internal state hidden $\rightarrow$ probing.
+	Problem: Invasive and takes time. Alternative: snooping on bus.
+	\item[Reproducibility Problem] Time changes behavior. Run multiple times,
+	identify interesting points in time, analyze accordingly.
+	\item[Environment Simulation Problem] Real environment costly/risky. Simulation
+	not always realistic.
+\end{description}
+
+\subsection*{Model-based Testing}
+\begin{description}
+	\item[FSM Initially Connected] Each state reachable from the initial state.
+	\item[FSM complete] For each state and input, there is a transition.
+	\item[FSM strongly Connected] Every state is reachable from every state.
+	\item[Timed Automata] Edge syntax: (A|g)/R means actions A enabled if g holds.
+	Application resets R.
+	\item[Region Abstraction] Equivalence classes for making clocks integral, so we
+	have regions for $x = 0, 0 < x < 1, x = 1, ...$ until it makes no sense
+	anymore. Time transitions marked as $\tau$.
+	\item[Composition of FSMs] See slide 16:38.
+\end{description}
+
+\subsection*{LTL, Traces, Property Checking}
+
+\begin{description}
+	\item[Bad Prefix] Bad prefix of $\sigma$ is a finite prefix $\hat\sigma$ of
+	$\sigma$ where no extension would satisfy a given property.
+	\item[Safety] Every infinite trace violating the property has a bad prefix.
+	That means, once we were in a bad state, we are lost.
+	\item[Check Safety] Express property as automaton, construct composition with
+	the model automaton, check reachability of any error state.
+	\item[Liveness] Violating traces do not have a bad prefix. That means, we want
+	to ensure that something specific happens in the future given certain
+	circumstances.
+	\item[Safety Monitor] Shipped with a state labeling function. 1 for bad states,
+	0 for good ones.
+	\item[LTL] \textbf{Eventually:} Now or some time in the future.\\
+	\textbf{Until:} $a\textbf{U}b$ holds if $b$ holds from now on forever, or $a$
+	holds until $b$ holds forever.
+	\item[Büchi Automaton] Accepts if an accepting state is visited infinitely
+	often.
+	\item[Model Checking with LTL] Check whether $\varphi$ holds: 
+	\begin{enumerate}
+		\item Negate $\varphi$.
+		\item Transform in Büchi Automaton.
+		\item Construct composition with model automaton.
+		\item Search for reachable loops with accepting states.
+		\item If found, there are sequences violating $\varphi$.
+	\end{enumerate}
+	\item[Zone Graph] Input: Region Graph.
+	\begin{enumerate}
+		\item Start with initial region. Repeat for each newly created zone.
+		\item Collapse zone with all regions reachable by delay transition. 
+		\item Add edge to regions (or zones) reachable by discrete transitions.
+	\end{enumerate}
+	\item[Hybrid Reachability Checking] Assume derivative to be constant
+	$\rightarrow$ get regions of potential values
+	\item[Linear Hybrid Automate] Guard and invariants are linear equations. Allows
+	for exact reachability checks.
+\end{description}
