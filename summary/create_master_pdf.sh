@@ -7,13 +7,11 @@ case "${USER}" in
         # Feel free to use this on Linux-y systems, Marlene and Maxi.
         echo "Welcome back, Ben."
         SLIDE_PATH="lectures/Lecture_"
-        TEX_PATH="."
         LAYOUT="3x2"
         ;;
     "max")
         echo "Welcome back, Max."
         SLIDE_PATH="/Users/max/Dropbox/University/SS16/EmbeddedSystems/Slides/Lecture_"
-        TEX_PATH="/Users/max/Workspace/embeddedsystems/summary"
         LAYOUT="2x2"
         ;;
     *)
@@ -29,23 +27,13 @@ case "${USER}" in
  customer friendliness, so feel free to customize the slide layout to
  your very needs using lines 30-32."
         SLIDE_PATH="/Users/max/Dropbox/University/SS16/EmbeddedSystems/Slides/Lecture_"
-        TEX_PATH="/Users/max/Workspace/embeddedsystems/summary"
         LAYOUT="2x2"
         exit 1
         ;;
 esac
 
-cd "${TEX_PATH}"
-
-# three invocations plus one for good measure.
-# This kind of should-a could-a been done in a Makefile, y'know.
-pdflatex summary.tex
-pdflatex summary.tex
-pdflatex summary.tex
-pdflatex summary.tex
-
 pdfjam --a4paper --landscape --fitpaper false --twoside --nup $LAYOUT \
- -o wow_thats_awesome.pdf -- \
+ -o slides.pdf -- \
  ${SLIDE_PATH}2.pdf 11 \
  ${SLIDE_PATH}3.pdf 18,20 \
  ${SLIDE_PATH}6.pdf 28 \
@@ -54,5 +42,3 @@ pdfjam --a4paper --landscape --fitpaper false --twoside --nup $LAYOUT \
  ${SLIDE_PATH}14.pdf 36,39,43,45-47,50 \
  ${SLIDE_PATH}16.pdf 38
 
-pdfjoin -o wow_thats_more_awesomer.pdf -- \
- summary.pdf wow_thats_awesome.pdf
