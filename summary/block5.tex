@@ -5,6 +5,7 @@
 	\item[Deadline $d_i$]
 	\item[Slack time $X_i$] = $d_i - r_i - C_i$ max time that can pass until
 	this task \textbf{must} be scheduled.
+	\item[Laxity] deadline - remaining computation time
 	\item[Start Time $s_i$]
 	\item[Finishing Time $f_i$]
 	\item[Lateness $L_i$] = $f_i - d_i$
@@ -69,6 +70,76 @@
 
 \subsection*{Periodic Scheduling}
 \begin{description}
+	\item[Processor Utilization] \ 
+	\[ U = \sum_{i=1}^n \frac{C_i}{T_i} \]
+	\item[Utilization Bound (single processor)] $U < U_{bnd} \rightarrow$
+	schedulable.\\
+	$U_{bnd} \leq U \leq 1 \rightarrow$ maybe schedulable.\\
+	$U > 1 \rightarrow$ not schedulable.
 	\item[EDF - Earliest Deadline First] Works, but is too slow for practice.
-	\item[LEFT OFF AT SLIDE SET 13]
+	$U_{bnd} = 1$ for $D_i \geq T_i$
+	\item[RM - Rate Monotonic] Assume $T_i = D_i$. prio$(\tau_i) = T_i^{-1}$.\\
+	Optimal among fixed priority schedulers. $U_{bnd} = \ln 2 \approx 0.69$.\\
+	Exact check:
+	\begin{enumerate}
+		\item Sort by priorities, \ie, $i = 1$ has highest priority.
+		\item Initialize: $R^0_i = C_i$
+		\item Iteration $j$: For each $i > 1$ where $i$ is not a fix-point yet:
+			\begin{enumerate}
+				\item \ 
+				\[ R_i^{j+1} = C_i + \sum_{k=1}^{i-1} C_k \left\lceil \frac{R_i^j}{T_k}
+				\right\rceil \]
+			\end{enumerate}
+		\item Repeat until all $i$s are fix-points.
+		\item If any $R_i$ is greater than its $C_i \rightarrow$ not schedulable.
+		\item Else: RM-schedulable. 
+	\end{enumerate}
+	With critical resources see next section.
+	\MAX{Include example}
+\end{description}
+
+\subsection*{Scheduling with Resources}
+
+\begin{description}
+	\item[Priority Inheritance] If job $J_1$ needs a resource held by a lower
+	priority job $J_2$, then $J_2$ inherits $J_1$'s priority.
+	\item[Direct Blocking] Job blocked by missing resource held by lower priority
+	job.
+	\item[Push-Through Blocking] Job $J_m$ is blocked by lower priority job $J_l$,
+	that blocks higher priority job $J_h$ directly. Therefore, $J_m$ has to wait
+	for $J_l$ and $J_h$ to finish.
+	\item[Schedulability check] Use 
+	\[ R_i^{j+1} = C_i + B_i + \sum_{k=1}^{i-1} C_k \left\lceil \frac{R_i^j}
+	{T_k} \right\rceil\]
+	instead, where $B_i$ is the maximum blocking time.
+	\item[Blocking Time Approximation] $D_{j,k}$: Duration of longest critical
+	section of task $\tau_k$ using critical section $S_k$.\\
+	Jobs ordered by priority, $n$ tasks, $m$ critical sections.
+	\[ B_i \leq \sum_{j = i+1}^n \max_k\{ D_{j,k} | C(S_k) \leq P_i \} \]
+	\[ B_i \leq \sum_{k = 1}^m \max_{j>i}\{ D_{j,k} | C(S_k) \leq P_i \} \]
+	\item[Exact Blocking Time] Exhaustive search, exponential time.
+	\item[Priority Ceiling] $C(S) = \max\{\text{prio}(J)|\text{J can lock} S \}$
+	\item[Priority Ceiling Protocol] J can lock $S$ if its priority id \emph
+	{greater} than the \emph{ceilings} of all semaphores locked by other tasks.\\
+	If not the case, $J$ gets priority of this very task.\\
+	When exiting the critical section, the priority is set to highest priority of a
+	job blocked by the exiting job.
+\end{description}
+
+\subsection*{Multiprocessor Scheduling with preemption}
+\begin{description}
+	\item[Schedulability] $U \leq n$
+	\item[Game Board Representation] x-Axis: Laxity \\
+	y-Axis: Remaining computation time
+	\item[Least Laxity First] Optimal.
+	\item[Fully Run] $FR(t,k) = \{i \in M | D_i(t) \leq k \}$
+	\item[Partially Run] $PR(t,k) = \{i \in M | L_i(t) \leq k \land D_i(t) > k \}$
+	\item[Need Not Be Run] $NN(t,k) = \{i \in M | L_i(t) > k \}$
+	\item[Surplus Computing Power] \ 
+	\[ SCP(t,k) = (k * n) - \sum_{i \in FR(t,k)} C_i(t) - \sum_{i \in PR(t,k)} (k -
+	L_i(t)) \]
+	$SCP(0,k) \geq 0 \forall k > 0$ is a necessary and sufficient condition on
+	schedulability.
+	\item[Scheduling idea] See slide 14:36, 14:39
+	\item[Operating Systems] 14:43, 14:45, 14:46, 14:47, 14:50 \MAX{todo}
 \end{description}
