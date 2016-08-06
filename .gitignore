@@ -8,6 +8,8 @@
 *.out
 document.pdf
 verification.pdf
+summary/*.pdf
+summary/*.toc
 # Do not commit PDFs, please.
 *.synctex.gz
 *.fdb_latexmk
