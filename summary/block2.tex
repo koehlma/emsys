@@ -1,5 +1,7 @@
 \MAX{include graphic illustrating the four properties for a controller curve}
 
+
+\subsection{A/D Conversion}
 \begin{description}
 	\item[CCD Image Sensors] Charge-coupled devices. Sequential charge transfer,
 	complex interface, low power consumption.
@@ -17,6 +19,11 @@
 		\item x[0] = 1 since $7 = V > \frac{5}{8} V_{ref} = 6.25$
 	\end{itemize}
 	Speed, cost $\in \BIGO(\log n)$.
+\end{description}
+
+\subsection{Sampling}
+
+\begin{description}
 	\item[Aliasing] High frequency masquerades as low frequency. \MAX{include
 	image example}
 	\item[Anti-Aliasing] Use low-pass filter, \ie, forsake high frequency parts
@@ -36,6 +43,10 @@
 	 		&= \sum_{s \in S} y(t_s) * \frac{\sin\left(\frac{\pi}{p_s}(t-t_s)\right)}
 	 		{\frac{\pi}{p_s}(t-t_s)}
 	\end{align*}
+\end{description}
+
+\subsection{Dynamics, Stability \& Controlling}
+\begin{description}
 	\item[State Dynamics] $\dot{S} = AS + BI, O = CS + DI$
 	\item[Input-Output Linearity] For linear components: \\
 	\begin{align*}

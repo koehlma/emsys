@@ -1,4 +1,4 @@
-\subsection*{Basic Terminology}
+\subsection{Basic Terminology}
 \begin{description}
 	\item[Release Time $r_i$ (aperiodic tasks)]
 	\item[Computation Time $C_i$]
@@ -29,7 +29,7 @@
 	properties (\eg not missing deadlines).
 \end{description}
 
-\subsection*{Cost Functions}
+\subsection{Cost Functions}
 \begin{description}
 	\item[Avg Response Time] \ 
 	\[ \bar{t_r} = \frac{1}{n}\sum_{i=1}^n(f_i-r_i) \]
@@ -43,7 +43,7 @@
 	\[ N_{\text{late}} = \sum_{i=1}^n \INDICATOR{f_i > d_i} \]
 \end{description}
 
-\subsection*{Aperiodic Scheduling}
+\subsection{Aperiodic Scheduling}
 \begin{description}
 	\item[EDD - Earliest Due Date] Synchronous, independent tasks. Preemption
 	does not matter. \\ Complete, minimizes maximum lateness.\\ $\in \BIGO(n
@@ -68,7 +68,7 @@
 	Exponential time $\rightarrow$ use off-line.
 \end{description}
 
-\subsection*{Periodic Scheduling}
+\subsection{Periodic Scheduling}
 \begin{description}
 	\item[Processor Utilization] \ 
 	\[ U = \sum_{i=1}^n \frac{C_i}{T_i} \]
@@ -98,7 +98,7 @@
 	\MAX{Include example}
 \end{description}
 
-\subsection*{Scheduling with Resources}
+\subsection{Scheduling with Resources}
 
 \begin{description}
 	\item[Priority Inheritance] If job $J_1$ needs a resource held by a lower
@@ -126,7 +126,7 @@
 	job blocked by the exiting job.
 \end{description}
 
-\subsection*{Multiprocessor Scheduling with preemption}
+\subsection{Multiprocessor Scheduling with preemption}
 \begin{description}
 	\item[Schedulability] $U \leq n$
 	\item[Game Board Representation] x-Axis: Laxity \\

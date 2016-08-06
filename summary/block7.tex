@@ -1,0 +1,80 @@
+\begin{description}
+	\item[Game Arena] Player 0: Circle, Player 1: Square, environment, bad.
+	\item[Winning Condition] Set of traces.
+	\begin{itemize}
+		\item Reachability Game
+		\item Safety Game (Reachability with reversed player roles)
+		\item Büchi Game
+		\item Parity Game
+	\end{itemize}
+	\item[Controllable Pre-Operator] \ 
+	\begin{align*} 
+	\CPRE_i(S) = &\{ v \in V_i | \exists v' \in V. (v,v') \in E \land v' \in S \} \\
+	&\cup \{ v \in V_{1-i} | \forall v' \in V. (v, v') \in E \implies v' \in S \}
+	\end{align*}
+	\ie, any position where we can enforce to end up in $S$.
+	\item[Attractor construction] For reachability games:
+	\begin{align*}
+		\ATTR^0_i(R) &= R \\
+		\ATTR^{n+1}_i(R) &= \ATTR_i^n(R) \cup \CPRE_i(\ATTR_i^n(R))\\
+		\ATTR_i(R) &= \bigcup_{n \in \mathds{N}} \ATTR_i^n(R)
+	\end{align*}
+	Therefore, $\ATTR_i^n(R)$ means that player $i$ can reach $R$ in at most $n$ steps.
+	\item[Recurrence Construction] For Büchi games. $\RECUR^n(F)$ means that player 0 can enforce to come back to $F$ at least $n$ \emph{additional} times.
+	\begin{align*}
+		W_0 &= \ATTR_0(\RECUR(F))\\
+		W_1 &= V\BS W_0\\
+		\RECUR^0(F) &= F\\
+		W_1^n(F) &= V\BS \ATTR_0(\RECUR^n(F))\\
+		\RECUR^{n+1}(F) &= \RECUR^n(F)\BS \CPRE_1(W_1^n(F))\\
+		\RECUR(F) &= \bigcap_{n \in \mathds{N}} \RECUR^n(F)
+	\end{align*}
+	\item[Extracting the winning strategy] Always move to the attractor level with the least reachable $n$.
+	\item[Synthesis from LTL] 
+	\begin{enumerate}
+		\item LTL Specification
+		\item Deterministic Automaton
+		\item Game
+		\item Check winner. If player 0 wins, the specification is realizable.
+	\end{enumerate}
+	\item[Transforming Automata to Games] \ 
+	\begin{itemize}
+		\item Given a state $s$, with inputs $I$ and outputs $O$. 
+		\item Introduce position for player 1 named $s, o$ where o is the output in state s. 
+		\item For each possible input $i$ introduce a position for player 0 named $s, o, i$ meaning that the output remains the same, the input came from the environment. 
+		\item For each possible reaction to this input, introduce another position representing this actions.
+	\end{itemize}
+	\item[Parity Games] 
+	\[ \textit{Parity}(\Omega) = \{ p_0p_1\ldots \in V^\omega | \min\{ n \in \mathds{N} | \forall i \exists j. j>i \land \Omega(p_j) = n \} \text{ is even} \} \] 
+	That means, the minimal color that is visited infinitely often is even.
+\end{description}
+
+\subsection{Timed Games}
+
+\begin{itemize}
+	\item Player 0 chooses action and delay $t \geq 0$. During this delay, state invariants must not be violated.
+	\item Player 1 either accepts Player 0's choice or chooses a delay $\leq t$ and an \textbf{uncontrollable} action which guard is satisfied.
+	\item Controllable predecessors $P$ are states with respective time intervals such that Player 1 cannot make Player 0 leave $P$ without reaching the desired state.
+\end{itemize}
+
+\subsection{Abstractions}
+\begin{itemize}
+	\item Use an abstraction to obtain a discrete model via partitioning. 
+	\item Either all or no state in an element of the partition satisfy any given property.
+	\item Abstract transitions must be realizable in the continuous world.
+	\item Use a discrete planner to obtain a discrete plan.
+	\item The continuous planner transforms this plan into an applicable plan for the real world.
+\end{itemize}
+
+\subsection{Receding Horizon}
+
+\begin{itemize}
+	\item Define partial order on state partition with $W_0$ is minimum.
+	\item All goals are in $W_0$.
+	\item Define a synthesis-strategy function $F$ agreeing with the order. 
+	\item $F(W) = W'$ means that we synthesize a strategy from $W$ to $W'$.
+	\item After reaching $W'$ we keep synthesizing towards $W_0$.
+	\item Define invariant that holds in the initial states.
+\end{itemize}
+
+

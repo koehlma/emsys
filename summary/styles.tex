@@ -1,5 +1,6 @@
 
 \newcommand{\BLOCKTEMPLATE}[2]{
+  \invisiblesection{#2}
   \refstepcounter{blockCounter}
   \thispagestyle{plain}
   \newpage
@@ -22,7 +23,7 @@
         }
         \vspace{2mm}
         \vspace{2mm}
-        \hbox to 5in { \textit{ Summary: Schwenger % add your name here if you intend to collaborate or use
+        \hbox to 5in { \textit{ Author: Maximilian Schwenger (no warranty)% add your name here if you intend to collaborate or use
         \hfill } }
       }
   }
@@ -32,6 +33,12 @@
 }
 \setlength{\parskip}{1.5ex plus0.5ex minus0.3ex}
 \setlength{\parindent}{0ex}
+
+\newcommand\invisiblesection[1]{%
+  \refstepcounter{section}%
+  \addcontentsline{toc}{section}{\protect\numberline{\thesection}#1}%
+  \sectionmark{#1}
+  }
 
 % \makeatletter
 % \newtheoremstyle{case} % name
