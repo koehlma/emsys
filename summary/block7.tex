@@ -20,14 +20,17 @@
 		\ATTR_i(R) &= \bigcup_{n \in \mathds{N}} \ATTR_i^n(R)
 	\end{align*}
 	Therefore, $\ATTR_i^n(R)$ means that player $i$ can reach $R$ in at most $n$ steps.
-	\item[Recurrence Construction] For Büchi games. $\RECUR^n(F)$ means that player 0 can enforce to come back to $F$ at least $n$ \emph{additional} times.
+	\item[Recurrence Construction] $\RECUR^n(F)$ means that player 0 can enforce to come back to $F$ at least $n$ \emph{additional} times.
 	\begin{align*}
-		W_0 &= \ATTR_0(\RECUR(F))\\
-		W_1 &= V\BS W_0\\
 		\RECUR^0(F) &= F\\
 		W_1^n(F) &= V\BS \ATTR_0(\RECUR^n(F))\\
 		\RECUR^{n+1}(F) &= \RECUR^n(F)\BS \CPRE_1(W_1^n(F))\\
 		\RECUR(F) &= \bigcap_{n \in \mathds{N}} \RECUR^n(F)
+	\end{align*}
+    In a Büchi game, this means the winning regions look like this:
+	\begin{align*}
+		W_0 &= \ATTR_0(\RECUR(F))\\
+		W_1 &= V\BS W_0\\
 	\end{align*}
 	\item[Extracting the winning strategy] Always move to the attractor level with the least reachable $n$.
 	\item[Synthesis from LTL] 
