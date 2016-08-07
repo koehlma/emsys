@@ -48,7 +48,7 @@
 		\item For each possible reaction to this input, introduce another position representing this actions.
 	\end{itemize}
 	\item[Parity Games] 
-	\[ \textit{Parity}(\Omega) = \{ p_0p_1\ldots \in V^\omega | \min\{ n \in \mathds{N} | \forall i \exists j. j>i \land \Omega(p_j) = n \} \text{ is even} \} \] 
+	\[ \textit{Parity}(\Omega) = \{ p_0p_1\ldots \in V^\omega | \min\{ n \in \mathds{N} | \underbrace{\forall i \exists j. j>i \land \Omega(p_j) = n}_\text{\enquote{$n$ is visited inf.\ often}} \} \text{ is even} \} \] 
 	That means, the minimal color that is visited infinitely often is even.
 \end{description}
 
