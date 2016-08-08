@@ -36,7 +36,7 @@ pdfjam --a4paper --landscape --fitpaper false --twoside --nup $LAYOUT \
  -o slides.pdf -- \
  ${SLIDE_PATH}2.pdf 11 \
  ${SLIDE_PATH}3.pdf 18,20 \
- ${SLIDE_PATH}4.pdf 38 \
+ ${SLIDE_PATH}4.pdf 35 \
  ${SLIDE_PATH}6.pdf 28 \
  ${SLIDE_PATH}9.pdf 25,27,29,36,39,40-48 \
  ${SLIDE_PATH}11.pdf 33,36,39,40-43,56 \
