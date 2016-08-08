@@ -38,7 +38,6 @@ i2: half_adder port map (y, carry_in, z, sum);
 i3: or_gate port map (x, z, carry_out);
 end structure;
 	\end{lstlisting}
-\MAX{Add additional information like about clocks, bit vectors and the like.}
 	
 	\item[Process] cannot have subprocesses. Executed sequentially.
 	\begin{lstlisting}[language=vhdl]
@@ -110,14 +109,9 @@ end
 	\item[Delay Models] \ \\
 	\textbf{inertial delay:} default; Absorbs pulses of size
 	less than the delay time. Using reject x all pulses of length less than x are
-	absorbed. When inserting in the TL \textbf{for} time $t$ (not \textbf{at} time
-	$t$) remove elements with time-stamp $\in (t-rt, t)$ except they are part of a
-	sequence assigning the same value, where $rt$ is the reject time.\\
-	Additionally, same as for the transport model.\\
+	absorbed. \\
 	\textbf{transport delay:} Every pulse is translated.
-	When inserted in transaction list, all changes for this signal at a later or
-	equal point in time are removed
-	\MAX{Introduce more detailed execution algorithm}
+	\item[Execution Algorithm] See section \ref{sec:executionalgo}.
 	\item[Variables] Assigned sequentially, local scope, cannot be in sensitivity
 	lists, no time dimension.
 	\item[Process] Runs in a loop, only stops at waits or if there is a sensitivity
@@ -166,3 +160,55 @@ very well explored -> important for real time applications \\
 </advertisement>\\
 Consists of blocks with x-bit lookup tables with $2^x$ outputs and $y$ 1 bit
 registers
+
+\newpage
+\subsection{Execution Algorithm}
+\label{sec:executionalgo}
+
+Hint: Use a table to keep track of the current variable assignments. If wave form required, keep track of changes with timestamps of when
+they have changed to which value.
+\begin{enumerate}
+	\item All signals initialized with default value (i.g. `0').
+	\item $\TNEXT = 0$. 
+	\item Assign respective values to signals that are initialized.
+	\item Execute each process regardless of sensitivity lists until wait statement
+	is reached.
+	\item Add processes to PAL if necessary.
+	\item \label{item:iterationstep} $\TCURR := \TNEXT$
+	\item \label{item:checktransactionlist} All entries in TL with time-stamp
+	$\TCURR$
+	\begin{enumerate}
+		\item Assign values to signals using the \textbf{old} values, i.e. no values
+		assigned in the current iteration.
+		\item Note changes down in assignment table. Keep old values for following
+		assignments.
+		\item Add processes to PAL with \texttt{wait on} statements for this signal.
+	\end{enumerate}
+	\item Add processes to PAL with \texttt{wait until} statement where the
+	condition turns true with the \textbf{new} values.
+	\item Go through PAL, find entries with time-stamp $\TCURR$.
+	\begin{enumerate}
+		\item When reaching \texttt{wait for} statement, add to PAL.
+		\item When reaching end of process, restart immediately, unless there is a
+		sensitivity list.
+		\item Gather assignments in TL.
+		\begin{enumerate}
+			\item Assume we add an entry with time-stamp $t$:
+			\item Discard all transactions for this signal with time-stamp greater or
+			equal to $t$.
+			\item If the delay model is inertial with reject time $rt$: Remove
+			transactions with time-stamp $\in (t-rt, t)$ \textbf{except} they are part of
+			a sequence assigning the same value. In this sequence all entries have to
+			assign the same value \textbf{and} there must not be another assignment
+			between the end of the sequence and $t$.
+		\end{enumerate}
+	\end{enumerate}
+	\item Go to step \ref{item:checktransactionlist}, increment time by $\delta$ if
+	there is an appropriate value in the TL.
+	\item $\TNEXT$ is the minimal time-step of any entry in the PAL and TL. Go to
+	step \ref{item:iterationstep}.
+	\item If there is no entry in the TL and the PAL or the simulation's end time
+	is exceeded, stop.
+\end{enumerate}
+
+
