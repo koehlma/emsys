@@ -110,7 +110,10 @@ end
 	\item[Delay Models] \ \\
 	\textbf{inertial delay:} default; Absorbs pulses of size
 	less than the delay time. Using reject x all pulses of length less than x are
-	absorbed. \\
+	absorbed. When inserting in the TL \textbf{for} time $t$ (not \textbf{at} time
+	$t$) remove elements with time-stamp $\in (t-rt, t)$ except they are part of a
+	sequence assigning the same value, where $rt$ is the reject time.\\
+	Additionally, same as for the transport model.\\
 	\textbf{transport delay:} Every pulse is translated.
 	When inserted in transaction list, all changes for this signal at a later or
 	equal point in time are removed

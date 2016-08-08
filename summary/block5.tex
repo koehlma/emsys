@@ -81,6 +81,18 @@
 	\item[RM - Rate Monotonic] Assume $T_i = D_i$. prio$(\tau_i) = T_i^{-1}$.\\
 	Optimal among fixed priority schedulers. $U_{bnd} = \ln 2 \approx 0.69$.\\
 	Exact check:
+	\textbf{Intuitive}
+	\begin{enumerate}
+		\item Sort by priorities, \ie, $i = 1$ has highest priority.
+		\item Initialize: $R^0_i = C_i$
+		\item For the job with the highest priority we are done.
+		\item For any other job, check current $R^k_i$ value. When this value strictly
+		exceeds the period of any other job, account for this job's computation time
+		by adding it.
+		\item Remember that in the first iteration, we have to take \emph{all} tasks
+		with higher priority into account.
+	\end{enumerate}
+	\textbf{Formal}
 	\begin{enumerate}
 		\item Sort by priorities, \ie, $i = 1$ has highest priority.
 		\item Initialize: $R^0_i = C_i$
@@ -95,7 +107,6 @@
 		\item Else: RM-schedulable. 
 	\end{enumerate}
 	With critical resources see next section.
-	\MAX{Include example}
 \end{description}
 
 \subsection{Scheduling with Resources}
@@ -118,12 +129,14 @@
 	\[ B_i \leq \sum_{j = i+1}^n \max_k\{ D_{j,k} | C(S_k) \leq P_i \} \]
 	\[ B_i \leq \sum_{k = 1}^m \max_{j>i}\{ D_{j,k} | C(S_k) \leq P_i \} \]
 	\item[Exact Blocking Time] Exhaustive search, exponential time.
-	\item[Priority Ceiling] $C(S) = \max\{\text{prio}(J)|\text{J can lock} S \}$
-	\item[Priority Ceiling Protocol] J can lock $S$ if its priority id \emph
+	\item[Priority Ceiling] $C(S) = \max\{\text{prio}(J)|\text{ J can lock } S \}$
+	\item[Priority Ceiling Protocol] J can lock $S$ if its priority is \emph
 	{greater} than the \emph{ceilings} of all semaphores locked by other tasks.\\
 	If not the case, $J$ gets priority of this very task.\\
 	When exiting the critical section, the priority is set to highest priority of a
-	job blocked by the exiting job.
+	job blocked by the exiting job.\\
+	When checking whether $J_i$ can lock $S_i$ while $M$ is the set of semaphores that are currently locked, check: 
+	\[ \text{prio}(J_i) > \max_M\{C(S)\} \]
 \end{description}
 
 \subsection{Multiprocessor Scheduling with preemption}
